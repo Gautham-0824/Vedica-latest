@@ -1,0 +1,460 @@
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<title>Vedica · Multiplying Two Binomials</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Nunito:wght@700;800;900&display=swap" rel="stylesheet">
+<style>
+/* Layout: one 1024x768 lesson canvas, scaled to fit, same engine and look as the other Vedica lessons.
+   Colour: blue = the thing being read, orange = the thing being worked out, green = the finished answer. */
+:root{--bg:#e8edf2}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#10151c;color-scheme:dark}}
+:root[data-theme="dark"]{--bg:#10151c;color-scheme:dark}
+html,body{margin:0;height:100%;background:var(--bg);overflow:hidden}
+body{font-family:'DM Sans',system-ui,sans-serif;-webkit-font-smoothing:antialiased;color:#17233a}
+button{font:inherit;-webkit-tap-highlight-color:transparent;cursor:pointer}
+#wrap{position:fixed;inset:0;display:flex;align-items:center;justify-content:center;box-sizing:border-box;padding-block:env(safe-area-inset-top,0px) env(safe-area-inset-bottom,0px);padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+#cv{position:relative;width:1024px;height:768px;flex:none;overflow:hidden;border-radius:24px;background:#fffefa;transform-origin:center}
+.abs{position:absolute}
+.nun{font-family:Nunito,sans-serif}
+.rb{border:1px solid #e1e8ef;background:#fff;color:#3a4860;display:grid;place-items:center;padding:0;border-radius:99px;box-shadow:0 4px 12px rgba(23,35,58,.05);transition:transform 140ms cubic-bezier(.3,.7,.4,1)}
+.rb:active{transform:scale(.92)}
+.key{width:62px;height:62px;border-radius:18px;border:1px solid #e3eaf1;background:#fff;color:#17233a;font-family:Nunito,sans-serif;font-size:28px;font-weight:800;box-shadow:0 1px 0 rgba(23,35,58,.05),0 6px 14px rgba(23,35,58,.06);transition:transform 120ms,background 120ms}
+.key:active{transform:scale(.9);background:#eaf3ff}
+.pri{height:56px;padding:0 30px;border-radius:99px;border:0;background:#0a84ff;color:#fff;font-size:17px;font-weight:700;box-shadow:0 10px 24px rgba(10,132,255,.3);transition:transform 140ms}
+.sec{height:56px;padding:0 26px;border-radius:99px;border:1px solid #e1e8ef;background:#fff;color:#3a4860;font-size:17px;font-weight:600;box-shadow:0 4px 12px rgba(23,35,58,.05);transition:transform 140ms}
+.pri:active,.sec:active{transform:scale(.96)}
+@keyframes vdRing{0%{transform:scale(.35);opacity:0}25%{opacity:.9}100%{transform:scale(1.8);opacity:0}}
+button:focus-visible{outline:3px solid #0a84ff;outline-offset:2px}
+</style>
+<div id="wrap"><div id="cv"></div></div>
+<script>
+const INK='#17233a',BLUE='#0a84ff',OR='#e86f00',GR='#1a9e62',MU='#8391a6';
+const XE='cubic-bezier(.55,0,.25,1)',YE='cubic-bezier(.25,.9,.3,1.06)',HE='cubic-bezier(.45,0,.2,1)',DUR='1050ms',BY=530;
+const rm=matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+/* ---------- the maths: Urdhva Tiryagbhyam, (ax+b)(cx+d) = ac x² + (ad+bc) x + bd ---------- */
+const N2=n=>String(n).replace('-','−'),fmt=n=>n<0?'('+N2(n)+')':String(n);
+const term=(n,p,first)=>{const ab=Math.abs(n),body=p===0?String(ab):(ab===1?'':String(ab))+(p===1?'x':'x²');return n<0?'−'+body:(first?'':'+')+body};
+const sp=(n,p)=>(n<0?'− ':'+ ')+term(Math.abs(n),p,true);
+const num=s=>+String(s).replace('−','-');
+function yav(n,m){
+  const [a,b]=n.split(',').map(num),[c,d]=m.split(',').map(num),A=a*c,B=a*d+b*c,C=b*d,cx=k=>k===1?'x':k+'x';
+  return {n,m,a,b,c,d,A,B,C,ta:cx(a),tc:cx(c),sb:b<0?'−':'+',sd:d<0?'−':'+',ab:Math.abs(b),ad:Math.abs(d),
+    tA:term(A,2,true),tB:term(B,1,true),tC:term(C,0,true),tBa:term(Math.abs(B),1,true),tCa:term(Math.abs(C),0,true),
+    total:(a+b)*(c+d),str:'('+cx(a)+(b<0?'−':'+')+Math.abs(b)+')('+cx(c)+(d<0?'−':'+')+Math.abs(d)+')',
+    full:term(A,2,true)+term(B,1)+term(C,0),full2:term(A,2,true)+' '+sp(B,1)+' '+sp(C,0)};
+}
+let bad=[],cnt=0;
+for(let a=1;a<=9;a++)for(let c=1;c<=9;c++)for(let b=-9;b<=9;b++)for(let d=-9;d<=9;d++){
+  if(!b||!d)continue;const Y=yav(a+','+b,c+','+d);cnt++;
+  let ok=Y.total===Y.A+Y.B+Y.C;for(let x=-3;x<=3;x++)if((a*x+b)*(c*x+d)!==Y.A*x*x+Y.B*x+Y.C)ok=false;
+  if(!ok)bad.push([a,b,c,d]);
+}
+console.log(bad.length?'[Vedica] binomial tests FAILED '+bad.length:'[Vedica] '+cnt+'/'+cnt+' binomial products verified');
+
+/* ---------- scene toolkit (same model as the other Vedica lessons) ---------- */
+function mk(pre){
+  const S={E:{},B:{},A:[],focus:null,hand:null,finale:null,win:false};
+  S.el=(id,t,x,y,o)=>S.E[pre+id]={t:String(t),x,y,o:1,s:1,c:INK,z:96,w:900,dl:0,...o};
+  S.mod=(id,p)=>{const e=S.E[pre+id]||S.B[pre+id];if(e)Object.assign(e,p)};
+  S.box=(id,x,y,w,h,o)=>S.B[pre+id]={x,y,w,h,o:1,s:1,r:22,dashed:false,c:'#e1e8ef',fill:'#ffffff',shadow:false,q:'',dl:0,...o};
+  S.f=(...a)=>{S.focus=(S.focus||[]).concat(a.flat().map(i=>pre+i))};
+  S.h=id=>{S.hand={k:pre+id}};
+  S.arrow=(i,p0,p1,o)=>{S.A[i]={p0,p1,c:BLUE,st:1,bend:.28,dl:0,...o}};
+  S.hide=ids=>ids.forEach(id=>{const e=S.E[pre+id];if(e){e.o=0;e.y+=26}});
+  return S;
+}
+function seq(S,items,cx,y,z){
+  const w=it=>/^[0-9]$/.test(it.t)?z*.62:z*.6*String(it.t).length;
+  const gaps=items.map((it,i)=>i===items.length-1?0:(it.g??z*.24));
+  const total=items.reduce((a,it,i)=>a+w(it)+gaps[i],0);let x=cx-total/2;const xs=[];
+  items.forEach((it,i)=>{const c=x+w(it)/2;xs.push(c);S.el(it.id,it.t,c,y,{z,w:it.op?700:900,c:it.c||INK,o:it.o??1});x+=w(it)+gaps[i]});
+  return {xs,total};
+}
+function bub(S,items,bo,to,ro){
+  const its=items.map(i=>({...i,o:i.o!==undefined?i.o:(i.res?ro:to)})),q=seq(S,its,512,BY,52);
+  S.box('bub',512,BY,Math.max(300,q.total+90),104,{shadow:true,r:28,o:bo});
+  return {xs:q.xs,ids:its.map(i=>i.id),res:its.filter(i=>i.res).map(i=>i.id),rest:its.filter(i=>!i.res).map(i=>i.id)};
+}
+const colOf=Y=>Y.over?BLUE:OR;
+
+/* ---------- scenes ---------- */
+const EY=215,EZ=58,SY=390,SX=[302,512,722],isOp=t=>/^[+×=÷]$/.test(t);
+function eqRow(S,Y,y,z0){
+  const items=[{id:'o1',t:'(',g:0,op:1},{id:'TA',t:Y.ta},{id:'s1',t:Y.sb,op:1},{id:'TB',t:Y.ab,g:0},{id:'c1',t:')',g:4,op:1},
+    {id:'o2',t:'(',g:0,op:1},{id:'TC',t:Y.tc},{id:'s2',t:Y.sd,op:1},{id:'TD',t:Y.ad,g:0},{id:'c2',t:')',op:1}];
+  const q=seq(S,items,512,y,z0);
+  return {xs:q.xs,total:q.total,ids:items.map(i=>i.id)};
+}
+const X=(r,id)=>r.xs[r.ids.indexOf(id)];
+const slots=(S,f)=>SX.forEach((x,k)=>S.box('sl'+k,x,SY,180,84,f[k]?{shadow:true,r:24}:{dashed:true,c:'#cbd7e3',fill:'transparent',q:'?',r:24}));
+const put=(S,Y,k)=>{const v=[Y.tA,Y.tB,Y.tC][k];S.el('R'+(k+1),v,SX[k],SY,{z:52,c:OR})};
+const ST={
+  meet(S,Y,ph){
+    const r=eqRow(S,Y,300,EZ);if(ph===0)S.hide(r.ids);
+    if(ph>=2){r.ids.forEach(i=>S.mod(i,{c:BLUE}));S.f(r.ids);S.h('TD')}
+  },
+  look(S,Y,ph){
+    const r=eqRow(S,Y,EY,EZ);
+    if(ph>=1){S.mod('TA',{c:BLUE});S.mod('TC',{c:BLUE})}
+    if(ph>=2){S.mod('TB',{c:OR});S.mod('TD',{c:OR})}
+    const msg='x-terms '+Y.a+', '+Y.c+' · numbers '+N2(Y.b)+', '+N2(Y.d);
+    S.box('tag',512,128,Math.max(380,msg.length*14+60),60,{shadow:true,r:22,q:msg,qz:22,qc:OR,o:ph>=3?1:0,s:ph>=3?1:.9});
+    if(ph===1){S.f('TA','TC');S.h('TC')}
+    if(ph===2){S.f('TA','TB','TC','TD');S.h('TD')}
+    if(ph>=3){S.f('tag',r.ids);S.h('TD')}
+  },
+  left(S,Y,ph){
+    const r=eqRow(S,Y,EY,EZ);slots(S,[ph>=3,0,0]);
+    ['TA','TC'].forEach(i=>S.mod(i,{c:BLUE}));
+    const live=ph>=1&&ph<3;
+    const b=bub(S,[{id:'ca',t:Y.a,c:BLUE},{id:'cx',t:'×',op:1},{id:'cc',t:Y.c,c:BLUE},{id:'ce',t:'=',op:1},{id:'R1',t:Y.tA,res:1,c:OR}],live?1:0,live?1:0,ph>=2?1:0);
+    if(live){S.arrow(0,[X(r,'TA'),EY+40],[b.xs[0]-6,BY-62],{st:ph>=2?2:1,bend:.25});S.arrow(1,[X(r,'TC'),EY+40],[b.xs[2]+6,BY-62],{st:ph>=2?2:1,bend:-.25})}
+    if(ph>=3)S.mod('R1',{x:SX[0],y:SY});
+    if(ph===0){S.f('TA','TC');S.h('TC')}
+    if(ph===1){S.f('TA','TC','bub',b.rest);S.h('cx')}
+    if(ph===2){S.f('bub','R1');S.h('R1')}
+    if(ph>=3){S.f('sl0','R1');S.h('R1')}
+  },
+  cross(S,Y,ph){
+    const r=eqRow(S,Y,EY,EZ);slots(S,[1,ph>=4,0]);put(S,Y,0);
+    ['TA','TD'].forEach(i=>S.mod(i,{c:BLUE}));
+    if(ph>=1)['TB','TC'].forEach(i=>S.mod(i,{c:OR}));
+    const as=ph>=3?3:ph>=2?2:1;
+    S.arrow(0,[X(r,'TA'),EY-44],[X(r,'TD'),EY-44],{bend:-.3,st:as});
+    if(ph>=1)S.arrow(1,[X(r,'TB'),EY+44],[X(r,'TC'),EY+44],{bend:.3,c:OR,st:as});
+    const live=ph>=2&&ph<4;
+    const b=bub(S,[{id:'x1',t:fmt(Y.a)+'×'+fmt(Y.d),c:BLUE},{id:'xp',t:'+',op:1},{id:'x2',t:fmt(Y.b)+'×'+fmt(Y.c),c:OR},{id:'xe',t:'=',op:1},{id:'R2',t:Y.tB,res:1,c:OR}],live?1:0,live?1:0,ph>=3?1:0);
+    if(ph>=4)S.mod('R2',{x:SX[1],y:SY});
+    if(ph===0){S.f('TA','TD','sl0','R1');S.h('TD')}
+    if(ph===1){S.f('TA','TB','TC','TD','sl0','R1');S.h('TC')}
+    if(ph===2){S.f('bub',b.rest,'sl0','R1');S.h('xp')}
+    if(ph===3){S.f('bub','R2','sl0','R1');S.h('R2')}
+    if(ph>=4){S.f('sl0','R1','sl1','R2');S.h('R2')}
+  },
+  right(S,Y,ph){
+    const r=eqRow(S,Y,EY,EZ);slots(S,[1,1,ph>=3]);put(S,Y,0);put(S,Y,1);
+    ['TB','TD'].forEach(i=>S.mod(i,{c:BLUE}));
+    const live=ph>=1&&ph<3;
+    const b=bub(S,[{id:'rb',t:fmt(Y.b),c:BLUE},{id:'rx',t:'×',op:1},{id:'rd',t:fmt(Y.d),c:BLUE},{id:'re',t:'=',op:1},{id:'R3',t:Y.tC,res:1,c:OR}],live?1:0,live?1:0,ph>=2?1:0);
+    if(live){S.arrow(0,[X(r,'TB'),EY+40],[b.xs[0]-6,BY-62],{st:ph>=2?2:1,bend:.25});S.arrow(1,[X(r,'TD'),EY+40],[b.xs[2]+6,BY-62],{st:ph>=2?2:1,bend:-.25})}
+    if(ph>=3)S.mod('R3',{x:SX[2],y:SY});
+    if(ph===0){S.f('TB','TD','sl0','sl1','R1','R2');S.h('TD')}
+    if(ph===1){S.f('TB','TD','bub',b.rest,'sl0','sl1','R1','R2');S.h('rx')}
+    if(ph===2){S.f('bub','R3','sl0','sl1','R1','R2');S.h('R3')}
+    if(ph>=3){S.f('sl0','sl1','sl2','R1','R2','R3');S.h('R3')}
+  },
+  join(S,Y,ph){
+    const r=eqRow(S,Y,EY,EZ),tmp=mk('t.'),sg=n=>n<0?'−':'+';
+    const q=seq(tmp,[{id:'R1',t:Y.tA},{id:'P2',t:sg(Y.B),op:1},{id:'R2',t:Y.tBa},{id:'P3',t:sg(Y.C),op:1},{id:'R3',t:Y.tCa}],512,SY,64);
+    const fx={R1:q.xs[0],P2:q.xs[1],R2:q.xs[2],P3:q.xs[3],R3:q.xs[4]};
+    if(ph===0){
+      slots(S,[1,1,1]);put(S,Y,0);put(S,Y,1);put(S,Y,2);
+      S.el('P2',sg(Y.B),fx.P2,SY,{z:52,s:64/52,c:GR,w:700,o:0});S.el('P3',sg(Y.C),fx.P3,SY,{z:52,s:64/52,c:GR,w:700,o:0});
+      S.f('sl0','sl1','sl2','R1','R2','R3');S.h('R3');
+    }else{
+      S.el('R1',Y.tA,fx.R1,SY,{z:52,s:64/52,c:GR});S.el('R2',Y.tBa,fx.R2,SY,{z:52,s:64/52,c:GR});S.el('R3',Y.tCa,fx.R3,SY,{z:52,s:64/52,c:GR});
+      S.el('P2',sg(Y.B),fx.P2,SY,{z:52,s:64/52,c:GR,w:700});S.el('P3',sg(Y.C),fx.P3,SY,{z:52,s:64/52,c:GR,w:700});
+      r.ids.forEach(i=>S.mod(i,{c:GR}));S.finale={x:512,y:SY,w:q.total+130,h:150};S.win=true;
+    }
+  },
+};
+const SUM={left:Y=>'Left: '+Y.tA,cross:Y=>'Middle: '+Y.tB,right:Y=>'Right: '+Y.tC,join:Y=>'= '+Y.full};
+const HL={left:OR,cross:OR,right:OR,join:GR};
+const CAP={
+  meet:Y=>'Look at **'+Y.str+'**. Expanding it looks long, but there is a neat trick. **Watch this.**',
+  look:Y=>'Name the parts. The x-terms are **'+Y.ta+'** and **'+Y.tc+'**. The numbers are **'+N2(Y.b)+'** and **'+N2(Y.d)+'**.',
+  left:Y=>'Multiply the x-terms, straight down the left. **'+Y.a+' × '+Y.c+' = '+Y.A+'**. That gives the **'+Y.tA+'** part.',
+  cross:Y=>'Now go crosswise and add. **'+fmt(Y.a)+' × '+fmt(Y.d)+' + '+fmt(Y.b)+' × '+fmt(Y.c)+' = '+N2(Y.B)+'**. That gives the **'+Y.tB+'** part.',
+  right:Y=>'Multiply the numbers, straight down the right. **'+fmt(Y.b)+' × '+fmt(Y.d)+' = '+N2(Y.C)+'**. That is the last part.',
+  join:Y=>'Write the three parts in order. **'+Y.str+' = '+Y.full2+'**.',
+};
+const TM={meet:[[0,800,2300],3600],look:[[0,800,2300,3800],5100],left:[[0,800,2300,3800],5100],cross:[[0,800,2300,3800,5300],6600],right:[[0,800,2300,3800],5100],join:[[0,800],2100],practice:[[0,500],700]};
+const four=(n,m,t)=>[['left',n,m,t],['cross',n,m,'Crosswise in the middle'],['right',n,m,'Down the right'],['join',n,m,'Read the answer']];
+const LIST=[['meet','2,3','4,5','Meet the problem'],['look','2,3','4,5','Name the parts'],...four('2,3','4,5','Down the left'),
+  ...four('3,−2','2,5','A minus sign: (3x−2)(2x+5)'),...four('5,−3','2,−4','Two minus signs: (5x−3)(2x−4)'),['practice','','','Your turn']];
+const STEPS=LIST.map(([g,n,m,name])=>({g,n,m,name,times:TM[g][0],end:TM[g][1]}));
+const LAST=STEPS.length-1;
+const SUTRA='Urdhva Tiryagbhyam: vertically and crosswise';
+const LANGS=[['en','English','English','en-IN'],['hi','Hindi','हिन्दी','hi-IN'],['ta','Tamil','தமிழ்','ta-IN'],['te','Telugu','తెలుగు','te-IN'],['ml','Malayalam','മലയാളം','ml-IN']];
+const PRACTICE=[{n:'1,6',m:'1,2'},{n:'4,−1',m:'3,2'},{n:'2,5',m:'3,−4'},{n:'5,−3',m:'2,−4'},{n:'3,7',m:'2,−5'}];
+const rnd=(a,b)=>a+Math.floor(Math.random()*(b-a+1));
+function randomP(){
+  let a,b,c,d;const sg=()=>Math.random()<.5?-1:1;
+  do{a=rnd(1,5);c=rnd(1,5);b=rnd(1,9)*sg();d=rnd(1,9)*sg()}while(a*d+b*c===0);
+  return {n:a+','+b,m:c+','+d};
+}
+function tasks(Y){
+  const {a,b,c,d,A,B,C}=Y;
+  return [
+    {cap:'Multiply the x-terms: **'+a+' × '+c+'**. That is the number in front of x².',q:a+' × '+c,ans:String(A),ex:[a,'×',c],g:'left',hint:'Close! Multiply '+a+' by '+c+'.'},
+    {cap:'Go crosswise and add: **'+fmt(a)+' × '+fmt(d)+' + '+fmt(b)+' × '+fmt(c)+'**. That is the number in front of x.',q:fmt(a)+' × '+fmt(d)+' + '+fmt(b)+' × '+fmt(c),ans:N2(B),ex:[fmt(a),'×',fmt(d),'+',fmt(b),'×',fmt(c)],g:'cross',hint:'Close! Work out each product, then add them. Mind the signs.'},
+    {cap:'Multiply the numbers: **'+fmt(b)+' × '+fmt(d)+'**. That is the last part.',q:fmt(b)+' × '+fmt(d),ans:N2(C),ex:[fmt(b),'×',fmt(d)],g:'right',hint:'Close! Multiply '+fmt(b)+' by '+fmt(d)+'. Two minus signs make a plus.'},
+    {cap:'Check with x = 1. The parts add up: **'+A+' + '+fmt(B)+' + '+fmt(C)+'**. What is the total?',q:A+' + '+fmt(B)+' + '+fmt(C),ans:N2(Y.total),ex:[A,'+',fmt(B),'+',fmt(C)],g:'join',hint:'Close! Add the three numbers. Mind the signs.'}];
+}
+function pscene(S,Y,pr){
+  const T=tasks(Y),t=pr.task,r=eqRow(S,Y,190,EZ),fin=pr.done||(pr.ok&&t===T.length-1),nf=fin?3:Math.min(t+(pr.ok?1:0),3),CY=292,vals=[Y.tA,Y.tB,Y.tC];
+  [0,1,2].forEach(k=>{
+    if(k<nf){S.box('cp'+k,SX[k],CY,180,72,{shadow:true,r:22});S.el('R'+(k+1),vals[k],SX[k],CY,{z:46,c:fin?GR:OR})}
+    else S.box('cp'+k,SX[k],CY,180,72,{dashed:true,c:'#cbd7e3',fill:'transparent',q:'?',r:22});
+  });
+  if(fin){r.ids.forEach(i=>S.mod(i,{c:GR}));S.finale={x:512,y:240,w:780,h:220}}
+  else{
+    const ex=T[t].ex,ids2=ex.map((_,i)=>'te'+t+'_'+i),q=seq(S,ex.map((x,i)=>({id:ids2[i],t:String(x),op:isOp(String(x))})),512,385,46);
+    S.box('tb'+t,512,385,Math.max(240,q.total+90),84,{shadow:true,r:26});
+    (t===0?['TA','TC']:t===1?['TA','TB','TC','TD']:t===2?['TB','TD']:[]).forEach(i=>S.mod(i,{c:BLUE}));
+    S.f(r.ids,'cp0','cp1','cp2','R1','R2','R3','tb'+t,ids2);
+  }
+}
+
+/* ---------- chrome ---------- */
+const cv=document.getElementById('cv');
+cv.innerHTML=`
+<div class="abs" style="top:22px;left:36px;right:36px;height:40px;display:flex;align-items:center;justify-content:space-between;z-index:7">
+ <div class="nun" style="display:flex;align-items:center;gap:8px;font-size:21px;font-weight:800;letter-spacing:-.03em"><span style="display:grid;place-items:center;width:28px;height:28px;border-radius:9px 9px 9px 3px;background:#0a84ff;color:#fff;font-size:16px;font-style:italic;box-shadow:0 5px 12px rgba(10,132,255,.22)">V</span>Vedica</div>
+ <div style="display:flex;align-items:center;gap:14px"><div style="display:flex;align-items:baseline;gap:8px;font-size:15px;font-weight:600"><span style="color:#8391a6">Multiplying two binomials</span><span style="color:#d3dbe4">·</span><span id="sn" style="color:#0a84ff;font-weight:700"></span><span id="sm" style="color:#8290a5"></span></div>
+ <button id="x" class="rb" aria-label="Exit lesson" title="Exit lesson" style="width:40px;height:40px"><svg width="18" height="18" viewBox="0 0 24 24" style="fill:none;stroke:currentColor;stroke-width:2.6;stroke-linecap:round"><path d="M6 6l12 12M18 6 6 18"/></svg></button></div></div>
+<div id="pg" class="abs" style="top:62px;left:50%;transform:translateX(-50%);display:flex;gap:6px;z-index:5"></div>
+<div id="fin" class="abs" style="left:0;top:0"></div><div id="spot" class="abs" style="left:0;top:0;pointer-events:none"></div>
+<div id="bl"></div>
+<svg class="abs" width="1024" height="768" viewBox="0 0 1024 768" style="left:0;top:0;pointer-events:none;overflow:visible"><path id="a0"/><path id="a1"/></svg>
+<div id="nl"></div>
+<div class="abs" style="right:20px;top:216px;width:184px;display:flex;flex-direction:column;align-items:flex-end;gap:7px;pointer-events:none;z-index:2"><div id="rh" style="padding:0 0 2px 4px;font-size:12px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:#8391a6;transition:opacity 300ms">Steps</div><div id="rail" style="display:flex;flex-direction:column;gap:7px"></div></div>
+<div id="ringh"></div>
+<div id="hand" class="abs" style="left:0;top:0;pointer-events:none;z-index:4"><svg width="66" height="70" viewBox="-30 -18 60 64" style="display:block;overflow:visible;filter:drop-shadow(0 6px 10px rgba(23,35,58,.18))"><path d="M-3 11V-11c0-4 6-4 6 0v11-5c0-4 6-4 6 0v7-4c0-4 6-4 6 0v7-2c0-4 6-4 6 1v8c0 11-7 18-18 18-9 0-14-4-18-11l-6-10c-2-4 3-8 6-4z" style="fill:#fff7ee;stroke:#23324b;stroke-width:2;stroke-linecap:round;stroke-linejoin:round"/></svg></div>
+<div id="tap" class="abs" style="left:0;right:0;top:110px;bottom:120px;cursor:pointer"></div>
+<div id="pr" class="abs" style="left:0;right:0;top:444px;display:none;flex-direction:column;align-items:center;gap:10px"><div class="nun" style="display:flex;align-items:center;gap:16px;font-weight:800;font-size:44px;letter-spacing:-.02em"><span>=</span><div id="inp"></div></div><div id="hint" style="font-size:16px;font-weight:600;text-align:center;max-width:560px;transition:color 200ms"></div></div>
+<div id="keys" class="abs" style="left:0;right:0;top:572px;display:none;justify-content:center;gap:8px"></div>
+<div id="dn" class="abs" style="left:0;right:0;top:400px;display:none;flex-direction:column;align-items:center;gap:12px"><div class="nun" style="font-size:40px;font-weight:900;letter-spacing:-.03em">You did it!</div><div id="su" style="height:34px;padding:0 16px;border-radius:99px;background:#eaf3ff;color:#0a84ff;font-size:15px;font-weight:700;display:flex;align-items:center"></div><div style="display:flex;gap:12px;margin-top:12px"><button id="wa" class="sec">Watch the lesson again</button><button id="ta" class="pri">Try another</button></div></div>
+<div class="abs" style="top:100px;right:30px;display:flex;flex-direction:column;align-items:flex-end;gap:10px;z-index:9">
+ <button id="inf" class="rb" aria-label="About this sutra" title="About this sutra" style="width:48px;height:48px"><svg width="24" height="24" viewBox="0 0 24 24" style="fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round"><circle cx="12" cy="12" r="9"/><path d="M12 11v5.5" style="stroke-width:2.4"/><circle cx="12" cy="7.6" r="1.25" style="fill:currentColor;stroke:none"/></svg></button>
+ <div id="spw" style="position:relative;display:flex;justify-content:flex-end"><button id="spk" class="rb" style="width:48px;height:48px"><svg width="24" height="24" viewBox="0 0 24 24" style="fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round"><path d="M4 9.5h3.2L12 5.5v13l-4.8-4H4z" style="fill:currentColor"/><path id="wv"/></svg></button><div id="menu"></div></div></div>
+<div id="info" class="abs" style="inset:0;z-index:20;display:none;place-items:center;background:rgba(23,35,58,.32);backdrop-filter:blur(6px);opacity:0;transition:opacity 260ms ease-out"><div id="card" role="dialog" aria-modal="true" aria-label="Multiplying two binomials" style="position:relative;width:560px;box-sizing:border-box;padding:30px 32px 28px;border-radius:32px;background:#fff;box-shadow:0 30px 80px rgba(23,35,58,.24);transition:transform 380ms cubic-bezier(.2,.8,.2,1),opacity 260ms">
+ <button id="ix" class="rb" aria-label="Close" style="position:absolute;top:18px;right:18px;width:40px;height:40px;border:0;background:#f1f4f8"><svg width="18" height="18" viewBox="0 0 24 24" style="fill:none;stroke:currentColor;stroke-width:2.6;stroke-linecap:round"><path d="M6 6l12 12M18 6 6 18"/></svg></button>
+ <div class="nun" style="padding:8px 44px 0;text-align:center;font-size:30px;font-weight:900;letter-spacing:-.03em;line-height:1.2">Multiplying Two Binomials</div>
+ <div style="margin-top:12px;text-align:center;font-size:15px;font-weight:600;color:#6b7a90;line-height:1.4">Expand (2x+3)(4x+5) in one line. Go down the left, crosswise in the middle, then down the right.</div>
+ <div style="margin-top:20px;display:flex;flex-direction:column;gap:10px"><div style="display:flex;align-items:center;gap:14px;padding:12px 16px;border-radius:20px;background:#f5f8fb"><span class="nun" style="flex:none;width:28px;height:28px;border-radius:99px;background:#eaf3ff;color:#0a84ff;display:grid;place-items:center;font-size:14px;font-weight:800">1</span><span style="flex:1;min-width:0;display:flex;flex-direction:column;gap:2px"><span class="nun" style="font-size:17px;font-weight:800">Down the left</span><span style="font-size:14px;font-weight:500;color:#6b7a90">2x × 4x</span></span><span id="ex2" class="nun" style="display:inline-block;font-size:20px;font-weight:900;color:#0a84ff;white-space:nowrap;transition:transform 600ms cubic-bezier(.3,1.3,.5,1) 400ms,opacity 300ms ease 400ms">8x²</span></div><div style="display:flex;align-items:center;gap:14px;padding:12px 16px;border-radius:20px;background:#f5f8fb"><span class="nun" style="flex:none;width:28px;height:28px;border-radius:99px;background:#eaf3ff;color:#0a84ff;display:grid;place-items:center;font-size:14px;font-weight:800">2</span><span style="flex:1;min-width:0;display:flex;flex-direction:column;gap:2px"><span class="nun" style="font-size:17px;font-weight:800">Crosswise in the middle</span><span style="font-size:14px;font-weight:500;color:#6b7a90">2x × 5 + 3 × 4x</span></span><span class="nun" style="font-size:20px;font-weight:900;color:#0a84ff;white-space:nowrap">22x</span></div><div style="display:flex;align-items:center;gap:14px;padding:12px 16px;border-radius:20px;background:#f5f8fb"><span class="nun" style="flex:none;width:28px;height:28px;border-radius:99px;background:#eaf3ff;color:#0a84ff;display:grid;place-items:center;font-size:14px;font-weight:800">3</span><span style="flex:1;min-width:0;display:flex;flex-direction:column;gap:2px"><span class="nun" style="font-size:17px;font-weight:800">Down the right</span><span style="font-size:14px;font-weight:500;color:#6b7a90">3 × 5</span></span><span class="nun" style="font-size:20px;font-weight:900;color:#0a84ff;white-space:nowrap">15</span></div></div>
+ <button id="ist" class="pri" style="margin:26px auto 0;display:block;min-width:160px;height:50px">Start</button></div></div>
+<div class="abs" style="left:36px;right:36px;bottom:30px;display:grid;grid-template-columns:56px minmax(0,1fr) auto;align-items:center;gap:20px;z-index:6">
+ <button id="bk" class="rb" aria-label="Previous step" style="width:56px;height:56px"><svg width="24" height="24" viewBox="0 0 24 24" style="fill:none;stroke:currentColor;stroke-width:2.4;stroke-linecap:round;stroke-linejoin:round"><path d="m14.5 6-6 6 6 6"/></svg></button>
+ <div id="cap" aria-live="polite" class="nun" style="text-align:center;font-size:23px;font-weight:700;color:#34425a;letter-spacing:-.01em;line-height:1.3;text-wrap:balance"></div>
+ <div style="display:flex;align-items:center;gap:10px"><button id="rp" class="rb" aria-label="Replay this step" style="height:56px;padding:0 18px 0 14px;display:flex;gap:7px;font-size:15px;font-weight:600"><svg width="20" height="20" viewBox="0 0 24 24" style="fill:none;stroke:currentColor;stroke-width:2.3;stroke-linecap:round;stroke-linejoin:round"><path d="M4 12a8 8 0 1 0 2.3-5.7M4 5v5h5"/></svg><span>Replay</span></button>
+ <button id="nx" style="height:56px;border-radius:99px;border:0;overflow:hidden;display:flex;align-items:center;justify-content:center;padding:0;font-size:17px;font-weight:700;transition:width 520ms cubic-bezier(.32,.72,0,1),background 300ms,color 300ms,box-shadow 300ms,gap 520ms"><span id="nxl" style="overflow:hidden;white-space:nowrap;transition:max-width 520ms cubic-bezier(.32,.72,0,1),opacity 300ms">Next</span><svg width="24" height="24" viewBox="0 0 24 24" style="flex-shrink:0;fill:none;stroke:currentColor;stroke-width:2.4;stroke-linecap:round;stroke-linejoin:round"><path id="nxi" d="m9.5 6 6 6-6 6"/></svg></button></div></div>`;
+const $=id=>document.getElementById(id);
+const pgBars=STEPS.map((s,i)=>{const b=document.createElement('button'),w=STEPS.length>14?34:42;b.setAttribute('aria-label','Go to '+s.name);b.style.cssText='padding:12px 0;border:0;background:transparent';b.innerHTML='<div style="width:'+w+'px;height:5px;border-radius:99px;background:#e1e8ef;overflow:hidden"><div style="height:100%;width:0;background:#0a84ff;border-radius:99px"></div></div>';b.onclick=()=>go(i);$('pg').appendChild(b);return b.firstChild.firstChild});
+'1234567890'.split('').concat('−','⌫').forEach(d=>{const b=document.createElement('button');b.className='key';b.textContent=d;b.setAttribute('aria-label',d==='⌫'?'Delete':d==='−'?'Minus':d);b.onclick=()=>d==='⌫'?del():press(d);$('keys').appendChild(b)});
+
+/* ---------- state + engine ---------- */
+const st={step:0,phase:0,done:false,capIn:false,pr:null,info:false,infoShow:false,menu:false,audio:false,lang:'en',lastHand:[512,500]};
+let timers=[],pending=null,spoken=null,capNow='';
+const later=(f,ms)=>timers.push(setTimeout(f,ms)),clear=()=>{timers.forEach(clearTimeout);timers=[]};
+const buzz=ms=>{try{navigator.vibrate&&navigator.vibrate(ms)}catch(e){}};
+const freshPr=list=>({list:list||PRACTICE.map(p=>({...p})),pi:0,task:0,input:'',wrong:0,ok:false,bad:false,shake:0,replay:null,done:false,again:false});
+const cur=()=>st.pr.list[st.pr.pi];
+const setPr=p=>{st.pr={...st.pr,...p};render()};
+function go(step,opts={}){
+  clear();const def=STEPS[step];
+  st.step=step;st.phase=0;st.done=false;st.capIn=false;if(step===LAST)st.pr=freshPr(opts.list);render();
+  later(()=>{st.capIn=true;render()},40);
+  def.times.forEach((t,i)=>{if(i>0)later(()=>{st.phase=i;render()},t)});
+  later(()=>{st.done=step<LAST;render()},def.end);
+}
+const next=()=>go(st.step<LAST?st.step+1:0);
+const back=()=>st.step>0?go(st.step-1):go(0);
+function stageTap(){if(st.step>=LAST)return;if(!st.done){clear();st.phase=STEPS[st.step].times.length-1;st.done=true;st.capIn=true;render()}else next()}
+function press(d){
+  const {pr}=st;if(st.step!==LAST||st.phase<1||!pr||pr.ok||pr.replay||pr.done)return;
+  const Y=yav(cur().n,cur().m),T=tasks(Y),t=pr.task,ans=T[t].ans,input=((pr.bad?'':pr.input)+d).slice(0,ans.length);
+  if(input.length<ans.length)return setPr({input,bad:false,again:false});
+  if(input===ans){
+    buzz([12,40,12]);setPr({input,ok:true,bad:false,again:false});
+    later(()=>{const p=st.pr,end=p.pi>=p.list.length-1;
+      if(t<T.length-1)st.pr={...p,task:t+1,input:'',ok:false,wrong:0,again:false};
+      else st.pr=end?{...p,done:true}:{...p,pi:p.pi+1,task:0,input:'',ok:false,wrong:0,again:false};render()},t<T.length-1?1100:1500);
+  }else{
+    buzz(8);const wrong=pr.wrong+1;setPr({input,bad:true,wrong,again:false});
+    [-12,10,-7,5,0].forEach((x,i)=>later(()=>setPr({shake:x}),60*(i+1)));
+    if(wrong>=3)later(startReplay,1100);
+  }
+}
+function del(){const {pr}=st;if(st.step!==LAST||!pr||pr.ok||pr.replay||pr.done)return;setPr({input:pr.bad?'':pr.input.slice(0,-1),bad:false})}
+function startReplay(){
+  const Y=yav(cur().n,cur().m),g=tasks(Y)[st.pr.task].g,si=STEPS.findIndex(s=>s.g===g);let t=0;
+  setPr({replay:{s:si,ph:0},input:'',bad:false});
+  STEPS[si].times.forEach((tt,ph)=>later(()=>setPr({replay:{s:si,ph}}),tt));
+  t=STEPS[si].end+700;later(()=>setPr({replay:null,wrong:0,input:'',again:true}),t);
+}
+function frame(){
+  if(st.step<LAST){const d=STEPS[st.step],Y=yav(d.n,d.m),S=mk(Y.n+'x'+Y.m+'.');ST[d.g](S,Y,st.phase);return S}
+  if(st.pr&&st.phase>=1){const Y=yav(cur().n,cur().m),S=mk(Y.n+'x'+Y.m+'.');if(st.pr.replay)ST[STEPS[st.pr.replay.s].g](S,Y,st.pr.replay.ph);else pscene(S,Y,st.pr);return S}
+  return mk('x.');
+}
+
+/* ---------- narration ---------- */
+function speak(){
+  spoken=capNow;const ss=window.speechSynthesis;if(!ss)return;
+  const L=LANGS.find(l=>l[0]===st.lang)||LANGS[0];ss.cancel();
+  const u=new SpeechSynthesisUtterance(capNow.replace(/×/g,' times ').replace(/−/g,' minus ').replace(/²/g,' squared ').replace(/=/g,' equals '));
+  u.lang=L[3];const v=ss.getVoices().find(v=>v.lang&&v.lang.replace('_','-').toLowerCase().startsWith(L[0]));if(v)u.voice=v;u.rate=.95;ss.speak(u);
+}
+const savePref=()=>{try{localStorage.setItem('vedica-narration',JSON.stringify({lang:st.lang,audio:st.audio}))}catch(e){}};
+
+/* ---------- renderer ---------- */
+const NE={},BE={};let lastFin=null,ringKey='';
+const DIMA=.14;
+function arrowPath(a){
+  const [x0,y0]=a.p0,[x1,y1]=a.p1,dx=x1-x0,dy=y1-y0,L=Math.hypot(dx,dy)||1,px=-dy/L,py=dx/L,bb=a.bend*L;
+  const c1=[x0+dx*.3+px*bb*1.08-2,y0+dy*.3+py*bb*1.08+2],c2=[x0+dx*.72+px*bb*.9+3,y0+dy*.72+py*bb*.9-2];
+  const tx=x1-c2[0],ty=y1-c2[1],tl=Math.hypot(tx,ty)||1,ux=tx/tl,uy=ty/tl,h=15,an=.5;
+  const head=s=>[x1-h*(ux*Math.cos(an)-s*uy*Math.sin(an)),y1-h*(uy*Math.cos(an)+s*ux*Math.sin(an))],f=p=>p[0].toFixed(1)+' '+p[1].toFixed(1);
+  let len=0,prev=[x0,y0];
+  for(let j=1;j<=24;j++){const t=j/24,u=1-t,p=[u*u*u*x0+3*u*u*t*c1[0]+3*u*t*t*c2[0]+t*t*t*x1,u*u*u*y0+3*u*u*t*c1[1]+3*u*t*t*c2[1]+t*t*t*y1];len+=Math.hypot(p[0]-prev[0],p[1]-prev[1]);prev=p}
+  return {d:'M'+f([x0,y0])+' C'+f(c1)+' '+f(c2)+' '+f([x1,y1])+' M'+f(head(1))+' L'+f([x1,y1])+' L'+f(head(-1)),len:len+2*h+4};
+}
+const lastE={},lastB={},lastA=[],akey=[];
+function render(){
+  const F=frame(),fs=F.focus?new Set(F.focus):null,dim=k=>fs?!fs.has(k):false;
+  // digits
+  new Set([...Object.keys(F.E),...Object.keys(NE)]).forEach(id=>{
+    let e=F.E[id];if(e)lastE[id]=e;else e={...lastE[id],o:0,dl:0,od:undefined};
+    let n=NE[id];const isNew=!n,d=dim(id);
+    if(!n){n=NE[id]={o:document.createElement('div'),i:document.createElement('div')};n.o.appendChild(n.i);n.o.style.cssText='position:absolute;left:0;top:0;pointer-events:none';
+      n.i.style.cssText='position:absolute;left:0;top:0;white-space:nowrap;font-family:Nunito,sans-serif;line-height:1;letter-spacing:-.03em;font-variant-numeric:tabular-nums';$('nl').appendChild(n.o)}
+    n.i.textContent=e.t;
+    const put=(op)=>{
+      n.o.style.transform='translateX('+e.x+'px)';
+      n.i.style.transform='translateY('+e.y+'px) translate(-50%,-50%) scale('+e.s+')';
+      n.i.style.opacity=op;n.i.style.filter=d?'blur(2.5px)':'blur(0px)';n.i.style.color=e.c;n.i.style.fontWeight=e.w;n.i.style.fontSize=e.z+'px';
+    };
+    const tr=()=>{const od=e.od??e.dl;n.o.style.transition=rm?'none':'transform '+DUR+' '+XE+' '+e.dl+'ms';
+      n.i.style.transition=(rm?'':'transform '+DUR+' '+YE+' '+e.dl+'ms, ')+'opacity 620ms ease '+od+'ms, filter 480ms ease, color 420ms ease '+e.dl+'ms'};
+    const op=e.o*(d?DIMA:1);
+    if(isNew){n.o.style.transition='none';n.i.style.transition='none';put(0);void n.i.offsetWidth;tr();n.i.style.opacity=op}
+    else{tr();put(op)}
+  });
+  // boxes
+  new Set([...Object.keys(F.B),...Object.keys(BE)]).forEach(id=>{
+    let b=F.B[id];if(b)lastB[id]=b;else b={...lastB[id],o:0,dl:0};
+    let n=BE[id];const isNew=!n,d=dim(id);
+    if(!n){n=BE[id]=document.createElement('div');const s=document.createElement('span');s.className='nun';s.style.cssText='font-weight:800;white-space:nowrap';n.appendChild(s);$('bl').appendChild(n)}
+    const s=n.firstChild;s.textContent=b.q;s.style.fontSize=(b.qz||b.h*.42)+'px';s.style.color=b.qc||'#c0ccd8';
+    const put=(sc,op)=>{Object.assign(n.style,{position:'absolute',left:0,top:0,width:b.w+'px',height:b.h+'px',boxSizing:'border-box',borderRadius:b.r+'px',border:b.dashed?'2.5px dashed '+b.c:'1px solid '+b.c,background:b.fill,display:'grid',placeItems:'center',transform:'translate('+(b.x-b.w/2)+'px,'+(b.y-b.h/2)+'px) scale('+sc+')',opacity:op,boxShadow:b.shadow?'0 14px 34px rgba(23,35,58,.10),0 1px 0 rgba(23,35,58,.04)':'none'})};
+    const tr=()=>n.style.transition=(rm?'':'transform '+DUR+' '+YE+' '+b.dl+'ms, ')+'opacity 420ms ease '+b.dl+'ms';
+    const op=b.o*(d?.35:1);
+    if(isNew){n.style.transition='none';put(b.s*.9,0);void n.offsetWidth;tr();n.style.transform='translate('+(b.x-b.w/2)+'px,'+(b.y-b.h/2)+'px) scale('+b.s+')';n.style.opacity=op}
+    else{tr();put(b.s,op)}
+  });
+  // arrows
+  [0,1].forEach(i=>{
+    let a=F.A[i];if(a)lastA[i]=a;else a=lastA[i]?{...lastA[i],st:3}:null;const p=$('a'+i);
+    if(!a){p.style.opacity=0;return}
+    const {d,len}=arrowPath(a),isNew=akey[i]!==d;akey[i]=d;p.setAttribute('d',d);
+    Object.assign(p.style,{fill:'none',stroke:a.c,strokeWidth:5,strokeLinecap:'round',strokeLinejoin:'round',strokeDasharray:len+' '+len});
+    const op=a.st===1?1:a.st===2?.4:0;
+    if(isNew){p.style.transition='none';p.style.strokeDashoffset=a.st===1?len:0;p.style.opacity=op;void p.getBoundingClientRect();p.style.transition=(rm?'none':'stroke-dashoffset 900ms '+HE+' '+a.dl+'ms')+', opacity 450ms ease';p.style.strokeDashoffset=0}
+    else{p.style.transition='stroke-dashoffset 900ms '+HE+', opacity 450ms ease';p.style.strokeDashoffset=0;p.style.opacity=op}
+  });
+  // spotlight, finale, hand
+  const sp=$('spot');let o=0,sw=300,sh=200,tx=0,ty=0;
+  if(fs){let x0=1e9,y0=1e9,x1=-1e9,y1=-1e9;
+    F.focus.forEach(k=>{const e=F.E[k],b=F.B[k];
+      if(e&&e.o){const h=e.z*e.s/2+10,w=h*Math.max(1,e.t.length*.6);x0=Math.min(x0,e.x-w);x1=Math.max(x1,e.x+w);y0=Math.min(y0,e.y-h);y1=Math.max(y1,e.y+h)}
+      if(b&&b.o){x0=Math.min(x0,b.x-b.w/2);x1=Math.max(x1,b.x+b.w/2);y0=Math.min(y0,b.y-b.h/2);y1=Math.max(y1,b.y+b.h/2)}});
+    if(x1>x0){sw=x1-x0+200;sh=y1-y0+170;o=1;tx=(x0+x1)/2-sw/2;ty=(y0+y1)/2-sh/2}}
+  Object.assign(sp.style,{width:sw+'px',height:sh+'px',opacity:o,borderRadius:'50%',background:'radial-gradient(closest-side,rgba(10,132,255,.11),rgba(10,132,255,.04) 60%,rgba(10,132,255,0))',transform:'translate('+tx+'px,'+ty+'px)',transition:'transform '+DUR+' '+XE+',width '+DUR+' '+XE+',height '+DUR+' '+XE+',opacity 500ms ease'});
+  if(F.finale)lastFin=F.finale;const fin=lastFin||{x:512,y:320,w:300,h:170};
+  Object.assign($('fin').style,{width:fin.w+'px',height:fin.h+'px',borderRadius:'36px',background:'#fff',boxShadow:'0 24px 60px rgba(23,35,58,.12),0 2px 8px rgba(23,35,58,.05)',transform:'translate('+(fin.x-fin.w/2)+'px,'+(fin.y-fin.h/2)+'px) scale('+(F.finale?1:.88)+')',opacity:F.finale?1:0,pointerEvents:'none',transition:'transform 700ms cubic-bezier(.3,1.3,.5,1),opacity 450ms ease,width 500ms ease,height 500ms ease'});
+  if(F.win&&!render.win)buzz(20);render.win=F.win;
+  let hx=512,hy=500,hv=0;
+  if(F.hand){const e=F.hand.k?F.E[F.hand.k]:null;if(e){hx=e.x+10;hy=e.y+e.z*e.s*.42;hv=1}else if(!F.hand.k){hx=F.hand.x;hy=F.hand.y;hv=1}if(hv)st.lastHand=[hx,hy]}
+  if(!hv)[hx,hy]=st.lastHand;
+  Object.assign($('hand').style,{transform:'translate('+(hx-33)+'px,'+(hy-4)+'px) rotate(-14deg) scale('+(hv?1:.8)+')',transformOrigin:'33px 4px',opacity:hv,transition:'transform '+(rm?0:1000)+'ms '+HE+',opacity 380ms ease'});
+  const rk=hv?Math.round(hx)+'-'+Math.round(hy)+'-'+st.step:'';
+  if(rk!==ringKey){ringKey=rk;$('ringh').innerHTML=hv?'<div style="position:absolute;left:'+(hx-24)+'px;top:'+(hy-24)+'px;width:48px;height:48px;border-radius:50%;z-index:3;border:3px solid rgba(10,132,255,.45);pointer-events:none;animation:vdRing 1.5s 1s ease-out infinite both"></div>':''}
+
+  // recap rail
+  const rc=STEPS[st.step],items=[];
+  if(st.step<LAST)STEPS.forEach((s,i)=>{if(i>st.step||!SUM[s.g]||s.n!==rc.n||s.m!==rc.m||(i===st.step&&!st.done))return;items.push({id:i,txt:SUM[s.g](yav(s.n,s.m)),hl:HL[s.g]||OR})});
+  const rail=$('rail');
+  [...rail.children].forEach(c=>{if(!items.some(x=>'r'+x.id===c.dataset.id))c.remove()});
+  items.forEach(c=>{
+    if(rail.querySelector('[data-id="r'+c.id+'"]'))return;
+    const m=c.txt.match(/^(.*(?:= |: ))(.+)$/),d=document.createElement('div');d.dataset.id='r'+c.id;d.setAttribute('role','button');d.title='Replay step '+(c.id+1);
+    d.style.cssText='height:36px;max-width:184px;box-sizing:border-box;padding:0 14px 0 7px;pointer-events:auto;cursor:pointer;white-space:nowrap;display:flex;align-items:center;gap:8px;flex-shrink:0;border-radius:99px;background:#fff;border:1px solid #edf1f5;box-shadow:0 1px 0 rgba(23,35,58,.03),0 6px 16px rgba(23,35,58,.06);transform:translateX(12px) scale(.9);opacity:0';
+    d.innerHTML='<span style="flex-shrink:0;width:22px;height:22px;border-radius:99px;background:#eaf3ff;color:#0a84ff;display:grid;place-items:center;font-family:Nunito,sans-serif;font-size:12px;font-weight:800">'+(c.id+1)+'</span><span class="nun" style="font-size:15px;font-weight:800;letter-spacing:-.01em">'+(m?m[1]:c.txt)+'<span style="color:'+c.hl+'">'+(m?m[2]:'')+'</span></span>';
+    d.onclick=()=>go(c.id);rail.appendChild(d);requestAnimationFrame(()=>requestAnimationFrame(()=>{d.style.transition='transform '+(rm?0:520)+'ms cubic-bezier(.3,1.3,.5,1),opacity 320ms ease';d.style.transform='none';d.style.opacity=1}));
+  });
+  $('rh').style.opacity=items.length?1:0;
+
+  // captions, practice
+  const pr=st.pr||freshPr(),prac=st.step===LAST&&st.phase>=1,Y=prac?yav(cur().n,cur().m):null;let capStr,hl=BLUE;
+  if(st.step<LAST){const d=STEPS[st.step],y=yav(d.n,d.m);capStr=CAP[d.g](y);hl=HL[d.g]||BLUE}
+  else if(!Y)capStr='Your turn.';
+  else if(pr.replay){const d=STEPS[pr.replay.s];capStr=CAP[d.g](Y);hl=HL[d.g]||colOf(Y)}
+  else if(pr.done){capStr='**'+Y.full2+'**. Vertically and crosswise, every time.';hl=GR}
+  else{const T=tasks(Y)[pr.task];if(pr.ok){capStr='**Yes!** '+(T.ok||T.q+' = '+T.ans)+'.';hl=GR}else capStr=T.cap}
+  capNow=capStr.replace(/\*\*/g,'');
+  const cap=$('cap');cap.innerHTML=capStr.split('**').map((t,i)=>t?(i%2?'<span style="color:'+hl+';font-weight:800">'+t+'</span>':'<span>'+t+'</span>'):'').join('');
+  Object.assign(cap.style,{opacity:st.capIn?1:0,transform:'translateY('+(st.capIn?0:8)+'px)',filter:st.capIn?'blur(0)':'blur(4px)',transition:st.capIn?'opacity 450ms ease,transform 550ms cubic-bezier(.32,.72,0,1),filter 450ms ease':'none'});
+  $('sn').textContent=st.step===LAST?'Practice':'Step '+(st.step+1)+' of '+LAST;$('sm').textContent=STEPS[st.step].name;
+  pgBars.forEach((f,i)=>{const s=STEPS[i];let w=0,tr='none';
+    if(i<st.step)w=100;else if(i===st.step){if(st.step<LAST){if(st.done){w=100;tr='width 300ms ease'}else if(st.capIn){w=100;tr='width '+s.end+'ms linear'}}else{w=(pr.pi+(pr.done||pr.ok?1:0))/pr.list.length*100;tr='width 600ms cubic-bezier(.32,.72,0,1)'}}
+    f.style.width=w+'%';f.style.transition=tr});
+  const showP=prac&&!pr.done&&!pr.replay;
+  $('pr').style.display=showP?'flex':'none';$('keys').style.display=showP?'flex':'none';$('dn').style.display=prac&&pr.done?'flex':'none';$('tap').style.display=st.step<LAST&&!st.info?'block':'none';
+  const col=pr.ok?GR:pr.bad?OR:BLUE;
+  Object.assign($('inp').style,{minWidth:'100px',height:'78px',padding:'0 18px',boxSizing:'border-box',borderRadius:'22px',border:'3px solid '+col,background:pr.ok?'#eefaf3':pr.bad?'#fff5eb':'#f4f9ff',display:'flex',alignItems:'center',justifyContent:'center',fontSize:'46px',letterSpacing:'.02em',color:pr.input?col:'#b5c3d2',transform:'translateX('+pr.shake+'px) scale('+(pr.ok?1.06:1)+')',transition:'transform 110ms ease,border-color 200ms,background 200ms,color 200ms'});
+  $('inp').textContent=pr.input||'?';
+  let ht='Use the trick from the lesson.';if(Y&&pr.wrong>0)ht=tasks(Y)[pr.task].hint;if(pr.again)ht='Your turn again.';if(pr.ok)ht='That’s it.';
+  $('hint').textContent=ht;$('hint').style.color=pr.wrong&&!pr.ok&&!pr.again?'#a8662a':pr.ok?GR:'#8a97aa';
+  $('su').textContent=SUTRA;
+  const exp=(st.done&&st.step<LAST),nx=$('nx');
+  Object.assign(nx.style,{width:(exp?124:56)+'px',gap:exp?'6px':'0',background:exp?BLUE:'#e7f1fd',color:exp?'#fff':BLUE,boxShadow:exp?'0 10px 24px rgba(10,132,255,.3)':'none'});
+  Object.assign($('nxl').style,{maxWidth:exp?'60px':'0',opacity:exp?1:0});
+  $('nxi').setAttribute('d',st.step===LAST?'M20 12a8 8 0 1 1-2.3-5.7M20 5v5h-5':'m9.5 6 6 6-6 6');nx.setAttribute('aria-label',st.step===LAST?'Start the lesson again':'Next step');
+  $('bk').style.color=st.step===0?'#c3ccd6':'#3a4860';
+  // info, narration menu
+  const inf=$('info');inf.style.display=st.info?'grid':'none';inf.style.opacity=st.infoShow?1:0;
+  Object.assign($('card').style,{opacity:st.infoShow?1:0,transform:'translateY('+(st.infoShow?0:14)+'px) scale('+(st.infoShow?1:.92)+')'});
+  Object.assign($('ex2').style,{opacity:st.infoShow?1:0,transform:st.infoShow?'none':'translateY(8px) scale(.8)'});
+  const on=st.audio,sk=$('spk');Object.assign(sk.style,{background:on?BLUE:'#fff',color:on?'#fff':'#3a4860',borderColor:on?BLUE:'#e1e8ef',boxShadow:on?'0 8px 18px rgba(10,132,255,.28)':'0 4px 12px rgba(23,35,58,.06)'});
+  $('wv').setAttribute('d',on?'M15.5 9a4 4 0 0 1 0 6M18 6.5a7.5 7.5 0 0 1 0 11':'m16 9.5 5 5m0-5-5 5');
+  const ln=(LANGS.find(l=>l[0]===st.lang)||LANGS[0])[1];sk.setAttribute('aria-label',on?'Narration on · '+ln:'Narration off');
+  const mn=$('menu');Object.assign(mn.style,{position:'absolute',right:'58px',top:0,width:'200px',padding:'6px',boxSizing:'border-box',borderRadius:'20px',background:'rgba(255,255,255,.96)',backdropFilter:'blur(20px)',border:'1px solid #e6ecf2',boxShadow:'0 18px 44px rgba(23,35,58,.16)',display:'flex',flexDirection:'column',gap:'2px',opacity:st.menu?1:0,transform:'translateX('+(st.menu?0:8)+'px) scale('+(st.menu?1:.96)+')',transformOrigin:'right top',pointerEvents:st.menu?'auto':'none',transition:'opacity 180ms ease-out,transform 220ms cubic-bezier(.2,.8,.2,1)'});
+  if(!mn.children.length)mn.innerHTML='<div style="padding:6px 12px 8px;font-size:12px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:#8391a6">Narration</div>'+LANGS.map(l=>'<button data-l="'+l[0]+'" style="display:flex;align-items:center;justify-content:space-between;gap:8px;width:100%;padding:8px 12px;border:0;border-radius:14px;text-align:left"><span style="display:flex;flex-direction:column;align-items:flex-start"><span style="font-size:15px;font-weight:700">'+l[2]+'</span><span style="font-size:12px;font-weight:500;color:#8391a6">'+l[1]+'</span></span><svg width="18" height="18" viewBox="0 0 24 24" style="fill:none;stroke:#0a84ff;stroke-width:2.6;stroke-linecap:round;stroke-linejoin:round"><path d="m5 12.5 4.5 4.5L19 7.5"/></svg></button>').join('');
+  [...mn.querySelectorAll('button')].forEach(b=>{const s=b.dataset.l===st.lang;b.style.background=s?'#eaf3ff':'transparent';b.style.color=s?BLUE:INK;b.lastChild.style.opacity=s?1:0});
+  if(st.audio&&st.capIn&&capNow!==spoken)speak();
+}
+function fit(){
+  const w=$('wrap'),cs=getComputedStyle(w),aw=w.clientWidth-parseFloat(cs.paddingLeft)-parseFloat(cs.paddingRight),ah=w.clientHeight-parseFloat(cs.paddingTop)-parseFloat(cs.paddingBottom);
+  $('cv').style.transform='scale('+Math.min(aw/1024,ah/768)+')';
+}
+function openInfo(){st.info=true;st.menu=false;render();setTimeout(()=>{st.infoShow=true;render()},20)}
+function closeInfo(){st.infoShow=false;render();setTimeout(()=>{st.info=false;render();const p=pending;pending=null;if(p)p()},260)}
+$('inf').onclick=openInfo;$('ix').onclick=closeInfo;$('ist').onclick=closeInfo;$('info').onclick=closeInfo;$('card').onclick=e=>e.stopPropagation();
+$('tap').onclick=stageTap;$('nx').onclick=next;$('bk').onclick=back;$('rp').onclick=()=>go(st.step);
+$('x').onclick=()=>{try{speechSynthesis.cancel()}catch(e){}go(0)};
+$('wa').onclick=()=>go(0);$('ta').onclick=()=>go(LAST,{list:[randomP()]});
+$('spw').onmouseenter=()=>{st.menu=true;render()};$('spw').onmouseleave=()=>{st.menu=false;render()};
+$('spk').onclick=()=>{st.audio=!st.audio;st.menu=true;savePref();if(st.audio){spoken=null;render()}else{try{speechSynthesis.cancel()}catch(e){}render()}};
+$('menu').onclick=e=>{const b=e.target.closest('button');if(!b)return;st.lang=b.dataset.l;st.audio=true;spoken=null;savePref();render()};
+addEventListener('resize',fit);
+addEventListener('keydown',e=>{
+  if(st.info){if(e.key==='Escape')closeInfo();return}
+  if(/^[0-9]$/.test(e.key))return press(e.key);
+  if(e.key==='-'||e.key==='−')return press('−');
+  if(e.key==='Backspace')return del();
+  if(e.key==='ArrowRight')return next();if(e.key==='ArrowLeft')return back();
+  if(e.key===' '&&st.step<LAST){e.preventDefault();return stageTap()}
+  if(e.key==='r'||e.key==='R')return go(st.step);
+});
+try{const v=JSON.parse(localStorage.getItem('vedica-narration')||'null');if(v){st.lang=v.lang||'en';st.audio=!!v.audio}}catch(e){}
+fit();
+// Resume: every step is saved, and an unfinished lesson reopens at the step it was left on.
+(function(){var K='vedica-resume',id=window.__vdLesson||location.pathname.split('/').pop(),g=go,sv;
+go=function(s,o){try{var r=JSON.parse(localStorage.getItem(K)||'{}');r[id]=s;localStorage.setItem(K,JSON.stringify(r))}catch(e){}return g(s,o)};
+try{sv=JSON.parse(localStorage.getItem(K)||'{}')[id]}catch(e){}
+if(sv>0&&sv<=LAST)go(sv);else{pending=()=>go(0);openInfo()}})();
+</script>
+
+<script>(function(){if(parent===window)return;var P=function(t){parent.postMessage({vedica:t},'*')};var x=document.getElementById('x');if(x)x.onclick=function(){try{speechSynthesis.cancel()}catch(e){}P('exit')};var dn=document.getElementById('dn');if(dn)new MutationObserver(function(){if(dn.style.display==='flex'&&!dn._s){dn._s=1;P('done')}}).observe(dn,{attributes:true});})();</script>
+</body></html>

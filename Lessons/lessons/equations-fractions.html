@@ -1,0 +1,415 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Vedica · S13.1 Sopantyadvayamantyam</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Nunito:wght@700;800;900&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#e8edf2;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#10151c}}
+:root[data-theme="dark"]{--bg:#10151c}
+html,body{margin:0;height:100%;background:var(--bg);overflow:hidden}
+body{font-family:'DM Sans',system-ui,sans-serif;-webkit-font-smoothing:antialiased;color:#17233a}
+button{font:inherit;-webkit-tap-highlight-color:transparent;cursor:pointer}
+#wrap{position:fixed;inset:0;display:flex;align-items:center;justify-content:center}
+#cv{position:relative;width:1024px;height:768px;flex:none;overflow:hidden;border-radius:24px;background:#fffefa;transform-origin:center}
+.abs{position:absolute}
+.nun{font-family:Nunito,sans-serif}
+.rb{border:1px solid #e1e8ef;background:#fff;color:#3a4860;display:grid;place-items:center;padding:0;border-radius:99px;box-shadow:0 4px 12px rgba(23,35,58,.05);transition:transform 140ms cubic-bezier(.3,.7,.4,1)}
+.rb:active{transform:scale(.92)}
+.key{width:62px;height:62px;border-radius:18px;border:1px solid #e3eaf1;background:#fff;color:#17233a;font-family:Nunito,sans-serif;font-size:28px;font-weight:800;box-shadow:0 1px 0 rgba(23,35,58,.05),0 6px 14px rgba(23,35,58,.06);transition:transform 120ms,background 120ms}
+.key:active{transform:scale(.9);background:#eaf3ff}
+.pri{height:56px;padding:0 30px;border-radius:99px;border:0;background:#0a84ff;color:#fff;font-size:17px;font-weight:700;box-shadow:0 10px 24px rgba(10,132,255,.3);transition:transform 140ms}
+.sec{height:56px;padding:0 26px;border-radius:99px;border:1px solid #e1e8ef;background:#fff;color:#3a4860;font-size:17px;font-weight:600;box-shadow:0 4px 12px rgba(23,35,58,.05);transition:transform 140ms}
+.pri:active,.sec:active{transform:scale(.96)}
+@keyframes vdRing{0%{transform:scale(.35);opacity:0}25%{opacity:.9}100%{transform:scale(1.8);opacity:0}}
+button:focus-visible{outline:3px solid #0a84ff;outline-offset:2px}
+</style>
+</head>
+<body>
+<div id="wrap"><div id="cv"></div></div>
+<script>
+const INK='#17233a',BLUE='#0a84ff',OR='#e86f00',GR='#1a9e62',MU='#8391a6';
+const XE='cubic-bezier(.55,0,.25,1)',YE='cubic-bezier(.25,.9,.3,1.06)',HE='cubic-bezier(.45,0,.2,1)',DUR='1050ms',Z=96,ADV=60,RY=320,BY=530;
+const digs=n=>String(n).split('').map(Number);
+const xsOf=(n,cx,a)=>Array.from({length:n},(_,i)=>cx+(i-(n-1)/2)*a);
+const rm=matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+/* ---------- Sopantyadvayamantyam: the ultimate and twice the penultimate ----------
+   1/(AB) + 1/(AC) = 1/(AD) + 1/(BC), where A,B,C,D = x+a, x+b, x+c, x+d are equally spaced.
+   Answer in one line: D + 2C = 0  ->  3x + (d + 2c) = 0. */
+function M(n){if(!n)n=251;const a=Math.floor(n/100),k=n%100-50,f=[a,a+k,a+2*k,a+3*k],u=f[3],p=f[2],num=u+2*p,xv=-num/3;
+  const g=(i,j)=>1/((xv+f[i])*(xv+f[j])),ok=f.every(c=>Math.abs(xv+c)>1e-9)&&Math.abs(g(0,1)+g(0,2)-g(0,3)-g(1,2))<1e-9;
+  return {n,a,k,f,u,p,num,xv,int:num%3===0,whole:Math.floor(num/3),rem:num%3,ok}}
+let badN=0,totN=0;for(let a=1;a<=30;a++)for(let k=-9;k<=9;k++){if(!k||a+3*k<1)continue;totN++;if(!M(a*100+k+50).ok)badN++}
+console.log(badN?'[Vedica] sutra tests FAILED '+badN:'[Vedica] '+totN+'/'+totN+' sutra tests pass');
+
+/* ---------- layout ---------- */
+const BU=618,BCX=575,Q=52/96,CHY=500,CXs=[335,495,655,815],T4=[[0,1],[0,2],[0,3],[1,2]],FW=256;
+function lay(ws,cx,g){const t=ws.reduce((a,b)=>a+b,0)+g*(ws.length-1);let x=cx-t/2;return ws.map(w=>{const c=x+w/2;x+=w+g;return c})}
+const est=t=>[...t].reduce((a,c)=>a+(c==='('||c===')'?16:c==='x'?24:26),0);
+function mk(pre){
+  const S={pre,E:{},B:{},A:[],focus:null,hand:null,finale:null,win:false,bids:[]};
+  S.el=(id,t,x,y,o)=>S.E[pre+id]={t:String(t),x,y,o:1,s:1,c:INK,z:96,w:900,dl:0,...o};
+  S.box=(id,x,y,w,h,o)=>S.B[pre+id]={x,y,w,h,o:1,s:1,r:22,dashed:false,c:'#e1e8ef',fill:'#ffffff',shadow:false,q:'',dl:0,...o};
+  S.f=(...a)=>{S.focus=(S.focus||[]).concat(a.flat().map(i=>pre+i))};
+  S.h=id=>{S.hand={k:pre+id}};
+  return S;
+}
+const BW=t=>/^\d+$/.test(t)?t.length*32:/^[+×÷=]$/.test(t)?30:t.length*28;
+function bub(S,items){
+  const G=14,tot=items.reduce((a,it,i)=>a+BW(String(it.t))+(i<items.length-1?G:0),0);let x=BCX-tot/2;
+  items.forEach((it,i)=>{const w=BW(String(it.t)),c=x+w/2;S.el(it.id,it.t,c,BU,{z:96,s:Q,c:it.c||INK,dl:it.dl||0});x+=w+G});
+  S.bids=items.map(i=>i.id);S.box('bub',BCX,BU,560,84,{shadow:true,r:28});
+}
+function seq(S,items,cx,y,z){
+  const w=it=>/^[0-9]$/.test(it.t)?z*.62:z*.6*String(it.t).length,gaps=items.map((it,i)=>i===items.length-1?0:z*.24);
+  const total=items.reduce((a,it,i)=>a+w(it)+gaps[i],0);let x=cx-total/2;
+  items.forEach((it,i)=>{S.el(it.id,it.t,x+w(it)/2,y,{z,c:it.op?MU:INK});x+=w(it)+gaps[i]});
+  return {total};
+}
+/* the long equation: two rows, every factor is its own piece so we can colour it */
+function eqn(S,Y,upto,hl){
+  const f=Y.f,r1=lay([FW,44,FW],575,16),r2=lay([44,FW,44,FW],575,16),cxs=[r1[0],r1[2],r2[1],r2[3]],Ys=[215,215,355,355];
+  for(let i=0;i<upto;i++){const x=cxs[i],y=Ys[i],ps=T4[i].map(j=>'(x+'+f[j]+')'),w=ps.map(est);let s=x-(w[0]+w[1]+4)/2;
+    S.el('o'+i,'1',x,y-34,{z:48});S.box('v'+i,x,y+4,FW,5,{fill:INK,c:INK,r:3});
+    ps.forEach((t,m)=>{S.el('t'+i+(m?'b':'a'),t,s+w[m]/2,y+44,{z:44,c:hl[f[T4[i][m]]]||INK});s+=w[m]+4})}
+  if(upto>=2)S.el('p1','+',r1[1],215,{z:56,c:MU});
+  if(upto>=3)S.el('e2','=',r2[0],355,{z:56,c:MU});
+  if(upto>=4)S.el('p2','+',r2[2],355,{z:56,c:MU});
+}
+const pcs=(Y,v)=>{const r=[];T4.forEach((t,i)=>t.forEach((j,m)=>{if(Y.f[j]===v)r.push('t'+i+(m?'b':'a'))}));return r};
+/* the four factors as chips, in order */
+function chips(S,Y,o){
+  for(let i=0;i<4;i++){const u=o.u&&i===3,p=o.p&&i===2,dl=o.st?i*170:0;
+    S.box('cb'+i,CXs[i],CHY,118,58,{shadow:true,r:20,c:u?'#f4c79a':p?'#9cc8ff':'#e1e8ef',fill:u?'#fff1e3':p?'#eaf3ff':'#fff',dl});
+    S.el('cf'+i,'x+'+Y.f[i],CXs[i],CHY,{z:48,c:u?OR:p?BLUE:INK,dl})}
+  if(o.gaps)for(let i=0;i<3;i++)S.el('cg'+i,(Y.k>0?'+':'−')+Math.abs(Y.k),(CXs[i]+CXs[i+1])/2,CHY,{z:26,c:MU,w:800});
+  if(o.u)S.el('lu','ultimate',CXs[3],CHY+52,{z:24,c:OR,w:800});
+  if(o.p)S.el('lp','penultimate',CXs[2],CHY+52,{z:24,c:BLUE,w:800});
+}
+const sfrac=(S,P,y,top,bot,col)=>{S.el('fn',top,P,y-38,{z:64,c:col});S.el('fd',bot,P,y+42,{z:64,c:col});S.box('fb',P,y+3,Math.max(90,String(top).length*38+24),6,{fill:col,c:col,r:3})};
+
+/* ---------- scenes ---------- */
+const ST={
+  meet(S,Y,ph){eqn(S,Y,ph+1,{})},
+  factors(S,Y,ph){eqn(S,Y,4,{});chips(S,Y,{gaps:ph>=1,st:ph===0});
+    S.f([0,1,2,3].flatMap(i=>['cb'+i,'cf'+i]),ph>=1?['cg0','cg1','cg2']:[])},
+  ultpen(S,Y,ph){
+    const hl={[Y.u]:OR};if(ph>=1)hl[Y.p]=BLUE;
+    eqn(S,Y,4,hl);chips(S,Y,{u:1,p:ph>=1});
+    S.f('cb3','cf3','lu',pcs(Y,Y.u));if(ph>=1)S.f('cb2','cf2','lp',pcs(Y,Y.p));
+  },
+  combine(S,Y,ph){
+    eqn(S,Y,4,{[Y.u]:OR,[Y.p]:BLUE});chips(S,Y,{u:1,p:1});
+    if(ph===0)bub(S,[{id:'ua',t:'(x+'+Y.u+')',c:OR},{id:'ub',t:'+',dl:200},{id:'uc',t:'2',dl:400},{id:'ud',t:'(x+'+Y.p+')',c:BLUE,dl:600},{id:'ue',t:'=',dl:800},{id:'uf',t:'0',dl:1000}]);
+    else bub(S,[{id:'q1',t:'3x',c:BLUE},{id:'q2',t:'+'},{id:'q3',t:Y.num,c:OR},{id:'q4',t:'='},{id:'q5',t:'0'}]);
+    S.f('cb3','cf3','cb2','cf2','lu','lp',pcs(Y,Y.u),pcs(Y,Y.p),S.bids,'bub');
+  },
+  solve(S,Y,ph){
+    const WY=290,nm=String(Y.num),wn=nm.length*60+30;
+    if(ph===0){const P=lay([130,64,wn,64,60],575,16);
+      S.el('q1','3x',P[0],WY,{c:BLUE});S.el('q2','+',P[1],WY);S.el('q3',Y.num,P[2],WY,{c:OR});S.el('q4','=',P[3],WY);S.el('q5','0',P[4],WY);S.h('q3')}
+    if(ph===1){const P=lay([130,64,wn+60],575,16);
+      S.el('q1','3x',P[0],WY,{c:BLUE});S.el('q4','=',P[1],WY);S.el('q6','−'+Y.num,P[2],WY,{c:OR});S.h('q6')}
+    if(ph>=2){
+      const fw=nm.length*36+50,fin=ph===3,ww=('−'+Y.whole).length*56,rw=Y.int?('−'+Y.num/3).length*58+30:ww+60;
+      const P=fin?lay([70,64,fw,64,rw],575,16):lay([70,64,fw],575,16);
+      S.el('x1','x',P[0],WY);S.el('q4','=',P[1],WY);sfrac(S,P[2],WY,'−'+Y.num,3,OR);
+      if(fin){S.el('q7','=',P[3],WY);
+        if(Y.int)S.el('rv','−'+Y.num/3,P[4],WY,{c:GR});
+        else{const R=lay([ww,44],P[4],4);S.el('rw','−'+Y.whole,R[0],WY,{c:GR});
+          S.el('mn',Y.rem,R[1],WY-30,{z:44,c:GR});S.el('md',3,R[1],WY+30,{z:44,c:GR});S.box('mb',R[1],WY+2,40,5,{fill:GR,c:GR,r:3})}
+        S.finale={x:575,y:WY,w:70+64+fw+64+rw+110,h:150};S.win=true}
+      S.h(fin?(Y.int?'rv':'rw'):'fn');
+    }
+  },
+};
+const SUM={factors:Y=>'Gap = '+(Y.k>0?'':'−')+Math.abs(Y.k),ultpen:Y=>'Last two: '+Y.u+', '+Y.p,combine:Y=>'3x + '+Y.num+' = 0',solve:Y=>'x = −'+Y.num+'/3'};
+const HL={factors:BLUE,ultpen:OR,combine:BLUE,solve:GR};
+const hlOf=(g,Y)=>HL[g]||BLUE;
+const CAP={
+  meet:(Y,s)=>s.n===251?'Solve this long equation with **Sopantyadvayamantyam**: the ultimate and twice the penultimate.':'Another one. This time the factors go **downwards**.',
+  factors:Y=>'The factors, in order: **'+Y.f.map(c=>'x+'+c).join(', ')+'**. Each is **'+Math.abs(Y.k)+'** '+(Y.k>0?'more':'less')+' than the last.',
+  ultpen:Y=>'The **ultimate** is the last factor: **x+'+Y.u+'**. The **penultimate** is the one before it: **x+'+Y.p+'**.',
+  combine:Y=>'Ultimate + twice penultimate: **(x+'+Y.u+') + 2(x+'+Y.p+') = 0**, which is **3x + '+Y.num+' = 0**.',
+  solve:Y=>Y.int?'**3x = −'+Y.num+'**, so **x = −'+Y.num+'/3 = −'+Y.num/3+'**.':'**3x = −'+Y.num+'**, so **x = −'+Y.num+'/3**, which is **−'+Y.whole+' '+Y.rem+'/3**.',
+};
+const TMf=(g,Y)=>({meet:[[0,600,1200,1800],3000],factors:[[0,1500],2900],ultpen:[[0,1400],2800],combine:[[0,2000],3300],solve:[[0,900,2000,3200],4400],practice:[[0,500],700]}[g]);
+const LIST=[],EXS=[251,1047];
+EXS.forEach((n,j)=>{[['meet',j?'A downward one':'Meet the problem'],['factors','List the factors'],['ultpen','Ultimate & penultimate'],['combine','Ultimate + 2 × penultimate'],['solve','Solve for x']].forEach(([g,nm])=>LIST.push([g,n,nm]))});LIST.push(['practice',0,'Your turn']);
+const TMs=(g,Y)=>{const [ts,e]=TMf(g,Y);if(g==='practice')return [ts,e];const nt=ts.map((v,i)=>i===0?0:800+(i-1)*1500);return [nt,nt[nt.length-1]+1300]};
+const STEPS=LIST.map(([g,n,name])=>{const [times,end]=TMs(g,M(n));return {g,n,name,times,end}});
+const LAST=STEPS.length-1;
+const SUTRA='Sopantyadvayamantyam: the ultimate and twice the penultimate';
+const LANGS=[['en','English','English','en-IN'],['hi','Hindi','हिन्दी','hi-IN'],['ta','Tamil','தமிழ்','ta-IN'],['te','Telugu','తెలుగు','te-IN'],['ml','Malayalam','മലയാളം','ml-IN']];
+const PRACTICE=[153,253,1047,356];
+const rnd=(a,b)=>a+Math.floor(Math.random()*(b-a+1));
+function randomN(){const k=[3,6,-3,-6][rnd(0,3)],a=k>0?rnd(1,9):rnd(1-3*k,9-3*k);return a*100+k+50}
+
+function tasks(Y){return [
+  {g:'ultpen',cap:'The **ultimate** is the last factor, **x + ?**. Type the number.',q:'ultimate',ans:String(Y.u),ex:['ultimate'],hint:'Close! The ultimate is the last factor in the list.'},
+  {g:'ultpen',cap:'The **penultimate** is the one before it, **x + ?**. Type the number.',q:'penultimate',ans:String(Y.p),ex:['penultimate'],hint:'Close! Take the second-to-last factor.'},
+  {g:'combine',cap:'**Ultimate + twice penultimate** gives **3x + ?**. Type the number.',q:Y.u+' + 2 × '+Y.p,ans:String(Y.num),ex:[Y.u,'+','2','×',Y.p],hint:'Close! Add '+Y.u+' and twice '+Y.p+'.'},
+  {g:'solve',cap:'**3x + '+Y.num+' = 0**, so **x = −?** Type the number after the minus.',q:Y.num+' ÷ 3',ans:String(Y.num/3),ex:[Y.num,'÷','3'],hint:'Close! Divide '+Y.num+' by 3.'},
+]}
+function pscene(S,Y,pr){
+  const T=tasks(Y),t=pr.task,tk=T[t],fin=pr.done||(pr.ok&&t===T.length-1),d=t+(pr.ok?1:0),PY=170;
+  for(let i=0;i<4;i++){const x=575+(i-1.5)*130,u=i===3&&d>=1,pn=i===2&&d>=2;
+    S.box('cb'+i,x,PY,100,50,{shadow:true,r:18,c:u?'#f4c79a':pn?'#9cc8ff':'#e1e8ef',fill:u?'#fff1e3':pn?'#eaf3ff':'#fff'});
+    S.el('cf'+i,'x+'+Y.f[i],x,PY,{z:40,c:u?OR:pn?BLUE:INK})}
+  if(fin){S.el('wf','x = −'+Y.num/3,575,290,{z:64,c:GR});S.finale={x:575,y:290,w:340,h:100};return}
+  const WK=[null,'ultimate = x+'+Y.u,'(x+'+Y.u+') + 2(x+'+Y.p+')','3x + '+Y.num+' = 0'];
+  if(d>=1&&d<=3)S.el('w'+d,WK[d],575,290,{z:48,c:d===1?OR:INK});
+  if(tk.ex){const q=seq(S,tk.ex.map((x,i)=>({id:'te'+t+'_'+i,t:String(x),op:/^([+×÷=,(]|ultimate|penultimate)/.test(String(x))})),575,396,40);S.box('tb'+t,575,396,Math.max(240,q.total+70),62,{shadow:true,r:22})}
+}
+
+/* ---------- chrome ---------- */
+const cv=document.getElementById('cv');
+cv.innerHTML=`
+<div class="abs" style="top:22px;left:36px;right:36px;height:40px;display:flex;align-items:center;justify-content:space-between;z-index:7">
+ <div class="nun" style="display:flex;align-items:center;gap:8px;font-size:21px;font-weight:800;letter-spacing:-.03em"><span style="display:grid;place-items:center;width:28px;height:28px;border-radius:9px 9px 9px 3px;background:#0a84ff;color:#fff;font-size:16px;font-style:italic;box-shadow:0 5px 12px rgba(10,132,255,.22)">V</span>Vedica</div>
+ <div style="display:flex;align-items:center;gap:14px"><div style="display:flex;align-items:baseline;gap:8px;font-size:15px;font-weight:600"><span style="color:#8391a6">Ultimate + twice penultimate</span><span style="color:#d3dbe4">·</span><span id="sn" style="color:#0a84ff;font-weight:700"></span><span id="sm" style="color:#8290a5"></span></div>
+ <button id="x" class="rb" aria-label="Exit lesson" title="Exit lesson" style="width:40px;height:40px"><svg width="18" height="18" viewBox="0 0 24 24" style="fill:none;stroke:currentColor;stroke-width:2.6;stroke-linecap:round"><path d="M6 6l12 12M18 6 6 18"/></svg></button></div></div>
+<div id="pg" class="abs" style="top:62px;left:50%;transform:translateX(-50%);display:flex;gap:6px;z-index:5"></div>
+<div id="fin" class="abs" style="left:0;top:0"></div><div id="spot" class="abs" style="left:0;top:0;pointer-events:none"></div>
+<div id="bl"></div>
+<svg class="abs" width="1024" height="768" viewBox="0 0 1024 768" style="left:0;top:0;pointer-events:none;overflow:visible"><path id="a0"/><path id="a1"/></svg>
+<div id="nl"></div>
+<div class="abs" style="right:20px;top:216px;width:184px;display:flex;flex-direction:column;align-items:flex-end;gap:7px;pointer-events:none;z-index:2"><div id="rh" style="padding:0 0 2px 4px;font-size:12px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:#8391a6;transition:opacity 300ms">Steps</div><div id="rail" style="display:flex;flex-direction:column;gap:7px"></div></div>
+<div id="ringh"></div>
+<div id="hand" class="abs" style="left:0;top:0;pointer-events:none;z-index:4"><svg width="66" height="70" viewBox="-30 -18 60 64" style="display:block;overflow:visible;filter:drop-shadow(0 6px 10px rgba(23,35,58,.18))"><path d="M-3 11V-11c0-4 6-4 6 0v11-5c0-4 6-4 6 0v7-4c0-4 6-4 6 0v7-2c0-4 6-4 6 1v8c0 11-7 18-18 18-9 0-14-4-18-11l-6-10c-2-4 3-8 6-4z" style="fill:#fff7ee;stroke:#23324b;stroke-width:2;stroke-linecap:round;stroke-linejoin:round"/></svg></div>
+<div id="tap" class="abs" style="left:0;right:0;top:110px;bottom:120px;cursor:pointer"></div>
+<div id="pr" class="abs" style="left:0;right:0;top:444px;display:none;flex-direction:column;align-items:center;gap:10px"><div class="nun" style="display:flex;align-items:center;gap:16px;font-weight:800;font-size:44px;letter-spacing:-.02em"><span>=</span><div id="inp"></div></div><div id="hint" style="font-size:16px;font-weight:600;text-align:center;max-width:560px;transition:color 200ms"></div></div>
+<div id="keys" class="abs" style="left:0;right:0;top:572px;display:none;justify-content:center;gap:8px"></div>
+<div id="dn" class="abs" style="left:0;right:0;top:400px;display:none;flex-direction:column;align-items:center;gap:12px"><div class="nun" style="font-size:40px;font-weight:900;letter-spacing:-.03em">You did it!</div><div id="su" style="height:34px;padding:0 16px;border-radius:99px;background:#eaf3ff;color:#0a84ff;font-size:15px;font-weight:700;display:flex;align-items:center"></div><div style="display:flex;gap:12px;margin-top:12px"><button id="wa" class="sec">Watch the lesson again</button><button id="ta" class="pri">Try another</button></div></div>
+<div class="abs" style="top:100px;right:30px;display:flex;flex-direction:column;align-items:flex-end;gap:10px;z-index:9">
+ <button id="inf" class="rb" aria-label="About this sutra" title="About this sutra" style="width:48px;height:48px"><svg width="24" height="24" viewBox="0 0 24 24" style="fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round"><circle cx="12" cy="12" r="9"/><path d="M12 11v5.5" style="stroke-width:2.4"/><circle cx="12" cy="7.6" r="1.25" style="fill:currentColor;stroke:none"/></svg></button>
+ <div id="spw" style="position:relative;display:flex;justify-content:flex-end"><button id="spk" class="rb" style="width:48px;height:48px"><svg width="24" height="24" viewBox="0 0 24 24" style="fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round"><path d="M4 9.5h3.2L12 5.5v13l-4.8-4H4z" style="fill:currentColor"/><path id="wv"/></svg></button><div id="menu"></div></div></div>
+<div id="info" class="abs" style="inset:0;z-index:20;display:none;place-items:center;background:rgba(23,35,58,.32);backdrop-filter:blur(6px);opacity:0;transition:opacity 260ms ease-out"><div id="card" role="dialog" aria-modal="true" aria-label="Ultimate + twice penultimate" style="position:relative;width:560px;box-sizing:border-box;padding:30px 32px 28px;border-radius:32px;background:#fff;box-shadow:0 30px 80px rgba(23,35,58,.24);transition:transform 380ms cubic-bezier(.2,.8,.2,1),opacity 260ms">
+ <button id="ix" class="rb" aria-label="Close" style="position:absolute;top:18px;right:18px;width:40px;height:40px;border:0;background:#f1f4f8"><svg width="18" height="18" viewBox="0 0 24 24" style="fill:none;stroke:currentColor;stroke-width:2.6;stroke-linecap:round"><path d="M6 6l12 12M18 6 6 18"/></svg></button>
+ <div class="nun" style="padding:8px 44px 0;text-align:center;font-size:30px;font-weight:900;letter-spacing:-.03em;line-height:1.2">Ultimate + twice penultimate</div>
+ <div style="margin-top:12px;text-align:center;font-size:15px;font-weight:600;color:#6b7a90;line-height:1.4">Sopantyadvayamantyam: the ultimate and twice the penultimate. Add the last factor to twice the one before it, set it to zero, and solve.</div>
+ <div class="nun" style="margin-top:20px;height:130px;border-radius:20px;background:#f5f8fb;display:flex;align-items:center;justify-content:center;gap:14px;font-weight:900;letter-spacing:-.03em;font-size:32px"><span>3x + 13 = 0</span><span style="color:#8391a6">→</span><span id="ex2" style="display:inline-block;color:#1a9e62;transition:transform 600ms cubic-bezier(.3,1.3,.5,1) 400ms,opacity 300ms ease 400ms">x = −13/3</span></div>
+ <button id="ist" class="pri" style="margin:26px auto 0;display:block;min-width:160px;height:50px">Start</button></div></div>
+<div class="abs" style="left:36px;right:36px;bottom:30px;display:grid;grid-template-columns:56px minmax(0,1fr) auto;align-items:center;gap:20px;z-index:6">
+ <button id="bk" class="rb" aria-label="Previous step" style="width:56px;height:56px"><svg width="24" height="24" viewBox="0 0 24 24" style="fill:none;stroke:currentColor;stroke-width:2.4;stroke-linecap:round;stroke-linejoin:round"><path d="m14.5 6-6 6 6 6"/></svg></button>
+ <div id="cap" aria-live="polite" class="nun" style="text-align:center;font-size:23px;font-weight:700;color:#34425a;letter-spacing:-.01em;line-height:1.3;text-wrap:balance"></div>
+ <div style="display:flex;align-items:center;gap:10px"><button id="rp" class="rb" aria-label="Replay this step" style="height:56px;padding:0 18px 0 14px;display:flex;gap:7px;font-size:15px;font-weight:600"><svg width="20" height="20" viewBox="0 0 24 24" style="fill:none;stroke:currentColor;stroke-width:2.3;stroke-linecap:round;stroke-linejoin:round"><path d="M4 12a8 8 0 1 0 2.3-5.7M4 5v5h5"/></svg><span>Replay</span></button>
+ <button id="nx" style="height:56px;border-radius:99px;border:0;overflow:hidden;display:flex;align-items:center;justify-content:center;padding:0;font-size:17px;font-weight:700;transition:width 520ms cubic-bezier(.32,.72,0,1),background 300ms,color 300ms,box-shadow 300ms,gap 520ms"><span id="nxl" style="overflow:hidden;white-space:nowrap;transition:max-width 520ms cubic-bezier(.32,.72,0,1),opacity 300ms">Next</span><svg width="24" height="24" viewBox="0 0 24 24" style="flex-shrink:0;fill:none;stroke:currentColor;stroke-width:2.4;stroke-linecap:round;stroke-linejoin:round"><path id="nxi" d="m9.5 6 6 6-6 6"/></svg></button></div></div>`;
+const $=id=>document.getElementById(id);
+const pgBars=STEPS.map((s,i)=>{const b=document.createElement('button'),w=STEPS.length>14?34:42;b.setAttribute('aria-label','Go to '+s.name);b.style.cssText='padding:12px 0;border:0;background:transparent';b.innerHTML='<div style="width:'+w+'px;height:5px;border-radius:99px;background:#e1e8ef;overflow:hidden"><div style="height:100%;width:0;background:#0a84ff;border-radius:99px"></div></div>';b.onclick=()=>go(i);$('pg').appendChild(b);return b.firstChild.firstChild});
+'1234567890'.split('').concat('⌫').forEach(d=>{const b=document.createElement('button');b.className='key';b.textContent=d;b.setAttribute('aria-label',d==='⌫'?'Delete':d);b.onclick=()=>d==='⌫'?del():press(d);$('keys').appendChild(b)});
+
+/* ---------- state + engine ---------- */
+const st={step:0,phase:0,done:false,capIn:false,pr:null,info:false,infoShow:false,menu:false,audio:false,lang:'en',lastHand:[512,500]};
+let timers=[],pending=null,spoken=null,capNow='';
+const later=(f,ms)=>timers.push(setTimeout(f,ms)),clear=()=>{timers.forEach(clearTimeout);timers=[]};
+const buzz=ms=>{try{navigator.vibrate&&navigator.vibrate(ms)}catch(e){}};
+const freshPr=list=>({list:list||PRACTICE.map(n=>({n})),pi:0,task:0,input:'',wrong:0,ok:false,bad:false,shake:0,replay:null,done:false,again:false});
+const cur=()=>st.pr.list[st.pr.pi];
+const setPr=p=>{st.pr={...st.pr,...p};render()};
+function go(step,opts={}){
+  clear();const def=STEPS[step];
+  st.step=step;st.phase=0;st.done=false;st.capIn=false;if(step===LAST)st.pr=freshPr(opts.list);render();
+  later(()=>{st.capIn=true;render()},40);
+  def.times.forEach((t,i)=>{if(i>0)later(()=>{st.phase=i;render()},t)});
+  later(()=>{st.done=step<LAST;render()},def.end);
+}
+const next=()=>go(st.step<LAST?st.step+1:0);
+const back=()=>st.step>0?go(st.step-1):go(0);
+function stageTap(){if(st.step>=LAST)return;if(!st.done){clear();st.phase=STEPS[st.step].times.length-1;st.done=true;st.capIn=true;render()}else next()}
+function press(d){
+  const {pr}=st;if(st.step!==LAST||st.phase<1||!pr||pr.ok||pr.replay||pr.done)return;
+  const Y=M(cur().n),T=tasks(Y),t=pr.task,ans=T[t].ans,input=((pr.bad?'':pr.input)+d).slice(0,ans.length);
+  if(input.length<ans.length)return setPr({input,bad:false,again:false});
+  if(input===ans){
+    buzz([12,40,12]);setPr({input,ok:true,bad:false,again:false});
+    later(()=>{const p=st.pr,end=p.pi>=p.list.length-1;
+      if(t<T.length-1)st.pr={...p,task:t+1,input:'',ok:false,wrong:0,again:false};
+      else st.pr=end?{...p,done:true}:{...p,pi:p.pi+1,task:0,input:'',ok:false,wrong:0,again:false};render()},t<T.length-1?1100:1500);
+  }else{
+    buzz(8);const wrong=pr.wrong+1;setPr({input,bad:true,wrong,again:false});
+    [-12,10,-7,5,0].forEach((x,i)=>later(()=>setPr({shake:x}),60*(i+1)));
+    if(wrong>=3)later(startReplay,1100);
+  }
+}
+function del(){const {pr}=st;if(st.step!==LAST||!pr||pr.ok||pr.replay||pr.done)return;setPr({input:pr.bad?'':pr.input.slice(0,-1),bad:false})}
+function startReplay(){
+  const Y=M(cur().n),tk=tasks(Y)[st.pr.task],si=STEPS.findIndex(s=>s.g===tk.g);let t=0;
+  setPr({replay:{s:si,ph:0,k:tk.k},input:'',bad:false});
+  TMs(STEPS[si].g,Y)[0].forEach((tt,ph)=>later(()=>setPr({replay:{s:si,ph,k:tk.k}}),tt));
+  t=TMs(STEPS[si].g,Y)[1]+700;later(()=>setPr({replay:null,wrong:0,input:'',again:true}),t);
+}
+function frame(){
+  if(st.step<LAST){const d=STEPS[st.step],Y=M(d.n),S=mk(Y.n+'.');ST[d.g](S,Y,st.phase,d.k);return S}
+  if(st.pr&&st.phase>=1){const Y=M(cur().n),S=mk((st.pr.replay?'':'p')+Y.n+'.');if(st.pr.replay)ST[STEPS[st.pr.replay.s].g](S,Y,st.pr.replay.ph,st.pr.replay.k);else pscene(S,Y,st.pr);return S}
+  return mk('x.');
+}
+
+/* ---------- narration ---------- */
+function speak(){
+  spoken=capNow;const ss=window.speechSynthesis;if(!ss)return;
+  const L=LANGS.find(l=>l[0]===st.lang)||LANGS[0];ss.cancel();
+  const u=new SpeechSynthesisUtterance(capNow.replace(/×/g,' times ').replace(/−/g,' minus ').replace(/÷/g,' divided by ').replace(/[✓✗]/g,'').replace(/=/g,' equals '));
+  u.lang=L[3];const v=ss.getVoices().find(v=>v.lang&&v.lang.replace('_','-').toLowerCase().startsWith(L[0]));if(v)u.voice=v;u.rate=.95;ss.speak(u);
+}
+const savePref=()=>{try{localStorage.setItem('vedica-narration',JSON.stringify({lang:st.lang,audio:st.audio}))}catch(e){}};
+
+/* ---------- renderer ---------- */
+const GN={},GB={},NE={},BE={},seen={},bseen={},RS={};let lastFin=null,ringKey='';
+const DIMA=.3;
+function arrowPath(a){
+  const [x0,y0]=a.p0,[x1,y1]=a.p1,dx=x1-x0,dy=y1-y0,L=Math.hypot(dx,dy)||1,px=-dy/L,py=dx/L,bb=a.bend*L;
+  const c1=[x0+dx*.3+px*bb*1.08-2,y0+dy*.3+py*bb*1.08+2],c2=[x0+dx*.72+px*bb*.9+3,y0+dy*.72+py*bb*.9-2];
+  const tx=x1-c2[0],ty=y1-c2[1],tl=Math.hypot(tx,ty)||1,ux=tx/tl,uy=ty/tl,h=15,an=.5;
+  const head=s=>[x1-h*(ux*Math.cos(an)-s*uy*Math.sin(an)),y1-h*(uy*Math.cos(an)+s*ux*Math.sin(an))],f=p=>p[0].toFixed(1)+' '+p[1].toFixed(1);
+  let len=0,prev=[x0,y0];
+  for(let j=1;j<=24;j++){const t=j/24,u=1-t,p=[u*u*u*x0+3*u*u*t*c1[0]+3*u*t*t*c2[0]+t*t*t*x1,u*u*u*y0+3*u*u*t*c1[1]+3*u*t*t*c2[1]+t*t*t*y1];len+=Math.hypot(p[0]-prev[0],p[1]-prev[1]);prev=p}
+  return {d:'M'+f([x0,y0])+' C'+f(c1)+' '+f(c2)+' '+f([x1,y1])+' M'+f(head(1))+' L'+f([x1,y1])+' L'+f(head(-1)),len:len+2*h+4};
+}
+const lastE={},lastB={},lastA=[],akey=[];
+function render(){
+  const F=frame(),fs=F.focus?new Set(F.focus):null,dim=k=>fs?!fs.has(k):false;
+  // digits
+  new Set([...Object.keys(F.E),...Object.keys(NE)]).forEach(id=>{
+    let e=F.E[id];if(e)lastE[id]=e;else e={...lastE[id],o:0,dl:0,od:undefined};
+    let n=NE[id];const gone=!F.E[id],isNew=!n||(GN[id]&&!gone),d=dim(id);GN[id]=gone;
+    if(!n){n=NE[id]={o:document.createElement('div'),i:document.createElement('div')};n.o.appendChild(n.i);n.o.style.cssText='position:absolute;left:0;top:0;pointer-events:none';
+      n.i.style.cssText='position:absolute;left:0;top:0;white-space:nowrap;font-family:Nunito,sans-serif;line-height:1;letter-spacing:-.03em;font-variant-numeric:tabular-nums';$('nl').appendChild(n.o)}
+    n.i.textContent=e.t;
+    const put=(op,pp)=>{
+      n.o.style.transform='translateX('+e.x+'px)';
+      n.i.style.transform='translateY('+e.y+'px) translate(-50%,-50%) scale('+(e.s*(pp||1))+')';
+      n.i.style.opacity=op;n.i.style.filter=d?'blur(1.5px)':'blur(0px)';n.i.style.color=e.c;n.i.style.fontWeight=e.w;n.i.style.fontSize=e.z+'px';
+    };
+    const tr=()=>{const od=e.od??e.dl;n.o.style.transition=rm?'none':'transform '+DUR+' '+XE+' '+e.dl+'ms';
+      n.i.style.transition=(rm?'':'transform '+DUR+' '+YE+' '+e.dl+'ms, ')+'opacity 620ms ease '+od+'ms, filter 480ms ease, color 420ms ease '+e.dl+'ms'};
+    const op=e.o*(d?DIMA:1);
+    if(isNew){n.o.style.transition='none';n.i.style.transition='none';put(0,.55);void n.i.offsetWidth;tr();put(op)}
+    else{tr();put(op)}
+  });
+  // boxes
+  new Set([...Object.keys(F.B),...Object.keys(BE)]).forEach(id=>{
+    let b=F.B[id];if(b)lastB[id]=b;else b={...lastB[id],o:0,dl:0};
+    let n=BE[id];const gone=!F.B[id],isNew=!n||(GB[id]&&!gone),d=dim(id);GB[id]=gone;
+    if(!n){n=BE[id]=document.createElement('div');const s=document.createElement('span');s.className='nun';s.style.cssText='font-weight:800;white-space:nowrap';n.appendChild(s);$('bl').appendChild(n)}
+    const s=n.firstChild;s.textContent=b.q;s.style.fontSize=(b.qz||b.h*.42)+'px';s.style.color=b.qc||'#c0ccd8';
+    const put=(sc,op)=>{Object.assign(n.style,{position:'absolute',left:0,top:0,width:b.w+'px',height:b.h+'px',boxSizing:'border-box',borderRadius:b.r+'px',border:b.dashed?'2.5px dashed '+b.c:'1px solid '+b.c,background:b.fill,display:'grid',placeItems:'center',transform:'translate('+(b.x-b.w/2)+'px,'+(b.y-b.h/2)+'px) scale('+sc+')',opacity:op,boxShadow:b.shadow?'0 14px 34px rgba(23,35,58,.10),0 1px 0 rgba(23,35,58,.04)':'none'})};
+    const tr=()=>n.style.transition=(rm?'':'transform '+DUR+' '+YE+' '+b.dl+'ms, ')+'opacity 420ms ease '+b.dl+'ms';
+    const op=b.o*(d?.35:1);
+    if(isNew){n.style.transition='none';put(b.s*.8,0);void n.offsetWidth;tr();n.style.transform='translate('+(b.x-b.w/2)+'px,'+(b.y-b.h/2)+'px) scale('+b.s+')';n.style.opacity=op}
+    else{tr();put(b.s,op)}
+  });
+  // arrows
+  [0,1].forEach(i=>{
+    let a=F.A[i];if(a)lastA[i]=a;else a=lastA[i]?{...lastA[i],st:3}:null;const p=$('a'+i);
+    if(!a){p.style.opacity=0;return}
+    const {d,len}=arrowPath(a),isNew=akey[i]!==d;akey[i]=d;p.setAttribute('d',d);
+    Object.assign(p.style,{fill:'none',stroke:a.c,strokeWidth:5,strokeLinecap:'round',strokeLinejoin:'round',strokeDasharray:len+' '+len});
+    const op=a.st===1?1:a.st===2?.4:0;
+    if(isNew){p.style.transition='none';p.style.strokeDashoffset=a.st===1?len:0;p.style.opacity=op;void p.getBoundingClientRect();p.style.transition=(rm?'none':'stroke-dashoffset 900ms '+HE+' '+a.dl+'ms')+', opacity 450ms ease';p.style.strokeDashoffset=0}
+    else{p.style.transition='stroke-dashoffset 900ms '+HE+', opacity 450ms ease';p.style.strokeDashoffset=0;p.style.opacity=op}
+  });
+  // spotlight, finale, hand
+  const sp=$('spot');let o=0,sw=300,sh=200,tx=0,ty=0;
+  if(fs){let x0=1e9,y0=1e9,x1=-1e9,y1=-1e9;
+    F.focus.forEach(k=>{const e=F.E[k],b=F.B[k];
+      if(e&&e.o){const h=e.z*e.s/2+10,w=h*Math.max(1,e.t.length*.6);x0=Math.min(x0,e.x-w);x1=Math.max(x1,e.x+w);y0=Math.min(y0,e.y-h);y1=Math.max(y1,e.y+h)}
+      if(b&&b.o){x0=Math.min(x0,b.x-b.w/2);x1=Math.max(x1,b.x+b.w/2);y0=Math.min(y0,b.y-b.h/2);y1=Math.max(y1,b.y+b.h/2)}});
+    if(x1>x0){sw=x1-x0+200;sh=y1-y0+170;o=1;tx=(x0+x1)/2-sw/2;ty=(y0+y1)/2-sh/2}}
+  Object.assign(sp.style,{width:sw+'px',height:sh+'px',opacity:o,borderRadius:'50%',background:'radial-gradient(closest-side,rgba(10,132,255,.11),rgba(10,132,255,.04) 60%,rgba(10,132,255,0))',transform:'translate('+tx+'px,'+ty+'px)',transition:'transform '+DUR+' '+XE+',width '+DUR+' '+XE+',height '+DUR+' '+XE+',opacity 500ms ease'});
+  if(F.finale)lastFin=F.finale;const fin=lastFin||{x:512,y:320,w:300,h:170};
+  Object.assign($('fin').style,{width:fin.w+'px',height:fin.h+'px',borderRadius:'36px',background:'#fff',boxShadow:'0 24px 60px rgba(23,35,58,.12),0 2px 8px rgba(23,35,58,.05)',transform:'translate('+(fin.x-fin.w/2)+'px,'+(fin.y-fin.h/2)+'px) scale('+(F.finale?1:.88)+')',opacity:F.finale?1:0,pointerEvents:'none',transition:'transform 700ms cubic-bezier(.3,1.3,.5,1),opacity 450ms ease,width 500ms ease,height 500ms ease'});
+  if(F.win&&!render.win)buzz(20);render.win=F.win;
+  let hx=512,hy=500,hv=0;
+  if(F.hand){const e=F.hand.k?F.E[F.hand.k]:null;if(e){hx=e.x+10;hy=e.y+e.z*e.s*.42;hv=1}else if(!F.hand.k){hx=F.hand.x;hy=F.hand.y;hv=1}if(hv)st.lastHand=[hx,hy]}
+  if(!hv)[hx,hy]=st.lastHand;
+  Object.assign($('hand').style,{transform:'translate('+(hx-33)+'px,'+(hy-4)+'px) rotate(-14deg) scale('+(hv?1:.8)+')',transformOrigin:'33px 4px',opacity:hv,transition:'transform '+(rm?0:1000)+'ms '+HE+',opacity 380ms ease'});
+  const rk=hv?Math.round(hx)+'-'+Math.round(hy)+'-'+st.step:'';
+  if(rk!==ringKey){ringKey=rk;$('ringh').innerHTML=hv?'<div style="position:absolute;left:'+(hx-24)+'px;top:'+(hy-24)+'px;width:48px;height:48px;border-radius:50%;z-index:3;border:3px solid rgba(10,132,255,.45);pointer-events:none;animation:vdRing 1.5s 1s ease-out infinite both"></div>':''}
+
+  // recap rail
+  const rc=STEPS[st.step],items=[];
+  if(st.step<LAST)STEPS.forEach((s,i)=>{if(i>st.step||!SUM[s.g]||s.n!==rc.n||(i===st.step&&!st.done))return;items.push({id:i,txt:SUM[s.g](M(s.n),s),hl:hlOf(s.g,M(s.n))})});
+  const rail=$('rail');
+  [...rail.children].forEach(c=>{if(!items.some(x=>'r'+x.id===c.dataset.id))c.remove()});
+  items.forEach(c=>{
+    if(rail.querySelector('[data-id="r'+c.id+'"]'))return;
+    const m=c.txt.match(/^(.*(?:= |: ))(.+)$/),d=document.createElement('div');d.dataset.id='r'+c.id;d.setAttribute('role','button');d.title='Replay step '+(c.id+1);
+    d.style.cssText='height:36px;max-width:184px;box-sizing:border-box;padding:0 14px 0 7px;pointer-events:auto;cursor:pointer;white-space:nowrap;display:flex;align-items:center;gap:8px;flex-shrink:0;border-radius:99px;background:#fff;border:1px solid #edf1f5;box-shadow:0 1px 0 rgba(23,35,58,.03),0 6px 16px rgba(23,35,58,.06);transform:translateX(12px) scale(.9);opacity:0';
+    d.innerHTML='<span style="flex-shrink:0;width:22px;height:22px;border-radius:99px;background:#eaf3ff;color:#0a84ff;display:grid;place-items:center;font-family:Nunito,sans-serif;font-size:12px;font-weight:800">'+(c.id+1)+'</span><span class="nun" style="font-size:15px;font-weight:800;letter-spacing:-.01em">'+(m?m[1]:c.txt)+'<span style="color:'+c.hl+'">'+(m?m[2]:'')+'</span></span>';
+    d.onclick=()=>go(c.id);rail.appendChild(d);requestAnimationFrame(()=>requestAnimationFrame(()=>{d.style.transition='transform '+(rm?0:520)+'ms cubic-bezier(.3,1.3,.5,1),opacity 320ms ease';d.style.transform='none';d.style.opacity=1}));
+  });
+  $('rh').style.opacity=items.length?1:0;
+
+  // captions, practice
+  const pr=st.pr||freshPr(),prac=st.step===LAST&&st.phase>=1,Y=prac?M(cur().n):null;let capStr,hl=BLUE;
+  if(st.step<LAST){const d=STEPS[st.step],y=M(d.n);capStr=CAP[d.g](y,d);hl=hlOf(d.g,y)}
+  else if(!Y)capStr='Your turn.';
+  else if(pr.replay){const d=STEPS[pr.replay.s];capStr=CAP[d.g](Y,{k:pr.replay.k});hl=hlOf(d.g,Y)}
+  else if(pr.done){capStr='**x = −'+Y.num/3+'**. Same one-line trick, every time.';hl=GR}
+  else{const T=tasks(Y)[pr.task];if(pr.ok){capStr='**Yes!** '+(T.ok||T.q+' = '+T.ans)+'.';hl=GR}else capStr=T.cap}
+  capNow=capStr.replace(/\*\*/g,'');
+  const cap=$('cap');cap.innerHTML=capStr.split('**').map((t,i)=>t?(i%2?'<span style="color:'+hl+';font-weight:800">'+t+'</span>':'<span>'+t+'</span>'):'').join('');
+  Object.assign(cap.style,{opacity:st.capIn?1:0,transform:'translateY('+(st.capIn?0:8)+'px)',filter:st.capIn?'blur(0)':'blur(4px)',transition:st.capIn?'opacity 450ms ease,transform 550ms cubic-bezier(.32,.72,0,1),filter 450ms ease':'none'});
+  $('sn').textContent=st.step===LAST?'Practice':'Step '+(st.step+1)+' of '+LAST;$('sm').textContent=STEPS[st.step].name;
+  pgBars.forEach((f,i)=>{const s=STEPS[i];let w=0,tr='none';
+    if(i<st.step)w=100;else if(i===st.step){if(st.step<LAST){if(st.done){w=100;tr='width 300ms ease'}else if(st.capIn){w=100;tr='width '+s.end+'ms linear'}}else{w=(pr.pi+(pr.done||pr.ok?1:0))/pr.list.length*100;tr='width 600ms cubic-bezier(.32,.72,0,1)'}}
+    f.style.width=w+'%';f.style.transition=tr});
+  const showP=prac&&!pr.done&&!pr.replay;
+  $('pr').style.display=showP?'flex':'none';$('keys').style.display=showP?'flex':'none';$('dn').style.display=prac&&pr.done?'flex':'none';$('tap').style.display=st.step<LAST&&!st.info?'block':'none';
+  const col=pr.ok?GR:pr.bad?OR:BLUE;
+  Object.assign($('inp').style,{minWidth:'100px',height:'78px',padding:'0 18px',boxSizing:'border-box',borderRadius:'22px',border:'3px solid '+col,background:pr.ok?'#eefaf3':pr.bad?'#fff5eb':'#f4f9ff',display:'flex',alignItems:'center',justifyContent:'center',fontSize:'46px',letterSpacing:'.02em',color:pr.input?col:'#b5c3d2',transform:'translateX('+pr.shake+'px) scale('+(pr.ok?1.06:1)+')',transition:'transform 110ms ease,border-color 200ms,background 200ms,color 200ms'});
+  $('inp').textContent=pr.input||'?';
+  let ht='Use the sutra from the lesson.';if(Y&&pr.wrong>0)ht=tasks(Y)[pr.task].hint;if(pr.again)ht='Your turn again.';if(pr.ok)ht='That’s it.';
+  $('hint').textContent=ht;$('hint').style.color=pr.wrong&&!pr.ok&&!pr.again?'#a8662a':pr.ok?GR:'#8a97aa';
+  $('su').textContent=SUTRA;
+  const exp=(st.done&&st.step<LAST)||(st.step===LAST&&false),nx=$('nx');
+  Object.assign(nx.style,{width:(exp?124:56)+'px',gap:exp?'6px':'0',background:exp?BLUE:'#e7f1fd',color:exp?'#fff':BLUE,boxShadow:exp?'0 10px 24px rgba(10,132,255,.3)':'none'});
+  Object.assign($('nxl').style,{maxWidth:exp?'60px':'0',opacity:exp?1:0});
+  $('nxi').setAttribute('d',st.step===LAST?'M20 12a8 8 0 1 1-2.3-5.7M20 5v5h-5':'m9.5 6 6 6-6 6');nx.setAttribute('aria-label',st.step===LAST?'Start the lesson again':'Next step');
+  $('bk').style.color=st.step===0?'#c3ccd6':'#3a4860';
+  // info, narration menu
+  const inf=$('info');inf.style.display=st.info?'grid':'none';inf.style.opacity=st.infoShow?1:0;
+  Object.assign($('card').style,{opacity:st.infoShow?1:0,transform:'translateY('+(st.infoShow?0:14)+'px) scale('+(st.infoShow?1:.92)+')'});
+  Object.assign($('ex2').style,{opacity:st.infoShow?1:0,transform:st.infoShow?'none':'translateY(8px) scale(.8)'});
+  const on=st.audio,sk=$('spk');Object.assign(sk.style,{background:on?BLUE:'#fff',color:on?'#fff':'#3a4860',borderColor:on?BLUE:'#e1e8ef',boxShadow:on?'0 8px 18px rgba(10,132,255,.28)':'0 4px 12px rgba(23,35,58,.06)'});
+  $('wv').setAttribute('d',on?'M15.5 9a4 4 0 0 1 0 6M18 6.5a7.5 7.5 0 0 1 0 11':'m16 9.5 5 5m0-5-5 5');
+  const ln=(LANGS.find(l=>l[0]===st.lang)||LANGS[0])[1];sk.setAttribute('aria-label',on?'Narration on · '+ln:'Narration off');
+  const mn=$('menu');Object.assign(mn.style,{position:'absolute',right:'58px',top:0,width:'200px',padding:'6px',boxSizing:'border-box',borderRadius:'20px',background:'rgba(255,255,255,.96)',backdropFilter:'blur(20px)',border:'1px solid #e6ecf2',boxShadow:'0 18px 44px rgba(23,35,58,.16)',display:'flex',flexDirection:'column',gap:'2px',opacity:st.menu?1:0,transform:'translateX('+(st.menu?0:8)+'px) scale('+(st.menu?1:.96)+')',transformOrigin:'right top',pointerEvents:st.menu?'auto':'none',transition:'opacity 180ms ease-out,transform 220ms cubic-bezier(.2,.8,.2,1)'});
+  if(!mn.children.length)mn.innerHTML='<div style="padding:6px 12px 8px;font-size:12px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:#8391a6">Narration</div>'+LANGS.map(l=>'<button data-l="'+l[0]+'" style="display:flex;align-items:center;justify-content:space-between;gap:8px;width:100%;padding:8px 12px;border:0;border-radius:14px;text-align:left"><span style="display:flex;flex-direction:column;align-items:flex-start"><span style="font-size:15px;font-weight:700">'+l[2]+'</span><span style="font-size:12px;font-weight:500;color:#8391a6">'+l[1]+'</span></span><svg width="18" height="18" viewBox="0 0 24 24" style="fill:none;stroke:#0a84ff;stroke-width:2.6;stroke-linecap:round;stroke-linejoin:round"><path d="m5 12.5 4.5 4.5L19 7.5"/></svg></button>').join('');
+  [...mn.querySelectorAll('button')].forEach(b=>{const s=b.dataset.l===st.lang;b.style.background=s?'#eaf3ff':'transparent';b.style.color=s?BLUE:INK;b.lastChild.style.opacity=s?1:0});
+  if(st.audio&&st.capIn&&capNow!==spoken)speak();
+}
+function fit(){const k=Math.min(innerWidth/1024,innerHeight/768);$('cv').style.transform='scale('+k+')'}
+function openInfo(){st.info=true;st.menu=false;render();setTimeout(()=>{st.infoShow=true;render()},20)}
+function closeInfo(){st.infoShow=false;render();setTimeout(()=>{st.info=false;render();const p=pending;pending=null;if(p)p()},260)}
+$('inf').onclick=openInfo;$('ix').onclick=closeInfo;$('ist').onclick=closeInfo;$('info').onclick=closeInfo;$('card').onclick=e=>e.stopPropagation();
+$('tap').onclick=stageTap;$('nx').onclick=next;$('bk').onclick=back;$('rp').onclick=()=>go(st.step);
+$('x').onclick=()=>{try{speechSynthesis.cancel()}catch(e){}go(0)};
+$('wa').onclick=()=>go(0);$('ta').onclick=()=>go(LAST,{list:[{n:randomN()}]});
+$('spw').onmouseenter=()=>{st.menu=true;render()};$('spw').onmouseleave=()=>{st.menu=false;render()};
+$('spk').onclick=()=>{st.audio=!st.audio;st.menu=true;savePref();if(st.audio){spoken=null;render()}else{try{speechSynthesis.cancel()}catch(e){}render()}};
+$('menu').onclick=e=>{const b=e.target.closest('button');if(!b)return;st.lang=b.dataset.l;st.audio=true;spoken=null;savePref();render()};
+addEventListener('resize',fit);
+addEventListener('keydown',e=>{
+  if(st.info){if(e.key==='Escape')closeInfo();return}
+  if(/^[0-9]$/.test(e.key))return press(e.key);
+  if(e.key==='Backspace')return del();
+  if(e.key==='ArrowRight')return next();if(e.key==='ArrowLeft')return back();
+  if(e.key===' '&&st.step<LAST){e.preventDefault();return stageTap()}
+  if(e.key==='r'||e.key==='R')return go(st.step);
+});
+try{const v=JSON.parse(localStorage.getItem('vedica-narration')||'null');if(v){st.lang=v.lang||'en';st.audio=!!v.audio}}catch(e){}
+fit();
+// Resume: every step is saved, and an unfinished lesson reopens at the step it was left on.
+(function(){var K='vedica-resume',id=window.__vdLesson||location.pathname.split('/').pop(),g=go,sv;
+go=function(s,o){try{var r=JSON.parse(localStorage.getItem(K)||'{}');r[id]=s;localStorage.setItem(K,JSON.stringify(r))}catch(e){}return g(s,o)};
+try{sv=JSON.parse(localStorage.getItem(K)||'{}')[id]}catch(e){}
+if(sv>0&&sv<=LAST)go(sv);else{pending=()=>go(0);openInfo()}})();
+</script>
+<script>(function(){if(parent===window)return;var P=function(t){parent.postMessage({vedica:t},'*')};var x=document.getElementById('x');if(x)x.onclick=function(){try{speechSynthesis.cancel()}catch(e){}P('exit')};var dn=document.getElementById('dn');if(dn)new MutationObserver(function(){if(dn.style.display==='flex'&&!dn._s){dn._s=1;P('done')}}).observe(dn,{attributes:true});})();</script>
+</body>
+</html>

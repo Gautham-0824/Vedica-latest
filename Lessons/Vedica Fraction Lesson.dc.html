@@ -1,0 +1,791 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,600;9..40,700&family=Nunito:wght@700;800;900&display=swap" rel="stylesheet">
+<style>
+html,body{margin:0;height:100%;background:#e8edf2;}
+body{font-family:'DM Sans',system-ui,sans-serif;-webkit-font-smoothing:antialiased;overflow:hidden;color:#17233a}
+a{color:#0a84ff;text-decoration:none} a:hover{color:#0064d6}
+button{font:inherit;-webkit-tap-highlight-color:transparent}
+@keyframes vdSoftPulse{0%,100%{transform:scale(1)}50%{transform:scale(1.12)}}
+@keyframes vdRing{0%{transform:scale(.35);opacity:0}25%{opacity:.9}100%{transform:scale(1.8);opacity:0}}
+</style>
+</helmet>
+<div style="{{ outerStyle }}">
+  <div style="{{ deviceStyle }}">
+    <div data-screen-label="Lesson" style="{{ canvasStyle }}">
+
+      <div style="position:absolute;top:22px;left:36px;right:36px;height:40px;display:flex;align-items:center;justify-content:space-between;z-index:7">
+        <div style="display:flex;align-items:center;gap:8px;font-family:Nunito,sans-serif;font-size:21px;font-weight:800;letter-spacing:-0.03em;color:#17233a">
+          <span style="display:grid;place-items:center;width:28px;height:28px;border-radius:9px 9px 9px 3px;background:#0a84ff;color:#fff;font-size:16px;font-style:italic;box-shadow:0 5px 12px rgba(10,132,255,.22)">V</span>
+          <span>Vedica</span>
+        </div>
+        <div style="display:flex;align-items:center;gap:14px">
+          <div style="display:flex;align-items:baseline;gap:8px;font-size:15px;font-weight:600">
+            <span style="color:#0a84ff;font-weight:700">{{ stepNum }}</span>
+            <span style="color:#8290a5">{{ stepName }}</span>
+          </div>
+          <sc-if value="{{ showParent }}" hint-placeholder-val="{{ false }}">
+            <button onClick="{{ onParent }}" aria-label="Parent view" style="width:40px;height:40px;border-radius:99px;border:1px solid #e1e8ef;background:#ffffff;display:grid;place-items:center;padding:0;color:#3a4860;cursor:pointer;box-shadow:0 4px 12px rgba(23,35,58,.05);transition:transform 140ms cubic-bezier(.3,.7,.4,1)" style-active="transform:scale(.92)">
+              <svg width="22" height="22" viewBox="0 0 24 24" style="fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round"><circle cx="9" cy="8" r="3.2"></circle><path d="M3.5 19c.6-3.2 2.8-5 5.5-5s4.9 1.8 5.5 5"></path><circle cx="16.5" cy="9.5" r="2.5"></circle><path d="M15.8 14.2c2.4-.2 4.2 1.4 4.7 4.3"></path></svg>
+            </button>
+          </sc-if>
+          <button onClick="{{ onClose }}" aria-label="Exit lesson" title="Exit lesson" style="width:40px;height:40px;border-radius:99px;border:1px solid #e1e8ef;background:#ffffff;display:grid;place-items:center;padding:0;color:#3a4860;cursor:pointer;box-shadow:0 4px 12px rgba(23,35,58,.05);transition:transform 140ms cubic-bezier(.3,.7,.4,1)" style-active="transform:scale(.92)">
+            <svg width="18" height="18" viewBox="0 0 24 24" style="fill:none;stroke:currentColor;stroke-width:2.6;stroke-linecap:round"><path d="M6 6l12 12M18 6 6 18"></path></svg>
+          </button>
+        </div>
+      </div>
+
+      <div style="position:absolute;top:62px;left:50%;transform:translateX(-50%);display:flex;gap:6px;z-index:5">
+        <sc-for list="{{ progress }}" as="p" hint-placeholder-count="6">
+          <button onClick="{{ p.go }}" aria-label="{{ p.label }}" style="padding:12px 0;border:0;background:transparent;cursor:pointer">
+            <div style="width:42px;height:5px;border-radius:99px;background:#e1e8ef;overflow:hidden">
+              <div style="{{ p.fill }}"></div>
+            </div>
+          </button>
+        </sc-for>
+      </div>
+
+      <div style="{{ stageWrap }}">
+      <div style="{{ finaleStyle }}"></div>
+      <div style="{{ spotStyle }}"></div>
+
+      <svg width="1024" height="768" viewBox="0 0 1024 768" style="position:absolute;left:0;top:0;pointer-events:none;overflow:visible">
+        <path d="{{ l1.d }}" style="{{ l1.st }}"></path>
+        <path d="{{ l2.d }}" style="{{ l2.st }}"></path>
+      </svg>
+
+      <sc-for list="{{ slots }}" as="s" hint-placeholder-count="0">
+        <div style="{{ s.st }}"><span style="{{ s.q }}">?</span></div>
+      </sc-for>
+      <sc-for list="{{ bars }}" as="b" hint-placeholder-count="0">
+        <div style="{{ b.st }}"></div>
+      </sc-for>
+      <sc-for list="{{ nums }}" as="n" hint-placeholder-count="0">
+        <div style="{{ n.o }}"><div style="{{ n.i }}">{{ n.t }}</div></div>
+      </sc-for>
+
+
+      {{ ring }}
+      <div style="{{ handStyle }}">
+        <svg width="66" height="70" viewBox="-30 -18 60 64" style="display:block;overflow:visible;filter:drop-shadow(0 6px 10px rgba(23,35,58,.18))">
+          <path d="M-3 11V-11c0-4 6-4 6 0v11-5c0-4 6-4 6 0v7-4c0-4 6-4 6 0v7-2c0-4 6-4 6 1v8c0 11-7 18-18 18-9 0-14-4-18-11l-6-10c-2-4 3-8 6-4z" style="fill:#fff7ee;stroke:#23324b;stroke-width:2;stroke-linecap:round;stroke-linejoin:round"></path>
+        </svg>
+      </div>
+      </div>
+
+      <div style="position:absolute;right:30px;top:236px;width:190px;display:flex;flex-direction:column;align-items:stretch;gap:8px;pointer-events:none;z-index:2">
+        <div style="{{ railHead }}">Steps</div>
+        <sc-for list="{{ rail }}" as="c" hint-placeholder-count="0">
+          <div role="button" title="{{ c.label }}" style="{{ c.st }}" onClick="{{ c.go }}">
+            <span style="flex-shrink:0;width:26px;height:26px;border-radius:99px;background:#eaf3ff;color:#0a84ff;display:grid;place-items:center;font-family:Nunito,sans-serif;font-size:14px;font-weight:800">{{ c.n }}</span>
+            <span style="font-family:Nunito,sans-serif;font-size:19px;font-weight:800;letter-spacing:-0.01em;color:#17233a;white-space:nowrap">{{ c.a }}<span style="{{ c.bs }}">{{ c.b }}</span></span>
+          </div>
+        </sc-for>
+      </div>
+
+      <sc-if value="{{ showTap }}" hint-placeholder-val="{{ false }}">
+        <div onClick="{{ stageTap }}" style="position:absolute;left:0;right:0;top:110px;bottom:120px;cursor:pointer"></div>
+      </sc-if>
+
+      <sc-if value="{{ showPrompt }}" hint-placeholder-val="{{ false }}">
+        <div style="{{ promptWrap }}">
+          <div style="display:flex;align-items:center;gap:16px;font-family:Nunito,sans-serif;font-weight:800;font-size:44px;letter-spacing:-0.02em;color:#17233a">
+            <span>{{ promptText }}</span>
+            <div style="{{ inputStyle }}">{{ inputShown }}</div>
+          </div>
+          <div style="{{ hintStyle }}">{{ hintText }}</div>
+        </div>
+        <div style="position:absolute;left:0;right:0;top:572px;display:flex;justify-content:center;gap:8px">
+          <sc-for list="{{ keys }}" as="key" hint-placeholder-count="11">
+            <button onClick="{{ key.press }}" aria-label="{{ key.aria }}" style="width:62px;height:62px;border-radius:18px;border:1px solid #e3eaf1;background:#ffffff;color:#17233a;font-family:Nunito,sans-serif;font-size:28px;font-weight:800;cursor:pointer;box-shadow:0 1px 0 rgba(23,35,58,.05),0 6px 14px rgba(23,35,58,.06);transition:transform 120ms cubic-bezier(.3,.7,.4,1),background 120ms" style-active="transform:scale(.9);background:#eaf3ff">{{ key.label }}</button>
+          </sc-for>
+        </div>
+      </sc-if>
+
+      <sc-if value="{{ showDone }}" hint-placeholder-val="{{ false }}">
+        <div style="position:absolute;left:0;right:0;top:462px;display:flex;flex-direction:column;align-items:center;gap:8px">
+          <div style="font-family:Nunito,sans-serif;font-size:40px;font-weight:900;letter-spacing:-0.03em">You did it!</div>
+          <div style="font-size:18px;color:#6b7a90;font-weight:500">{{ doneSub }}</div>
+          <div style="display:flex;gap:12px;margin-top:14px">
+            <button onClick="{{ watchAgain }}" style="height:56px;padding:0 26px;border-radius:99px;border:1px solid #e1e8ef;background:#ffffff;color:#3a4860;font-size:17px;font-weight:600;cursor:pointer;box-shadow:0 4px 12px rgba(23,35,58,.05);transition:transform 140ms cubic-bezier(.3,.7,.4,1)" style-active="transform:scale(.96)">Watch again</button>
+            <button onClick="{{ tryAnother }}" style="{{ tryStyle }}" style-active="transform:scale(.96)">Try another</button>
+            <sc-if value="{{ hasContinue }}" hint-placeholder-val="{{ false }}">
+              <button onClick="{{ onContinue }}" style="height:56px;padding:0 30px;border-radius:99px;border:0;background:#0a84ff;color:#ffffff;font-size:17px;font-weight:700;cursor:pointer;box-shadow:0 10px 24px rgba(10,132,255,.3);transition:transform 140ms cubic-bezier(.3,.7,.4,1)" style-active="transform:scale(.96)">{{ continueLabel }}</button>
+            </sc-if>
+          </div>
+        </div>
+      </sc-if>
+
+      <div style="position:absolute;top:100px;right:30px;display:flex;flex-direction:column;align-items:flex-end;gap:10px;z-index:9">
+        <button onClick="{{ openInfo }}" aria-label="About this sutra" title="About this sutra" style="width:48px;height:48px;border-radius:99px;border:1px solid #e1e8ef;background:#ffffff;color:#3a4860;display:grid;place-items:center;padding:0;cursor:pointer;box-shadow:0 4px 12px rgba(23,35,58,.06);transition:transform 140ms cubic-bezier(.3,.7,.4,1),color 160ms" style-hover="color:#0a84ff" style-active="transform:scale(.92)">
+          <svg width="24" height="24" viewBox="0 0 24 24" style="fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round"><circle cx="12" cy="12" r="9"></circle><path d="M12 11v5.5" style="stroke-width:2.4"></path><circle cx="12" cy="7.6" r="1.25" style="fill:currentColor;stroke:none"></circle></svg>
+        </button>
+        <div onMouseEnter="{{ menuOpen }}" onMouseLeave="{{ menuClose }}" style="position:relative;display:flex;justify-content:flex-end">
+          <button onClick="{{ toggleAudio }}" aria-label="{{ audioAria }}" title="{{ audioAria }}" style="{{ spkStyle }}" style-active="transform:scale(.92)">
+            <svg width="24" height="24" viewBox="0 0 24 24" style="fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round"><path d="M4 9.5h3.2L12 5.5v13l-4.8-4H4z" style="fill:currentColor"></path><path d="{{ spkWaves }}"></path></svg>
+          </button>
+          <div style="{{ menuStyle }}">
+            <div style="padding:6px 12px 8px;font-size:12px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:#8391a6">Narration</div>
+            <sc-for list="{{ langs }}" as="l" hint-placeholder-count="5">
+              <button onClick="{{ l.pick }}" style="{{ l.st }}" style-hover="background:#f2f6fb">
+                <span style="display:flex;flex-direction:column;align-items:flex-start;gap:1px">
+                  <span style="font-size:15px;font-weight:700">{{ l.native }}</span>
+                  <span style="font-size:12px;font-weight:500;color:#8391a6">{{ l.name }}</span>
+                </span>
+                <svg width="18" height="18" viewBox="0 0 24 24" style="{{ l.chk }}"><path d="m5 12.5 4.5 4.5L19 7.5"></path></svg>
+              </button>
+            </sc-for>
+          </div>
+        </div>
+      </div>
+
+      <sc-if value="{{ infoMount }}" hint-placeholder-val="{{ false }}">
+        <div onClick="{{ closeInfo }}" style="{{ backdropStyle }}">
+          <div onClick="{{ stop }}" role="dialog" aria-modal="true" aria-label="{{ info.title }}" style="{{ cardStyle }}">
+            <button onClick="{{ closeInfo }}" aria-label="Close" style="position:absolute;top:18px;right:18px;width:40px;height:40px;border-radius:99px;border:0;background:#f1f4f8;color:#3a4860;display:grid;place-items:center;padding:0;cursor:pointer" style-hover="background:#e6ebf1" style-active="transform:scale(.92)">
+              <svg width="18" height="18" viewBox="0 0 24 24" style="fill:none;stroke:currentColor;stroke-width:2.6;stroke-linecap:round"><path d="M6 6l12 12M18 6 6 18"></path></svg>
+            </button>
+            <div style="{{ info.tSt }}">{{ info.tA }}<span style="{{ info.hiSt }}">{{ info.tHi }}</span>{{ info.tB }}</div>
+            <div style="{{ info.exBox }}">
+              <span style="display:inline-flex;flex-direction:column;align-items:center;line-height:1;font-size:40px;color:#17233a">
+                <span>8</span>
+                <span style="align-self:stretch;height:4px;border-radius:99px;background:#17233a;margin:6px -4px"></span>
+                <span style="{{ info.d1St }}"><span style="{{ info.pulse1 }}">3</span></span>
+              </span>
+              <span style="font-size:40px;color:#17233a">+</span>
+              <span style="display:inline-flex;flex-direction:column;align-items:center;line-height:1;font-size:40px;color:#17233a">
+                <span>9</span>
+                <span style="align-self:stretch;height:4px;border-radius:99px;background:#17233a;margin:6px -4px"></span>
+                <span style="{{ info.d2St }}"><span style="{{ info.pulse2 }}">4</span></span>
+              </span>
+            </div>
+            <sc-if value="{{ infoFull }}" hint-placeholder-val="{{ false }}">
+              <div style="margin-top:16px;display:flex;flex-direction:column;gap:12px;text-align:left">
+                <div>
+                  <div style="font-size:12px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:#8391a6">When to use it</div>
+                  <div style="margin-top:4px;font-size:15px;font-weight:500;line-height:1.4;color:#34425a">{{ info.when }}</div>
+                </div>
+                <div>
+                  <div style="font-size:12px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:#8391a6">Sutra</div>
+                  <div style="margin-top:4px;font-size:15px;font-weight:500;line-height:1.4;color:#34425a"><span style="font-weight:700;color:#17233a">{{ info.sutra }}</span>: {{ info.alt }}</div>
+                </div>
+                <div>
+                  <div style="font-size:12px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:#8391a6">How it works</div>
+                  <div style="margin-top:8px;display:flex;flex-direction:column;gap:8px">
+                    <sc-for list="{{ info.stepList }}" as="sp" hint-placeholder-count="3">
+                      <div style="display:flex;align-items:flex-start;gap:10px"><span style="flex-shrink:0;width:24px;height:24px;border-radius:99px;background:#eaf3ff;color:#0a84ff;display:grid;place-items:center;font-family:Nunito,sans-serif;font-size:13px;font-weight:800">{{ sp.n }}</span><span style="font-size:15px;font-weight:500;line-height:1.4;color:#34425a">{{ sp.t }}</span></div>
+                    </sc-for>
+                  </div>
+                </div>
+              </div>
+            </sc-if>
+            <button onClick="{{ closeInfo }}" style="margin:26px auto 0;display:block;min-width:160px;height:50px;padding:0 30px;border-radius:99px;border:0;background:#0a84ff;color:#ffffff;font-size:17px;white-space:nowrap;font-weight:700;cursor:pointer;box-shadow:0 10px 24px rgba(10,132,255,.28);transition:transform 140ms cubic-bezier(.3,.7,.4,1)" style-active="transform:scale(.97)">{{ startText }}</button>
+          </div>
+        </div>
+      </sc-if>
+
+      <div style="position:absolute;left:36px;right:36px;bottom:30px;display:grid;grid-template-columns:56px minmax(0,1fr) auto;align-items:center;gap:20px;z-index:6">
+        <button onClick="{{ back }}" aria-label="Previous step" style="{{ backStyle }}">
+          <svg width="24" height="24" viewBox="0 0 24 24" style="fill:none;stroke:currentColor;stroke-width:2.4;stroke-linecap:round;stroke-linejoin:round"><path d="m14.5 6-6 6 6 6"></path></svg>
+        </button>
+        <div style="{{ capStyle }}">
+          <sc-for list="{{ cap }}" as="seg" hint-placeholder-count="1"><span style="{{ seg.st }}">{{ seg.t }}</span></sc-for>
+        </div>
+        <div style="display:flex;align-items:center;gap:10px">
+          <button onClick="{{ replay }}" aria-label="Replay this step" style="height:56px;padding:0 18px 0 14px;display:flex;align-items:center;gap:7px;border-radius:99px;border:1px solid #e1e8ef;background:#ffffff;color:#3a4860;font-size:15px;font-weight:600;cursor:pointer;box-shadow:0 4px 12px rgba(23,35,58,.05);transition:transform 140ms" style-active="transform:scale(.95)">
+            <svg width="20" height="20" viewBox="0 0 24 24" style="fill:none;stroke:currentColor;stroke-width:2.3;stroke-linecap:round;stroke-linejoin:round"><path d="M4 12a8 8 0 1 0 2.3-5.7M4 5v5h5"></path></svg>
+            <span>Replay</span>
+          </button>
+          <button onClick="{{ next }}" aria-label="{{ nextAria }}" style="{{ nextStyle }}">
+            <span style="{{ nextLabel }}">{{ nextText }}</span>
+            <svg width="24" height="24" viewBox="0 0 24 24" style="flex-shrink:0;fill:none;stroke:currentColor;stroke-width:2.4;stroke-linecap:round;stroke-linejoin:round"><path d="{{ nextIcon }}"></path></svg>
+            <div style="{{ nextFill }}">
+              <span style="white-space:nowrap">{{ nextText }}</span>
+              <svg width="24" height="24" viewBox="0 0 24 24" style="flex-shrink:0;fill:none;stroke:currentColor;stroke-width:2.4;stroke-linecap:round;stroke-linejoin:round"><path d="{{ nextIcon }}"></path></svg>
+            </div>
+          </button>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;autoplay&quot;:{&quot;editor&quot;:&quot;boolean&quot;,&quot;default&quot;:false,&quot;tsType&quot;:&quot;boolean&quot;,&quot;section&quot;:&quot;Behavior&quot;},&quot;hand&quot;:{&quot;editor&quot;:&quot;boolean&quot;,&quot;default&quot;:true,&quot;tsType&quot;:&quot;boolean&quot;,&quot;section&quot;:&quot;Behavior&quot;},&quot;dim&quot;:{&quot;editor&quot;:&quot;range&quot;,&quot;default&quot;:0.14,&quot;min&quot;:0.05,&quot;max&quot;:0.5,&quot;step&quot;:0.01,&quot;tsType&quot;:&quot;number&quot;,&quot;section&quot;:&quot;Look&quot;},&quot;bezel&quot;:{&quot;editor&quot;:&quot;boolean&quot;,&quot;default&quot;:true,&quot;tsType&quot;:&quot;boolean&quot;,&quot;section&quot;:&quot;Look&quot;}}">const NQ = new URLSearchParams(location.search), NATIVE = NQ.has('native');
+const nativePost = (t) => { try { window.webkit.messageHandlers.vedica.postMessage(t); } catch (e) {} };
+const NATIVE_CONT = NATIVE ? () => nativePost('continue') : null;
+
+const INK = '#17233a', BLUE = '#0a84ff', ORANGE = '#e86f00', GREEN = '#1a9e62', MUTE = '#8391a6';
+const DEMO = { a: 8, b: 3, c: 9, d: 4 };
+const PROBS = [{ a: 2, b: 5, c: 1, d: 3 }, { a: 1, b: 2, c: 1, d: 3 }, { a: 3, b: 4, c: 1, d: 5 }];
+const L1 = { Ax: 392, Px: 512, Bx: 632, Ex: 512, Nx: 740, topY: 330, barY: 385, botY: 440, rY: 212 };
+const L2 = { Ax: 230, Px: 335, Bx: 440, Ex: 560, Nx: 740, topY: 330, barY: 385, botY: 440, rY: 212 };
+const L3 = { Ax: 230, Px: 335, Bx: 440, Ex: 560, Nx: 740, topY: 262, barY: 316, botY: 370, rY: 166 };
+const TIMES = [[0, 450, 1700, 2600], [0, 450, 1650, 2600], [0, 450, 1650, 2600], [0, 80, 1150, 2150], [0, 450, 1450, 2450], [0, 500]];
+const ENDS = [3200, 3300, 3300, 2900, 3300, 700];
+const FIRST = 1; // step 0 (Meet the problem) is covered by the Start card
+const AUTO = 5000;
+const NAMES = ['Meet the problem', 'Cross multiply', 'The other way', 'Add the tops', 'Multiply the bottoms', 'Your turn'];
+const XE = 'cubic-bezier(.55,0,.25,1)', YE = 'cubic-bezier(.25,.9,.3,1.06)', DUR = '820ms';
+const HAND_E = 'cubic-bezier(.45,0,.2,1)';
+
+const FINFO = { title: 'Adding Unlike Fractions', when: 'When adding two fractions whose bottom numbers are different.', sutra: 'Urdhva-Tiryagbhyam', alt: 'Vertically and crosswise',
+  steps: ['Top: multiply crosswise, then add the two results.', 'Bottom: multiply the two bottom numbers.', 'Simplify the answer if you can.'] };
+const LANGS = [['en', 'English', 'English', 'en-IN']];
+const RKEY = 'vedica-resume';
+const resumeGet = (id) => { try { return JSON.parse(localStorage.getItem(RKEY) || '{}')[id]; } catch (e) { return undefined; } };
+const resumeSet = (id, step) => { try { const r = JSON.parse(localStorage.getItem(RKEY) || '{}'); if (step == null) delete r[id]; else r[id] = step; localStorage.setItem(RKEY, JSON.stringify(r)); } catch (e) {} };
+const LKEY = 'vedica-narration';
+const RECAP = [['Bottoms: ', '3 and 4', BLUE], ['8 × 4 = ', '32', BLUE], ['9 × 3 = ', '27', ORANGE], ['32 + 27 = ', '59', BLUE], ['3 × 4 = ', '12', BLUE]];
+
+class Component extends DCLogic {
+  state = { step: 0, phase: 1, from: -1, done: false, capIn: false, auto: false, k: 1, pr: this.freshPr(0), infoMount: false, infoShow: false, menu: false, audio: false, lang: 'en' };
+  timers = [];
+  rseen = {};
+
+  freshPr(pi) { return { pi, task: 0, input: '', wrong: 0, anim: 0, tick: 0, shake: 0, ok: false, bad: false }; }
+  startAuto(step) { this.stopAuto(); if (step >= 5 || this.state.infoMount) return; this.af = setTimeout(() => this.setState({ auto: true }), 40); const t0 = Date.now(), go = () => { if (window.__vdBusy && window.__vdBusy() && Date.now() - t0 < AUTO + 12000) this.at = setTimeout(go, 250); else this.next(); }; this.at = setTimeout(go, AUTO + 40); } // waits for the narration to finish
+  stopAuto() { clearTimeout(this.at); clearTimeout(this.af); this.setState({ auto: false }); }
+  later(fn, ms) { this.timers.push(setTimeout(fn, ms)); }
+  // Waits at least ms, then until the voice has finished its line, so no line is cut off by the next one.
+  afterTalk(fn, ms) { const t0 = Date.now(), go = () => { if (window.__vdBusy && window.__vdBusy() && Date.now() - t0 < ms + 12000) this.later(go, 200); else fn(); }; this.later(go, ms); }
+  clear() { this.timers.forEach(clearTimeout); this.timers = []; clearInterval(this.iv); }
+
+  componentDidMount() {
+    this.onResize = () => this.setState({ k: Math.min((innerWidth - 32) / 1056, (innerHeight - 32) / 800, 1.3) });
+    this.onKey = (e) => {
+      const s = this.state;
+      if (s.infoMount) { if (e.key === 'Escape') this.closeInfo(); return; }
+      if (/^[0-9]$/.test(e.key)) return this.press(e.key);
+      if (e.key === 'Backspace') return this.del();
+      if (e.key === 'ArrowRight') return this.next();
+      if (e.key === 'ArrowLeft') return this.back();
+      if (e.key === ' ' && s.step < 5) { e.preventDefault(); return this.stageTap(); }
+      if (e.key === 'r' || e.key === 'R') return this.go(s.step);
+    };
+    try { const v = JSON.parse(localStorage.getItem(LKEY) || 'null'); if (v) this.setState({ lang: 'en', audio: !!v.audio }); } catch (e) {}
+    if (!this.props.embedded) { this.onResize(); addEventListener('resize', this.onResize); }
+    addEventListener('keydown', this.onKey);
+    const s0 = this.props.startStep ?? 0;
+    const saved = resumeGet('frac');
+    if (s0 <= FIRST && saved > FIRST && saved <= 5) this.go(saved);
+    else if (s0 <= FIRST) { this.pending = () => this.go(FIRST); this.openInfo(); } else this.go(s0);
+  }
+  componentDidUpdate() {
+    if (NATIVE && this.state.step === 5 && this.state.pr && this.state.pr.task >= 4 && !this.posted) { this.posted = true; nativePost('done'); } if (this.state.audio && this.state.capIn && this.capNow && this.capNow !== this.spoken) this.speak(); }
+  speak() {
+    this.spoken = this.capNow;
+    const ss = typeof speechSynthesis !== 'undefined' ? speechSynthesis : null; if (!ss || !this.capNow) return;
+    const u = new SpeechSynthesisUtterance(this.capNow.replace(/×/g, ' times ').replace(/=/g, ' equals ').replace(/(\d+)\/(\d+)/g, '$1 over $2'));
+    const vs = ss.getVoices();
+    const v = vs.find(v => /^en[-_]IN/i.test(v.lang)) || vs.find(v => /^en[-_](GB|US)/i.test(v.lang)) || vs.find(v => /^en/i.test(v.lang));
+    u.lang = v ? v.lang : 'en-US'; if (v) u.voice = v;
+    u.rate = 0.95;
+    this.utt = u; // keep a reference so Chrome does not drop it mid-sentence
+    clearTimeout(this.st);
+    const say = () => { try { ss.resume(); ss.speak(u); } catch (e) {} };
+    if (ss.speaking || ss.pending) { ss.cancel(); this.st = setTimeout(say, 120); } else say();
+  }
+  savePref() { try { localStorage.setItem(LKEY, JSON.stringify({ lang: this.state.lang, audio: this.state.audio })); } catch (e) {} }
+  openInfo(full) { this.setState({ infoFull: !!full }); this.stopAuto(); clearTimeout(this.it); this.setState({ infoMount: true, menu: false }); this.it = setTimeout(() => this.setState({ infoShow: true }), 20); }
+  closeInfo() { clearTimeout(this.it); this.setState({ infoShow: false }); const p = this.pending; this.pending = null; this.it = setTimeout(() => { this.setState({ infoMount: false }); if (p) p(); else if (this.state.done) this.startAuto(this.state.step); }, 260); }
+  componentWillUnmount() { clearTimeout(this.st); clearTimeout(this.it); clearTimeout(this.at); clearTimeout(this.af); clearTimeout(this.mt); try { speechSynthesis.cancel(); } catch (e) {} this.clear(); removeEventListener('resize', this.onResize); removeEventListener('keydown', this.onKey); }
+
+  go(step, opts = {}) {
+    this.clear();
+    resumeSet('frac', step);
+    const pr = step === 5 ? this.freshPr(opts.pi ?? this.state.pr.pi) : this.state.pr;
+    const ph = opts.direct ? 1 : 0;
+    this.setState({ step, phase: ph, from: this.state.step, done: false, capIn: false, pr });
+    this.later(() => this.setState({ capIn: true }), 40);
+    TIMES[step].forEach((t, i) => { if (i > ph) this.later(() => this.setState({ phase: i }), t); });
+    this.later(() => {
+      this.setState({ done: step < 5 });
+      this.startAuto(step);
+      if (step < 5 && this.props.autoplay) this.later(() => this.go(step + 1), 1600);
+    }, ENDS[step]);
+    this.stopAuto();
+    if (step === 5) this.iv = setInterval(() => this.setState(s => ({ pr: { ...s.pr, tick: s.pr.tick + 1 } })), 1250);
+  }
+  next() { const s = this.state.step; if (s === 5 && (this.props.onContinue || NATIVE_CONT)) { resumeSet('frac', null); return (this.props.onContinue || NATIVE_CONT)(); } this.go(s < 5 ? s + 1 : FIRST); }
+  back() { const s = this.state.step; if (s > FIRST) this.go(s - 1); else if (this.props.onExit) this.props.onExit(); }
+  stageTap() {
+    const s = this.state;
+    if (s.step >= 5) return;
+    if (!s.done) { this.clear(); this.setState({ phase: TIMES[s.step].length - 1, done: true, capIn: true }); this.startAuto(s.step); }
+    else this.next();
+  }
+
+  answer(pr) {
+    const P = PROBS[pr.pi];
+    return [P.a * P.d, P.c * P.b, P.a * P.d + P.c * P.b, P.b * P.d][pr.task];
+  }
+  setPr(patch) { this.setState(s => ({ pr: { ...s.pr, ...patch } })); }
+  press(d) {
+    const { step, phase, pr } = this.state;
+    if (step !== 5 || phase < 1 || pr.anim || pr.ok || pr.bad || pr.task >= 4) return;
+    const input = (pr.input + d).slice(0, 3);
+    const ans = String(this.answer(pr));
+    if (input.length < ans.length) return this.setPr({ input });
+    if (input === ans) {
+      this.setPr({ input, ok: true, anim: 1 });
+      this.later(() => this.setPr({ anim: 2 }), 850);
+      this.afterTalk(() => this.setState(s => ({ pr: { ...s.pr, task: s.pr.task + 1, anim: 0, input: '', ok: false, wrong: 0 } })), 1900);
+      if (pr.task === 3 && pr.pi === 0) this.later(() => this.go(5, { pi: 1 }), 4300);
+    } else {
+      this.setPr({ input, bad: true, wrong: pr.wrong + 1 });
+      [-12, 10, -7, 5, 0].forEach((x, i) => this.later(() => this.setPr({ shake: x }), 60 * (i + 1)));
+      this.later(() => this.setPr({ input: '', bad: false }), 900);
+    }
+  }
+  del() {
+    const { step, pr } = this.state;
+    if (step !== 5 || pr.ok || pr.bad) return;
+    this.setPr({ input: pr.input.slice(0, -1) });
+  }
+
+  frame() {
+    const { step, phase, from, pr } = this.state;
+    const prac = step === 5;
+    const usePrac = (prac && phase >= 1) || (step === 0 && phase === 0 && from === 5);
+    const P = usePrac ? PROBS[pr.pi] : DEMO;
+    let L = L2;
+    if (step <= 2 || (step === 3 && phase === 0)) L = L1;
+    if (usePrac) L = L3;
+    const E = {};
+    const set = (k, x, y, o = 1, s = 1, c) => { E[k] = { x, y, o, s, c }; };
+    set('aT', L.Ax, L.topY); set('aB', L.Ax, L.botY); set('bT', L.Bx, L.topY); set('bB', L.Bx, L.botY);
+    set('barA', L.Ax, L.barY); set('barB', L.Bx, L.barY); set('plus', L.Px, L.barY, 1, 1, BLUE);
+    set('eq', L.Ex, L.barY, 0, 0.6, MUTE); set('ansBar', L.Nx, L.barY, 0, 0);
+    set('r1', L.Ax, L.rY, 0, 0.5, BLUE); set('r2', L.Bx, L.rY, 0, 0.5, ORANGE);
+    set('num', L.Nx, L.topY, 0, 0.6); set('den', L.Nx, L.botY, 0, 0.6);
+    set('gA', L.Nx, L.barY, 0); set('gB', L.Nx, L.barY, 0); set('gOp', L.Nx, L.barY, 0, 0.3);
+    set('sR1', L.Ax, L.rY, 0, 0.8); set('sR2', L.Bx, L.rY, 0, 0.8); set('sN', L.Nx, L.topY, 0, 0.8); set('sD', L.Nx, L.botY, 0, 0.8);
+    const r1v = P.a * P.d, r2v = P.c * P.b;
+    const T = { aT: P.a, aB: P.b, bT: P.c, bB: P.d, plus: '+', eq: '=', r1: r1v, r2: r2v, num: r1v + r2v, den: P.b * P.d, gA: '', gB: '', gOp: '×' };
+    let focus = null, l1 = 0, l2 = 0, hand = null, finale = false, activeSlot = null;
+    const show = (...ks) => ks.forEach(k => { E[k].o = 1; E[k].s = 1; });
+    const lineEnds = (one) => one
+      ? [[L.Ax + 34, L.topY + 24], [L.Bx - 34, L.botY - 24]]
+      : [[L.Bx - 34, L.topY + 24], [L.Ax + 34, L.botY - 24]];
+    const cross = (one, stage, col) => {
+      const s1 = one ? 'aT' : 'bT', s2 = one ? 'bB' : 'aB', rk = one ? 'r1' : 'r2';
+      const [p0, p1] = lineEnds(one);
+      T.gA = T[s1]; T.gB = T[s2]; T.gOp = '×';
+      E[s1].c = col; E[s2].c = col;
+      E.gA = { ...E[s1], o: 0, c: col }; E.gB = { ...E[s2], o: 0, c: col };
+      E.gOp = { x: E[rk].x, y: L.rY, o: 0, s: 0.3, c: col };
+      focus = [s1, s2];
+      if (stage === 0) hand = { x: p0[0], y: p0[1] };
+      if (stage >= 1) { if (one) l1 = 1; else l2 = 1; hand = { x: p1[0], y: p1[1] }; }
+      if (stage === 2) {
+        E.gA = { x: E[rk].x - 46, y: L.rY, o: 1, s: 0.64, c: col };
+        E.gB = { x: E[rk].x + 46, y: L.rY, o: 1, s: 0.64, c: col };
+        E.gOp = { x: E[rk].x, y: L.rY, o: 1, s: 0.5, c: col };
+        focus.push('gA', 'gB', 'gOp'); hand = { k: rk };
+      }
+      if (stage >= 3) {
+        E.gA = { x: E[rk].x, y: L.rY, o: 0, s: 0.4, c: col }; E.gB = { ...E.gA };
+        E.gOp.o = 0; show(rk); focus = [rk, s1, s2]; hand = { k: rk };
+      }
+    };
+    const toNum = (stage) => {
+      if (stage === 2) {
+        E.r1 = { x: L.Nx - 64, y: L.topY, o: 1, s: 1.3, c: BLUE };
+        E.r2 = { x: L.Nx + 64, y: L.topY, o: 1, s: 1.3, c: ORANGE };
+        E.gOp = { x: L.Nx, y: L.topY, o: 1, s: 0.55, c: INK }; T.gOp = '+';
+        focus = ['r1', 'r2', 'gOp', 'ansBar']; hand = { x: L.Nx, y: L.topY + 8 };
+      }
+    };
+    const merged = () => { E.r1 = { x: L.Nx, y: L.topY, o: 0, s: 0.9, c: BLUE }; E.r2 = { ...E.r1, c: ORANGE }; E.gOp.o = 0; T.gOp = '+'; };
+    const toDen = (stage) => {
+      T.gA = T.aB; T.gB = T.bB; T.gOp = '×';
+      E.gA = { ...E.aB, o: 0 }; E.gB = { ...E.bB, o: 0 }; E.gOp = { x: L.Nx, y: L.botY, o: 0, s: 0.3 };
+      if (stage === 1) {
+        E.gA = { x: L.Nx - 58, y: L.botY, o: 1, s: 0.9, c: BLUE }; E.gB = { x: L.Nx + 58, y: L.botY, o: 1, s: 0.9, c: ORANGE };
+        E.gOp = { x: L.Nx, y: L.botY, o: 1, s: 0.5, c: BLUE };
+        focus = ['aB', 'bB', 'gA', 'gB', 'gOp', 'ansBar']; hand = { x: L.Nx, y: L.botY + 10 };
+      }
+      if (stage >= 2) { E.gA = { x: L.Nx, y: L.botY, o: 0, s: 0.5 }; E.gB = { ...E.gA }; show('den'); }
+    };
+
+    if (step === 0) {
+      if (phase === 0) ['aT', 'aB', 'bT', 'bB', 'barA', 'barB', 'plus'].forEach(k => { E[k].o = 0; E[k].y += 26; });
+      if (phase >= 2) { focus = ['aB', 'bB']; E.aB.c = BLUE; E.bB.c = ORANGE; }
+    } else if (step === 1) {
+      cross(true, phase, BLUE);
+    } else if (step === 2) {
+      show('r1'); l1 = 2; cross(false, phase, ORANGE);
+    } else if (step === 3) {
+      show('r1', 'r2'); focus = ['r1', 'r2'];
+      l1 = l2 = 3;
+      if (phase >= 1) { show('eq', 'ansBar'); hand = { k: 'r1' }; }
+      toNum(phase);
+      if (phase >= 3) { merged(); show('num'); focus = ['num', 'ansBar']; hand = { k: 'num' }; }
+    } else if (step === 4) {
+      show('eq', 'ansBar', 'num'); merged();
+      focus = ['aB', 'bB']; E.aB.c = BLUE; E.bB.c = ORANGE; hand = { k: 'aB' };
+      toDen(phase);
+      if (phase === 2) { focus = ['num', 'den', 'ansBar']; hand = { k: 'den' }; }
+      if (phase >= 3) { focus = null; hand = null; finale = true; }
+    } else if (prac) {
+      if (phase === 0) {
+        ['aT', 'aB', 'bT', 'bB', 'barA', 'barB', 'plus'].forEach(k => { E[k].o = 0; });
+      } else {
+        const { task: t, anim: a, tick } = pr;
+        const filled = (i) => t > i || (t === i && a === 2);
+        show('eq', 'ansBar');
+        ['sR1', 'sR2', 'sN', 'sD'].forEach((k, i) => { if (!filled(i)) show(k); });
+        if (filled(0)) show('r1');
+        if (filled(1)) show('r2');
+        if (filled(2)) { merged(); show('num'); }
+        if (filled(3)) show('den');
+        if (t === 0 || t === 1) {
+          const one = t === 0, col = one ? BLUE : ORANGE;
+          activeSlot = one ? 'sR1' : 'sR2';
+          if (!one) l1 = 2;
+          cross(one, a === 0 ? 1 : a === 1 ? 2 : 3, col);
+          if (a === 0) { const [p0, p1] = lineEnds(one); hand = tick % 2 ? { x: p1[0], y: p1[1] } : { x: p0[0], y: p0[1] }; }
+          focus.push(activeSlot);
+          if (a === 2) focus = [one ? 'r1' : 'r2'];
+        } else if (t === 2) {
+          activeSlot = 'sN'; l1 = l2 = 3;
+          focus = ['r1', 'r2', 'sN', 'ansBar']; hand = { k: tick % 2 ? 'r2' : 'r1' };
+          if (a === 1) toNum(2);
+          if (a === 2) { focus = ['num', 'ansBar']; hand = { k: 'num' }; }
+        } else if (t === 3) {
+          activeSlot = 'sD';
+          focus = ['aB', 'bB', 'sD', 'ansBar']; E.aB.c = BLUE; E.bB.c = ORANGE; hand = { k: tick % 2 ? 'bB' : 'aB' };
+          toDen(a === 0 ? 0 : a);
+          if (a === 2) { focus = ['num', 'den', 'ansBar']; hand = { k: 'den' }; }
+        } else {
+          finale = true;
+        }
+      }
+    }
+    if (finale) { E.num.c = BLUE; E.den.c = BLUE; E.ansBar.c = BLUE; }
+    return { E, T, L, focus, l1, l2, hand, finale, activeSlot, P };
+  }
+
+  renderVals() {
+    const st = this.state, F = this.frame();
+    const { E, T, L } = F;
+    const dimAmt = this.props.dim ?? 0.32;
+    const fs = F.focus ? new Set(F.focus) : null;
+    const dim = (k) => (fs ? !fs.has(k) : false);
+    const size = (k) => (k === 'r1' || k === 'r2') ? 52 : (k === 'plus' || k === 'eq') ? 64 : 80;
+    const numKeys = ['aT', 'aB', 'bT', 'bB', 'plus', 'eq', 'r1', 'r2', 'num', 'den', 'gA', 'gB', 'gOp'];
+    const baseNums = ['aT', 'aB', 'bT', 'bB'];
+
+    const nums = numKeys.map(k => {
+      const e = E[k], d = dim(k);
+      const emph = fs && fs.has(k) && baseNums.includes(k) ? 1.08 : 1;
+      return {
+        t: String(T[k]),
+        o: { position: 'absolute', left: 0, top: 0, transform: `translateX(${e.x}px)`, transition: `transform ${DUR} ${XE}`, pointerEvents: 'none' },
+        i: {
+          position: 'absolute', left: 0, top: 0, whiteSpace: 'nowrap',
+          transform: `translateY(${e.y}px) translate(-50%,-50%) scale(${e.s * emph})`,
+          opacity: e.o * (d ? dimAmt : 1), filter: 'blur(0px)', color: e.c || INK,
+          fontFamily: 'Nunito, sans-serif', fontWeight: k === 'plus' || k === 'eq' || k === 'gOp' ? 700 : 800,
+          fontSize: size(k), lineHeight: 1, letterSpacing: '-0.04em', fontVariantNumeric: 'tabular-nums',
+          transition: `transform ${DUR} ${YE}, opacity 480ms ease, filter 480ms ease, color 420ms ease`,
+        },
+      };
+    });
+
+    const bars = [['barA', 92], ['barB', 92], ['ansBar', 224]].map(([k, w]) => {
+      const e = E[k], d = dim(k);
+      return { st: {
+        position: 'absolute', left: 0, top: 0, width: w, height: 7, borderRadius: 99, background: e.c || INK,
+        transform: `translate(${e.x - w / 2}px, ${e.y - 3.5}px) scaleX(${k === 'ansBar' ? e.s : 1})`,
+        opacity: (k === 'ansBar' ? (e.s > 0 ? 1 : 0) : e.o) * (d ? dimAmt : 1), filter: 'blur(0px)',
+        transition: `transform ${DUR} ${XE}, opacity 480ms ease, filter 480ms ease, background 420ms ease`,
+      } };
+    });
+
+    const slots = ['sR1', 'sR2', 'sN', 'sD'].map(k => {
+      const e = E[k], d = dim(k), act = F.activeSlot === k;
+      const sz = (k === 'sR1' || k === 'sR2') ? 70 : 88;
+      return {
+        st: {
+          position: 'absolute', left: 0, top: 0, width: sz, height: sz, boxSizing: 'border-box', borderRadius: 22,
+          border: act ? `2.5px solid ${BLUE}` : '2.5px dashed #cbd7e3', background: act ? 'rgba(10,132,255,.07)' : 'transparent',
+          display: 'grid', placeItems: 'center',
+          transform: `translate(${e.x - sz / 2}px, ${e.y - sz / 2}px) scale(${e.s * (act ? 1.06 : 1)})`,
+          opacity: e.o * (d ? 0.35 : 1),
+          transition: `transform ${DUR} ${YE}, opacity 420ms ease, border-color 300ms, background 300ms`,
+        },
+        q: { fontFamily: 'Nunito, sans-serif', fontWeight: 800, fontSize: sz * 0.42, color: act ? BLUE : '#c0ccd8', transition: 'color 300ms' },
+      };
+    });
+
+    const mkLine = (one, state, col) => {
+      const p0 = one ? [L.Ax + 34, L.topY + 24] : [L.Bx - 34, L.topY + 24];
+      const p1 = one ? [L.Bx - 34, L.botY - 24] : [L.Ax + 34, L.botY - 24];
+      const len = Math.hypot(p1[0] - p0[0], p1[1] - p0[1]) + 2;
+      return {
+        d: `M${p0[0]} ${p0[1]} L${p1[0]} ${p1[1]}`,
+        st: {
+          fill: 'none', stroke: col, strokeWidth: 6, strokeLinecap: 'round',
+          strokeDasharray: `${len} ${len * 2}`, strokeDashoffset: state === 0 ? len : 0,
+          opacity: state === 1 ? 1 : state === 2 ? 0.2 : 0,
+          transition: `stroke-dashoffset 1000ms ${HAND_E}, opacity 450ms ease`,
+        },
+      };
+    };
+
+    let spotStyle = { position: 'absolute', left: 0, top: 0, width: 300, height: 200, opacity: 0, pointerEvents: 'none', transition: `transform ${DUR} ${XE}, width ${DUR} ${XE}, height ${DUR} ${XE}, opacity 500ms ease` };
+    if (fs) {
+      let x0 = 1e9, y0 = 1e9, x1 = -1e9, y1 = -1e9;
+      F.focus.forEach(k => {
+        const e = E[k]; if (!e || !e.o) return;
+        const h = (size(k) * (e.s || 1)) / 2 + 10, w = k === 'ansBar' ? 112 : h;
+        x0 = Math.min(x0, e.x - w); x1 = Math.max(x1, e.x + w); y0 = Math.min(y0, e.y - h); y1 = Math.max(y1, e.y + h);
+      });
+      if (x1 > x0) {
+        const w = x1 - x0 + 200, h = y1 - y0 + 170;
+        spotStyle = { ...spotStyle, width: w, height: h, opacity: 1, borderRadius: '50%',
+          background: 'radial-gradient(closest-side, rgba(10,132,255,.11), rgba(10,132,255,.04) 60%, rgba(10,132,255,0))',
+          transform: `translate(${(x0 + x1) / 2 - w / 2}px, ${(y0 + y1) / 2 - h / 2}px)` };
+      }
+    }
+
+    const finaleStyle = {
+      position: 'absolute', left: 0, top: 0, width: 264, height: 268, borderRadius: 36, background: '#ffffff',
+      boxShadow: '0 24px 60px rgba(23,35,58,.12), 0 2px 8px rgba(23,35,58,.05)',
+      transform: `translate(${L.Nx - 132}px, ${L.barY - 134}px) scale(${F.finale ? 1 : 0.88})`,
+      opacity: F.finale ? 1 : 0, pointerEvents: 'none',
+      transition: `transform 700ms cubic-bezier(.3,1.3,.5,1), opacity 450ms ease`,
+    };
+
+    let hx = 512, hy = 500, hv = 0;
+    const showHand = this.props.hand ?? true;
+    if (F.hand && showHand) {
+      hv = 1;
+      if (F.hand.k) { const e = E[F.hand.k]; hx = e.x + 10; hy = e.y + (F.hand.k === 'r1' || F.hand.k === 'r2' ? 30 : 40); }
+      else { hx = F.hand.x; hy = F.hand.y; }
+      this.lastHand = [hx, hy];
+    } else if (this.lastHand) { [hx, hy] = this.lastHand; }
+    const handStyle = {
+      position: 'absolute', left: 0, top: 0, pointerEvents: 'none', zIndex: 4,
+      transform: `translate(${hx - 33}px, ${hy - 4}px) rotate(-14deg) scale(${hv ? 1 : 0.8})`, transformOrigin: '33px 4px',
+      opacity: hv, transition: `transform 1000ms ${HAND_E}, opacity 380ms ease`,
+    };
+    const ring = hv ? React.createElement('div', { key: `${Math.round(hx)}-${Math.round(hy)}-${st.step}`, style: {
+      position: 'absolute', left: hx - 24, top: hy - 24, width: 48, height: 48, borderRadius: '50%', zIndex: 3,
+      border: '3px solid rgba(10,132,255,.45)', pointerEvents: 'none', animation: 'vdRing 1.5s 1s ease-out infinite both' } }) : null;
+
+    // caption
+    const P = F.P, pr = st.pr;
+    let capStr, hl = BLUE;
+    if (st.step === 0) capStr = 'Two fractions with **different bottoms**: 3 and 4.';
+    else if (st.step === 1) capStr = 'Multiply crosswise: **8 × 4 = 32**.';
+    else if (st.step === 2) { capStr = 'Now the other way: **9 × 3 = 27**.'; hl = ORANGE; }
+    else if (st.step === 3) capStr = 'Add the two results: **32 + 27 = 59**. That’s the new top.';
+    else if (st.step === 4) capStr = 'Multiply the bottoms: **3 × 4 = 12**. Answer: **59/12**.';
+    else {
+      const Q = PROBS[pr.pi], a1 = Q.a * Q.d, a2 = Q.c * Q.b;
+      const lines = [
+        `Your turn. Multiply crosswise: **${Q.a} × ${Q.d}**.`,
+        `Now the other way: **${Q.c} × ${Q.b}**.`,
+        `Add the two results: **${a1} + ${a2}**.`,
+        `Multiply the bottoms: **${Q.b} × ${Q.d}**.`,
+        `**${Q.a}/${Q.b} + ${Q.c}/${Q.d} = ${a1 + a2}/${Q.b * Q.d}**. Same trick, every time.`,
+      ];
+      capStr = lines[pr.task];
+      if (pr.task === 1) hl = ORANGE;
+      if (pr.ok) { capStr = `**Yes!** ${[`${Q.a} × ${Q.d}`, `${Q.c} × ${Q.b}`, `${a1} + ${a2}`, `${Q.b} × ${Q.d}`][pr.task]} = ${this.answer(pr)}.`; hl = GREEN; }
+      if (pr.task === 4) hl = BLUE;
+    }
+    this.capNow = capStr.replace(/\*\*/g, '');
+    const cap = capStr.split('**').map((t, i) => ({ t, st: i % 2 ? { color: hl, fontWeight: 800 } : {} })).filter(s => s.t);
+    const capStyle = {
+      textAlign: 'center', fontFamily: 'Nunito, sans-serif', fontSize: 23, fontWeight: 700, color: '#34425a',
+      letterSpacing: '-0.01em', lineHeight: 1.3, textWrap: 'balance',
+      opacity: st.capIn ? 1 : 0, transform: `translateY(${st.capIn ? 0 : 8}px)`, filter: st.capIn ? 'blur(0px)' : 'blur(4px)',
+      transition: st.capIn ? 'opacity 450ms ease, transform 550ms cubic-bezier(.32,.72,0,1), filter 450ms ease' : 'none',
+    };
+
+    const progress = NAMES.map((n, i) => {
+      let w = 0, tr = 'none';
+      if (i < st.step) w = 100;
+      else if (i === st.step) {
+        if (st.step < 5) { if (st.done) { w = 100; tr = 'width 300ms ease'; } else if (st.capIn) { w = 100; tr = `width ${ENDS[st.step]}ms linear`; } }
+        else { w = (pr.task / 4) * 100; tr = 'width 600ms cubic-bezier(.32,.72,0,1)'; }
+      }
+      return { label: `Go to ${n}`, go: () => this.go(i), fill: { height: '100%', width: `${w}%`, background: BLUE, borderRadius: 99, transition: tr } };
+    });
+    progress.splice(0, FIRST);
+
+    const prac = st.step === 5 && st.phase >= 1;
+    const tasks = [`${P.a} × ${P.d} =`, `${P.c} × ${P.b} =`, `${P.a * P.d} + ${P.c * P.b} =`, `${P.b} × ${P.d} =`];
+    let hintText = 'Look where the hand is pointing.';
+    if (pr.wrong > 0 && pr.task < 4) {
+      const pairs = [[P.a, P.d], [P.c, P.b], null, [P.b, P.d]][pr.task];
+      if (pairs) {
+        const [x, n] = pairs;
+        hintText = n <= 6 ? `Not quite. ${n} groups of ${x}: ${Array(n).fill(x).join(' + ')}` : `Not quite. Try ${x} × ${n} again.`;
+      } else hintText = `Not quite. Start at ${P.a * P.d} and count on ${P.c * P.b}.`;
+    }
+    if (pr.ok) hintText = 'Watch it move into place.';
+    const inCol = pr.ok ? GREEN : pr.bad ? ORANGE : BLUE;
+    const inputStyle = {
+      minWidth: 100, height: 78, padding: '0 16px', boxSizing: 'border-box', borderRadius: 22,
+      border: `3px solid ${inCol}`, background: pr.ok ? '#eefaf3' : pr.bad ? '#fff5eb' : '#f4f9ff',
+      display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 46,
+      color: pr.input ? inCol : '#b5c3d2',
+      transform: `translateX(${pr.shake}px) scale(${pr.ok ? 1.06 : 1})`,
+      transition: 'transform 110ms ease, border-color 200ms, background 200ms, color 200ms',
+    };
+    const keys = ['1', '2', '3', '4', '5', '6', '7', '8', '9', '0'].map(d => ({ label: d, aria: d, press: () => this.press(d) }))
+      .concat([{ label: '⌫', aria: 'Delete', press: () => this.del() }]);
+
+    const done = st.done || st.step === 5;
+    const last = st.step === 5;
+    const cont = last && !!(this.props.onContinue || NATIVE_CONT);
+    const autoMode = !last;
+    const expanded = autoMode || (cont && pr.task >= 4 && pr.pi >= 1);
+    const nextStyle = {
+      position: 'relative', height: 56, width: expanded ? (cont ? 150 : 124) : 56, borderRadius: 99, border: 0, cursor: 'pointer', overflow: 'hidden',
+      display: 'flex', alignItems: 'center', justifyContent: 'center', gap: expanded ? 6 : 0, padding: 0,
+      background: autoMode ? '#ffffff' : expanded ? BLUE : '#e7f1fd', color: autoMode ? BLUE : expanded ? '#fff' : BLUE,
+      boxShadow: autoMode ? `inset 0 0 0 2px ${BLUE}, 0 6px 16px rgba(10,132,255,.14)` : expanded ? '0 10px 24px rgba(10,132,255,.3)' : 'none', fontSize: 17, fontWeight: 700,
+      transition: 'width 520ms cubic-bezier(.32,.72,0,1), background 300ms ease, color 300ms ease, box-shadow 300ms ease, gap 520ms',
+    };
+    const filling = autoMode && st.auto;
+    const nextFill = {
+      position: 'absolute', inset: 0, display: autoMode ? 'flex' : 'none', alignItems: 'center', justifyContent: 'center', gap: 6,
+      borderRadius: 99, background: BLUE, color: '#fff', pointerEvents: 'none',
+      clipPath: filling ? 'inset(0 0 0 0)' : 'inset(0 100% 0 0)', transition: filling ? `clip-path ${AUTO}ms linear` : 'none',
+    };
+    const nextLabel = { maxWidth: expanded ? (cont ? 86 : 60) : 0, opacity: expanded ? 1 : 0, overflow: 'hidden', whiteSpace: 'nowrap', transition: 'max-width 520ms cubic-bezier(.32,.72,0,1), opacity 300ms ease' };
+    const backStyle = {
+      width: 56, height: 56, borderRadius: 99, border: '1px solid #e1e8ef', background: '#fff', display: 'grid', placeItems: 'center', padding: 0,
+      color: st.step <= FIRST && !this.props.onExit ? '#c3ccd6' : '#3a4860', cursor: st.step <= FIRST && !this.props.onExit ? 'default' : 'pointer', boxShadow: '0 4px 12px rgba(23,35,58,.05)',
+    };
+
+    const k = st.k, bezel = !NATIVE && (this.props.bezel ?? true);
+    const deviceStyle = {
+      flexShrink: 0, width: 1056, height: 800, boxSizing: 'border-box', padding: 16, borderRadius: 50,
+      background: bezel ? '#14171c' : 'transparent',
+      boxShadow: bezel ? '0 40px 90px rgba(20,30,48,.22), inset 0 0 0 1.5px #2b3038' : 'none',
+      transform: `scale(${k})`, transformOrigin: 'center',
+    };
+    const canvasStyle = { position: 'relative', width: 1024, height: 768, overflow: 'hidden', borderRadius: bezel ? 34 : NATIVE ? 0 : 24, background: '#fffefa' };
+    const emb = !!this.props.embedded;
+    if (emb) { Object.assign(deviceStyle, { width: 1024, height: 768, padding: 0, borderRadius: 0, background: 'transparent', boxShadow: 'none', transform: 'none' }); canvasStyle.borderRadius = 0; }
+    const outerStyle = emb ? { position: 'absolute', inset: 0 } : { position: 'relative', width: '100vw', height: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', background: NATIVE ? '#fffefa' : '#e8edf2', overflow: 'hidden' };
+    const PRI = { height: 56, padding: '0 30px', borderRadius: 99, border: 0, background: BLUE, color: '#ffffff', fontSize: 17, fontWeight: 700, cursor: 'pointer', boxShadow: '0 10px 24px rgba(10,132,255,.3)', transition: 'transform 140ms cubic-bezier(.3,.7,.4,1)' };
+    const SEC = { height: 56, padding: '0 26px', borderRadius: 99, border: '1px solid #e1e8ef', background: '#ffffff', color: '#3a4860', fontSize: 17, fontWeight: 600, cursor: 'pointer', boxShadow: '0 4px 12px rgba(23,35,58,.05)', transition: 'transform 140ms cubic-bezier(.3,.7,.4,1)' };
+
+    // recap rail: finished steps fly to the left column and stay
+    const rItems = [];
+    if (st.step < 5) RECAP.forEach((c, i) => { if (i > 0 && (i < st.step || (i === st.step && st.done))) rItems.push({ id: i, n: i, a: c[0], b: c[1], col: c[2] }); });
+    const rail = rItems.map((c, j) => {
+      if (!this.rseen[c.id]) this.rseen[c.id] = 2;
+      const born = this.rseen[c.id] === 2;
+      return { n: c.n, label: `Replay step ${c.n}`, go: () => this.go(c.id), a: c.a, b: c.b, bs: { color: c.col },
+        st: { height: 44, width: '100%', boxSizing: 'border-box', padding: '0 16px 0 8px', pointerEvents: 'auto', cursor: 'pointer', whiteSpace: 'nowrap', overflow: 'visible', position: 'relative', display: 'flex', alignItems: 'center', gap: 8, flexShrink: 0,
+          borderRadius: 99, background: '#ffffff', border: '1px solid #edf1f5', boxShadow: '0 1px 0 rgba(23,35,58,.03), 0 6px 16px rgba(23,35,58,.06)',
+          transform: born ? 'translateX(12px) scale(.9)' : 'translateX(0) scale(1)',
+          opacity: born ? 0 : 1, transition: born ? 'none' : 'transform 520ms cubic-bezier(.3,1.3,.5,1), opacity 320ms ease' } };
+    });
+    Object.keys(this.rseen).forEach(id => { if (!rItems.some(c => String(c.id) === id)) delete this.rseen[id]; });
+    if (rItems.some(c => this.rseen[c.id] === 2)) {
+      cancelAnimationFrame(this.rraf);
+      this.rraf = requestAnimationFrame(() => { this.rraf = requestAnimationFrame(() => {
+        Object.keys(this.rseen).forEach(k => { if (this.rseen[k] === 2) this.rseen[k] = 1; });
+        this.forceUpdate();
+      }); });
+    }
+
+    const info = { ...FINFO, exQ: '8/3 + 9/4', exA: '59/12' };
+    { const m = info.title.match(/\d+/) || info.title.match(/Unlike/), i = m ? m.index : info.title.length;
+      info.tA = info.title.slice(0, i); info.tHi = m ? m[0] : ''; info.tB = m ? info.title.slice(i + m[0].length) : '';
+      const tfs = Math.min(32, Math.floor(430 / (info.title.length * 0.6)));
+      info.tSt = { padding: st.infoFull ? '4px 44px 0' : '8px 44px 0', textAlign: 'center', fontFamily: 'Nunito, sans-serif', fontSize: tfs, fontWeight: 900, letterSpacing: '-0.03em', lineHeight: 1.2, color: '#17233a', whiteSpace: 'nowrap' };
+      info.hiSt = { display: 'inline-block', fontSize: '1.3em', lineHeight: 1, verticalAlign: '-0.06em', color: '#0a84ff', transform: st.infoShow ? 'translateY(0) scale(1)' : 'translateY(6px) scale(.7)', opacity: st.infoShow ? 1 : 0,
+        transition: (st.infoShow ? 'transform 600ms cubic-bezier(.3,1.3,.5,1) 260ms, opacity 300ms ease 260ms' : 'opacity 150ms ease') }; }
+    { const q = info.exQ, on = st.infoShow, parts = [];
+      const hiAt = q.includes('×') ? [[q.indexOf('×') + 2, q.length]] : q.includes('²') ? [[q.length - 2, q.length - 1]] : [...q.matchAll(/\/(\d+)/g)].map(m => [m.index + 1, m.index + 1 + m[1].length]);
+      let c = 0;
+      hiAt.forEach(([a, b], k) => { if (a > c) parts.push({ t: q.slice(c, a), st: {} });
+        parts.push({ t: q.slice(a, b), st: { display: 'inline-block', fontSize: '1.3em', lineHeight: 1, color: '#0a84ff', transform: on ? 'translateY(0) scale(1)' : 'translateY(8px) scale(.8)', opacity: on ? 1 : 0,
+          transition: on ? `transform 600ms cubic-bezier(.3,1.3,.5,1) ${620 + k * 120}ms, opacity 300ms ease ${620 + k * 120}ms` : 'none' } });
+        c = b; });
+      if (c < q.length) parts.push({ t: q.slice(c), st: {} });
+      info.exParts = parts;
+      const dSt = (k) => ({ display: 'inline-block', color: '#0a84ff', transform: on ? 'translateY(0) scale(1)' : 'translateY(8px) scale(.8)', opacity: on ? 1 : 0,
+        transition: on ? `transform 600ms cubic-bezier(.3,1.3,.5,1) ${620 + k * 120}ms, opacity 300ms ease ${620 + k * 120}ms` : 'none' });
+      info.d1St = dSt(0); info.d2St = { ...dSt(1), color: '#e86f00' };
+      const pz = (d) => ({ display: 'inline-block', animation: on ? `vdSoftPulse 3.2s ease-in-out ${d}ms infinite` : 'none' });
+      info.pulse1 = pz(1500); info.pulse2 = pz(1500); }
+    { const fs = (info.exQ + info.exA).length > 12 ? 40 : 52; info.qSt = { fontSize: fs, color: '#17233a' }; info.aSt = { fontSize: fs, color: '#17233a' }; info.eqSt = { fontSize: fs, color: '#17233a' }; }
+    info.stepList = (info.steps && info.steps.length ? info.steps : NAMES.slice(0, -1)).map((t, i) => ({ n: i + 1, t }));
+    // info.lessonSteps = NAMES.slice(0, -1);
+    info.exBox = { ...{ marginTop: "24px", height: "170px", padding: "0 20px", boxSizing: "border-box", borderRadius: "20px", background: "#f5f8fb", alignContent: "center", display: "flex", alignItems: "center", justifyContent: "center", gap: "22px", fontFamily: "Nunito,sans-serif", fontWeight: "900", letterSpacing: "-0.03em", whiteSpace: "nowrap" }, marginTop: st.infoFull ? '16px' : '24px', height: st.infoFull ? '113px' : '170px' };
+    const sh = st.infoShow, EO = 'cubic-bezier(.2,.8,.2,1)';
+    const backdropStyle = { position: 'absolute', inset: 0, zIndex: 20, display: 'grid', placeItems: 'center', background: 'rgba(23,35,58,.32)', backdropFilter: 'blur(6px)', WebkitBackdropFilter: 'blur(6px)', opacity: sh ? 1 : 0, transition: `opacity ${sh ? 280 : 220}ms ease-out` };
+    const cardStyle = { position: 'relative', width: 560, padding: st.infoFull ? '24px 28px 22px' : '30px 32px 28px', maxHeight: 'calc(100% - 48px)', overflowY: 'auto', maxWidth: 'calc(100% - 64px)', boxSizing: 'border-box', padding: '30px 32px 28px', borderRadius: 32, background: '#ffffff', boxShadow: '0 30px 80px rgba(23,35,58,.24), 0 2px 8px rgba(23,35,58,.06)',
+      opacity: sh ? 1 : 0, transform: `translateY(${sh ? 0 : 14}px) scale(${sh ? 1 : 0.92})`, transition: this.rm ? 'opacity 200ms ease-out' : `transform ${sh ? 380 : 240}ms ${EO}, opacity ${sh ? 260 : 200}ms ease-out` };
+    const on = st.audio;
+    const spkStyle = { width: 48, height: 48, borderRadius: 99, border: on ? '1px solid #0a84ff' : '1px solid #e1e8ef', background: on ? '#0a84ff' : '#ffffff', color: on ? '#ffffff' : '#3a4860', display: 'grid', placeItems: 'center', padding: 0, cursor: 'pointer',
+      boxShadow: on ? '0 8px 18px rgba(10,132,255,.28)' : '0 4px 12px rgba(23,35,58,.06)', transition: 'transform 140ms cubic-bezier(.3,.7,.4,1), background 200ms, color 200ms' };
+    const menuStyle = { position: 'absolute', right: 58, top: 0, width: 200, padding: 6, boxSizing: 'border-box', borderRadius: 20, background: 'rgba(255,255,255,.96)', backdropFilter: 'blur(20px)', WebkitBackdropFilter: 'blur(20px)',
+      border: '1px solid #e6ecf2', boxShadow: '0 18px 44px rgba(23,35,58,.16)', display: 'flex', flexDirection: 'column', gap: 2,
+      opacity: st.menu ? 1 : 0, transform: `translateX(${st.menu ? 0 : 8}px) scale(${st.menu ? 1 : 0.96})`, transformOrigin: 'right top', pointerEvents: st.menu ? 'auto' : 'none', transition: `opacity 180ms ease-out, transform 220ms ${EO}` };
+    const langs = LANGS.map(([id, name, native]) => { const sel = st.lang === id; return { name, native,
+      st: { display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 8, width: '100%', padding: '8px 12px', border: 0, borderRadius: 14, background: sel ? '#eaf3ff' : 'transparent', color: sel ? '#0a84ff' : '#17233a', cursor: 'pointer', textAlign: 'left' },
+      chk: { flexShrink: 0, fill: 'none', stroke: '#0a84ff', strokeWidth: 2.6, strokeLinecap: 'round', strokeLinejoin: 'round', opacity: sel ? 1 : 0 },
+      pick: () => { this.spoken = null; this.setState({ lang: id, audio: true }, () => { this.savePref(); this.speak(); }); } }; });
+    const langName = (LANGS.find(l => l[0] === st.lang) || LANGS[0])[1];
+
+    return {
+      info, infoMount: st.infoMount, backdropStyle, cardStyle, openInfo: () => this.openInfo(true), infoFull: !!st.infoFull, startText: st.infoFull ? 'Got it' : 'Start', closeInfo: () => this.closeInfo(), stop: (e) => e.stopPropagation(),
+      spkStyle, menuStyle, langs, spkWaves: on ? 'M15.5 9a4 4 0 0 1 0 6M18 6.5a7.5 7.5 0 0 1 0 11' : 'm16 9.5 5 5m0-5-5 5',
+      audioAria: on ? 'Narration on' : 'Narration off',
+      menuOpen: () => {},
+      menuClose: () => { clearTimeout(this.mt); this.mt = setTimeout(() => this.setState({ menu: false }), 160); },
+      toggleAudio: () => { this.spoken = null; this.setState(s => ({ audio: !s.audio }), () => { this.savePref(); if (!this.state.audio) { clearTimeout(this.st); try { speechSynthesis.cancel(); } catch (e) {} } else if (this.spoken !== this.capNow) this.speak(); }); },
+      onClose: () => { try { speechSynthesis.cancel(); } catch (e) {} if (this.props.onClose) this.props.onClose(); else if (this.props.onExit) this.props.onExit(); else if (NATIVE) nativePost('exit'); else this.go(FIRST); },
+      deviceStyle, canvasStyle,
+      stepNum: st.step < 5 ? `Step ${st.step - FIRST + 1} of ${5 - FIRST}` : 'Practice', stepName: st.step < 5 ? NAMES[st.step] : `Guided ${Math.min(st.pr.pi, 1) + 1} of 2`,
+      progress, nums, bars, slots, rail,
+      stageWrap: { position: 'absolute', inset: 0, pointerEvents: 'none', transformOrigin: '512px 400px', transform: st.step < 5 ? 'translateX(-110px)' : 'none', transition: 'transform 620ms cubic-bezier(.32,.72,0,1)' }, railHead: { padding: '0 0 2px 4px', fontSize: 13, fontWeight: 700, letterSpacing: '.08em', textTransform: 'uppercase', color: '#8391a6', opacity: rail.length ? 1 : 0, transition: 'opacity 300ms ease' }, spotStyle, finaleStyle, handStyle, ring,
+      l1: mkLine(true, F.l1, BLUE), l2: mkLine(false, F.l2, ORANGE),
+      showTap: st.step < 5 && !st.infoMount,
+      stageTap: () => this.stageTap(),
+      showPrompt: prac && pr.task < 4, showDone: prac && pr.task >= 4 && pr.pi >= 1,
+      promptWrap: { position: 'absolute', left: 0, right: 0, top: 444, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 10 },
+      promptText: tasks[Math.min(pr.task, 3)], inputShown: pr.input || '?', inputStyle,
+      hintText, hintStyle: { fontSize: 16, fontWeight: 600, color: pr.wrong && !pr.ok ? '#a8662a' : pr.ok ? GREEN : '#8a97aa', transition: 'color 200ms' },
+      keys,
+      doneSub: `${P.a}/${P.b} + ${P.c}/${P.d} = ${P.a * P.d + P.c * P.b}/${P.b * P.d}, solved crosswise.`,
+      tryAnother: () => this.go(5, { pi: (pr.pi + 1) % PROBS.length }),
+      watchAgain: () => this.go(FIRST),
+      cap, capStyle,
+      back: () => this.back(), backStyle,
+      replay: () => this.go(st.step),
+      next: () => this.next(), nextStyle, nextLabel, nextFill, nextText: cont ? 'Continue' : 'Next',
+      outerStyle, showParent: !!this.props.onParent, onParent: () => this.props.onParent && this.props.onParent(),
+      hasContinue: !!(this.props.onContinue || NATIVE_CONT), onContinue: () => (this.props.onContinue || NATIVE_CONT) && (this.props.onContinue || NATIVE_CONT)(),
+      continueLabel: this.props.continueLabel || NQ.get('label') || 'Continue to practice', tryStyle: (this.props.onContinue || NATIVE_CONT) ? SEC : PRI,
+      nextAria: cont ? 'Continue' : last ? 'Start the lesson again' : 'Next step',
+      nextIcon: last && !cont ? 'M20 12a8 8 0 1 1-2.3-5.7M20 5v5h-5' : 'm9.5 6 6 6-6 6',
+    };
+  }
+}
+</script>
+</body>
+</html>
