@@ -37,11 +37,11 @@ struct RootView: View {
     }
 }
 
-/// The four tabs in a native `TabView` with the system tab bar.
+/// The four tabs in a native `TabView` with Apple's own tab bar: at the bottom on iPhone, at the top on iPad.
 struct MainTabs: View {
     @Environment(AppNavigator.self) private var nav
-    /// The window's real width class; the tabs' own screens keep it.
-    @Environment(\.horizontalSizeClass) private var sizeClass
+    private static let phone = UIDevice.current.userInterfaceIdiom == .phone
+    private static let iconSize = UIImage.SymbolConfiguration(pointSize: 19, weight: .medium)
 
     private var moduleSheet: Binding<ModuleSheetID?> {
         Binding(get: { nav.sheet.map(ModuleSheetID.init) }, set: { nav.sheet = $0?.id })
@@ -49,14 +49,9 @@ struct MainTabs: View {
 
     var body: some View {
         @Bindable var nav = nav
-        // The system tab bar is shown at the bottom on iPhone and iPad alike. iPadOS puts a regular-width
-        // tab bar at the top, so the TabView is given a compact width class (bottom bar); each screen
-        // inside gets the real width class back.
         TabView(selection: $nav.tab) {
-            Tab(AppTab.home.title, systemImage: AppTab.home.symbol, value: AppTab.home) {
-                withHeader { HomeScreen() }
-            }
-            Tab(AppTab.lessons.title, systemImage: AppTab.lessons.symbol, value: AppTab.lessons) {
+            Tab(value: AppTab.home) { withHeader { HomeScreen() } } label: { label(.home) }
+            Tab(value: AppTab.lessons) {
                 withHeader {
                     NavigationStack(path: $nav.lessonsPath) {
                         LessonsScreen()
@@ -64,28 +59,40 @@ struct MainTabs: View {
                             .navigationDestination(for: Tier.self) { TierScreen(tier: $0).hiddenNavBar() }
                     }
                 }
-            }
-            Tab(AppTab.quizzes.title, systemImage: AppTab.quizzes.symbol, value: AppTab.quizzes) {
-                withHeader { QuizzesScreen() }
-            }
-            Tab(AppTab.progress.title, systemImage: AppTab.progress.symbol, value: AppTab.progress) {
-                withHeader { ProgressScreen() }
-            }
+            } label: { label(.lessons) }
+            Tab(value: AppTab.quizzes) { withHeader { QuizzesScreen() } } label: { label(.quizzes) }
+            Tab(value: AppTab.progress) { withHeader { ProgressScreen() } } label: { label(.progress) }
         }
         .tint(Theme.blue)
-        .environment(\.horizontalSizeClass, .compact)
         .background(Theme.canvas.ignoresSafeArea())
         .sheet(item: moduleSheet) { ModuleSheet(family: $0.id) }
     }
 
-    /// Logo and avatar above a tab's screen.
+    /// Tab icon and title. On iPhone the icon is drawn a little smaller than iOS's default (about 25 pt),
+    /// so the bar reads lighter next to the app's content; iPad keeps the system size.
+    private func label(_ t: AppTab) -> some View {
+        Label {
+            Text(t.title)
+        } icon: {
+            // Tab bars show the filled form of a symbol, so the smaller iPhone icon uses it too.
+            if Self.phone, let img = UIImage(systemName: t.symbol + ".fill", withConfiguration: Self.iconSize)
+                                    ?? UIImage(systemName: t.symbol, withConfiguration: Self.iconSize) {
+                Image(uiImage: img.withRenderingMode(.alwaysTemplate))
+            } else {
+                Image(systemName: t.symbol)
+            }
+        }
+    }
+
+    /// Logo and avatar above a tab's screen. On iPad, Apple's tab bar floats at the top centre; the screen
+    /// is laid out from the very top so the logo and avatar sit on the same line as the bar, one either side.
     private func withHeader<C: View>(@ViewBuilder _ content: () -> C) -> some View {
         VStack(spacing: 0) {
             TabHeader()
             content()
         }
         .background(Theme.canvas.ignoresSafeArea())
-        .environment(\.horizontalSizeClass, sizeClass)
+        .ignoresSafeArea(.container, edges: Self.phone ? [] : .top)
     }
 }
 
