@@ -53,6 +53,8 @@ struct PrimaryPill: View {
     var body: some View {
         Button(action: action) {
             Text(title)
+                .lineLimit(1)
+                .fixedSize()   // a button label never wraps onto two lines
                 .font(Theme.text(17, .bold))
                 .foregroundColor(.white)
                 .padding(.horizontal, pt(30))
@@ -70,6 +72,8 @@ struct SecondaryPill: View {
     var body: some View {
         Button(action: action) {
             Text(title)
+                .lineLimit(1)
+                .fixedSize()
                 .font(Theme.text(17, .semibold))
                 .foregroundColor(Color(hex: 0x3a4860))
                 .padding(.horizontal, pt(26))

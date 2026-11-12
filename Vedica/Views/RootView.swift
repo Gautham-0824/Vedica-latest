@@ -40,6 +40,8 @@ struct RootView: View {
 /// The four tabs in a native `TabView` with the system tab bar.
 struct MainTabs: View {
     @Environment(AppNavigator.self) private var nav
+    /// The window's real width class; the tabs' own screens keep it.
+    @Environment(\.horizontalSizeClass) private var sizeClass
 
     private var moduleSheet: Binding<ModuleSheetID?> {
         Binding(get: { nav.sheet.map(ModuleSheetID.init) }, set: { nav.sheet = $0?.id })
@@ -47,7 +49,9 @@ struct MainTabs: View {
 
     var body: some View {
         @Bindable var nav = nav
-        // The system tab bar is shown (HIG): at the bottom on iPhone, iPadOS's standard tab bar on iPad.
+        // The system tab bar is shown at the bottom on iPhone and iPad alike. iPadOS puts a regular-width
+        // tab bar at the top, so the TabView is given a compact width class (bottom bar); each screen
+        // inside gets the real width class back.
         TabView(selection: $nav.tab) {
             Tab(AppTab.home.title, systemImage: AppTab.home.symbol, value: AppTab.home) {
                 withHeader { HomeScreen() }
@@ -69,6 +73,7 @@ struct MainTabs: View {
             }
         }
         .tint(Theme.blue)
+        .environment(\.horizontalSizeClass, .compact)
         .background(Theme.canvas.ignoresSafeArea())
         .sheet(item: moduleSheet) { ModuleSheet(family: $0.id) }
     }
@@ -80,6 +85,7 @@ struct MainTabs: View {
             content()
         }
         .background(Theme.canvas.ignoresSafeArea())
+        .environment(\.horizontalSizeClass, sizeClass)
     }
 }
 
