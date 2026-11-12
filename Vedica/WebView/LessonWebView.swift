@@ -238,7 +238,7 @@ struct LessonScreen: View {
                 PrimaryPill(title: buttonTitle) {
                     advance()
                 }
-                .padding(.trailing, 36).padding(.bottom, 30)
+                .padding(.trailing, pt(36)).padding(.bottom, pt(30))
                 .transition(.move(edge: .bottom).combined(with: .opacity))
             }
         }
@@ -250,12 +250,12 @@ struct LessonScreen: View {
     }
 
     private func advance() {
-        if review { nav.go(.results, forward: false) } else { nav.lessonFinished(id) }
+        if review { nav.show(.results, forward: false) } else { nav.lessonFinished(id) }
     }
 
     private func handle(_ msg: String) {
         if msg == "exit" {
-            if review { nav.go(.results, forward: false) } else { nav.lessonExit(id) }
+            if review { nav.show(.results, forward: false) } else { nav.lessonExit(id) }
         } else if msg == "continue" {
             advance()
         } else if msg == "done" && Catalog.page(id).file.hasPrefix("lessons/") {

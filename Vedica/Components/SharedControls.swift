@@ -1,35 +1,12 @@
 import SwiftUI
 
-/// Picks the portrait or landscape design canvas and scales it to fit (iPad or iPhone).
-struct CanvasFit<Content: View>: View {
-    var background: Color = Theme.canvas
-    var corner: CGFloat = 0
+/// Reports the window size to `Layout` so every screen adapts live to rotation, iPhone, iPad and split view.
+struct AdaptiveRoot<Content: View>: View {
     @ViewBuilder var content: () -> Content
 
     var body: some View {
-        GeometryReader { geo in
-            let portrait = geo.size.height > geo.size.width
-            let gw = max(geo.size.width, 1), gh = max(geo.size.height, 1)
-            let cw: CGFloat = portrait ? max(768, 1024 * gw / gh) : max(1024, 768 * gw / gh)
-            let ch: CGFloat = portrait ? max(1024, 768 * gh / gw) : max(768, 1024 * gh / gw)
-            let k = min(geo.size.width / cw, geo.size.height / ch)
-            ZStack {
-                background.ignoresSafeArea()
-                content()
-                    .frame(width: cw, height: ch)
-                    .background(Theme.canvas)
-                    .clipShape(RoundedRectangle(cornerRadius: corner, style: .continuous))
-                    .scaleEffect(k)
-                    .frame(width: cw * k, height: ch * k)
-            }
-            .frame(width: geo.size.width, height: geo.size.height)
-            .onChange(of: CGSize(width: cw, height: ch), initial: true) { _, c in
-                CanvasMetrics.shared.w = c.width
-                CanvasMetrics.shared.h = c.height
-                CanvasMetrics.shared.portrait = c.height > c.width
-            }
-        }
-        .ignoresSafeArea(.keyboard)
+        content()
+            .onGeometryChange(for: CGSize.self, of: { $0.size }) { Metrics.shared.update($0) }
     }
 }
 
@@ -49,10 +26,11 @@ struct RoundIconButton: View {
     var body: some View {
         Button(action: action) {
             Icon(d: d, size: icon, stroke: stroke, color: fg)
-                .frame(width: size, height: size)
+                .frame(width: pt(size), height: pt(size))
                 .background(Circle().fill(bg))
                 .overlay(Circle().stroke(border, lineWidth: 1))
                 .shadow(color: Theme.shadow.opacity(shadowOn ? 0.05 : 0), radius: 6, x: 0, y: 4)
+                .contentShape(Circle())
         }
         .buttonStyle(PressStyle(scale: 0.92))
     }
@@ -77,8 +55,8 @@ struct PrimaryPill: View {
             Text(title)
                 .font(Theme.text(17, .bold))
                 .foregroundColor(.white)
-                .padding(.horizontal, 30)
-                .frame(minWidth: minWidth, minHeight: height)
+                .padding(.horizontal, pt(30))
+                .frame(minWidth: pt(minWidth), minHeight: pt(height))
                 .background(Capsule().fill(Theme.blue))
                 .shadow(color: Theme.blue.opacity(0.3), radius: 12, x: 0, y: 10)
         }
@@ -94,8 +72,8 @@ struct SecondaryPill: View {
             Text(title)
                 .font(Theme.text(17, .semibold))
                 .foregroundColor(Color(hex: 0x3a4860))
-                .padding(.horizontal, 26)
-                .frame(minHeight: 56)
+                .padding(.horizontal, pt(26))
+                .frame(minHeight: pt(56))
                 .background(Capsule().fill(Color.white))
                 .overlay(Capsule().stroke(Theme.line, lineWidth: 1))
                 .shadow(color: Theme.shadow.opacity(0.05), radius: 6, x: 0, y: 4)
@@ -109,16 +87,18 @@ struct VedicaLogo: View {
     var tall = false
     var shadowed = true
     var body: some View {
+        let d = pt(size)
         Text("V")
             .font(Theme.round(size * 0.58, .heavy).italic())
             .foregroundColor(.white)
-            .frame(width: size, height: size)
+            .frame(width: d, height: d)
             .background(
-                UnevenRoundedRectangle(topLeadingRadius: size * 0.32, bottomLeadingRadius: size * 0.11,
-                                       bottomTrailingRadius: size * 0.32, topTrailingRadius: size * 0.32,
+                UnevenRoundedRectangle(topLeadingRadius: d * 0.32, bottomLeadingRadius: d * 0.11,
+                                       bottomTrailingRadius: d * 0.32, topTrailingRadius: d * 0.32,
                                        style: .continuous)
                     .fill(Theme.blue))
             .shadow(color: Theme.blue.opacity(shadowed ? 0.28 : 0), radius: 15, x: 0, y: 14)
+            .accessibilityHidden(true)
     }
 }
 

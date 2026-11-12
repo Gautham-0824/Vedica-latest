@@ -6,55 +6,56 @@ enum PadMode { case pen, scroll }
 struct ScratchPanel: View {
     @Binding var mode: PadMode
     let session: WorkSession
-    var width: CGFloat = 428
-    var height: CGFloat = 452
 
     var body: some View {
         @Bindable var z = session
         VStack(spacing: 0) {
-            HStack(spacing: 8) {
+            HStack(spacing: pt(8)) {
                 Text("Scratch pad").font(Theme.text(16, .bold)).foregroundColor(Theme.body)
+                    .accessibilityAddTraits(.isHeader)
                 Spacer()
-                tool("pencil.tip", on: mode == .pen) { mode = .pen }
-                tool("hand.draw", on: mode == .scroll) { mode = .scroll }
-                tool("arrow.uturn.backward", on: false) { if !z.padStrokes.isEmpty { z.padStrokes.removeLast() } }
-                tool("eraser", on: false) { z.padStrokes = [] }
+                tool("pencil.tip", "Pen", on: mode == .pen) { mode = .pen }
+                tool("hand.draw", "Scroll", on: mode == .scroll) { mode = .scroll }
+                tool("arrow.uturn.backward", "Undo", on: false) { if !z.padStrokes.isEmpty { z.padStrokes.removeLast() } }
+                tool("eraser", "Clear", on: false) { z.padStrokes = [] }
             }
-            .padding(.horizontal, 16).frame(height: 56)
+            .padding(.horizontal, pt(16)).frame(height: pt(56))
             Rectangle().fill(Theme.line).frame(height: 1)
             ZStack {
                 ScratchPad(strokes: $z.padStrokes, mode: mode)
                 if z.padStrokes.isEmpty {
-                    VStack(spacing: 4) {
+                    VStack(spacing: pt(4)) {
                         Text("Work it out here").font(Theme.round(20, .heavy)).foregroundColor(Theme.ghost)
                         Text("Apple Pencil or a finger").font(Theme.text(15, .medium)).foregroundColor(Theme.ghost)
                     }
                     .allowsHitTesting(false)
                 }
                 Text("More space below").font(Theme.text(13, .semibold)).foregroundColor(Theme.sub)
-                    .padding(.horizontal, 12).frame(height: 28)
+                    .padding(.horizontal, pt(12)).frame(height: pt(28))
                     .background(Capsule().fill(.white))
                     .overlay(Capsule().stroke(Theme.line, lineWidth: 1))
                     .frame(maxHeight: .infinity, alignment: .bottom)
-                    .padding(.bottom, 12)
+                    .padding(.bottom, pt(12))
                     .allowsHitTesting(false)
                     .opacity(mode == .pen ? 1 : 0)
             }
         }
-        .frame(width: width, height: height)
-        .background(RoundedRectangle(cornerRadius: 28, style: .continuous).fill(.white))
-        .clipShape(RoundedRectangle(cornerRadius: 28, style: .continuous))
-        .overlay(RoundedRectangle(cornerRadius: 28, style: .continuous).stroke(Theme.line, lineWidth: 1))
+        .frame(maxWidth: .infinity, maxHeight: .infinity)
+        .background(RoundedRectangle(cornerRadius: pt(28), style: .continuous).fill(.white))
+        .clipShape(RoundedRectangle(cornerRadius: pt(28), style: .continuous))
+        .overlay(RoundedRectangle(cornerRadius: pt(28), style: .continuous).stroke(Theme.line, lineWidth: 1))
     }
 
-    private func tool(_ s: String, on: Bool, action: @escaping () -> Void) -> some View {
+    private func tool(_ s: String, _ label: String, on: Bool, action: @escaping () -> Void) -> some View {
         Button(action: action) {
-            Image(systemName: s).font(.system(size: 16, weight: .semibold))
+            Image(systemName: s).font(.system(size: pt(16), weight: .semibold))
                 .foregroundColor(on ? Theme.blue : Theme.sub)
-                .frame(width: 38, height: 38)
-                .background(RoundedRectangle(cornerRadius: 12, style: .continuous).fill(on ? Theme.soft : Theme.panel))
+                .frame(width: pt(38), height: pt(38))
+                .background(RoundedRectangle(cornerRadius: pt(12), style: .continuous).fill(on ? Theme.soft : Theme.panel))
         }
         .buttonStyle(PressStyle(scale: 0.92))
+        .accessibilityLabel(label)
+        .accessibilityAddTraits(on ? .isSelected : [])
     }
 }
 

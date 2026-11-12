@@ -34,11 +34,13 @@ enum Theme {
 
     /// Nunito, the artifact's display face (bundled).
     static func round(_ size: CGFloat, _ weight: Font.Weight = .heavy) -> Font {
-        Fonts.font("Nunito", size, weight) ?? .system(size: size, weight: weight, design: .rounded)
+        let s = pt(size)
+        return Fonts.font("Nunito", s, weight) ?? .system(size: s, weight: weight, design: .rounded)
     }
     /// DM Sans, the artifact's text face (bundled).
     static func text(_ size: CGFloat, _ weight: Font.Weight = .semibold) -> Font {
-        Fonts.font("DMSans", size, weight) ?? .system(size: size, weight: weight)
+        let s = pt(size)
+        return Fonts.font("DMSans", s, weight) ?? .system(size: s, weight: weight)
     }
     static func weight(_ w: Int) -> Font.Weight {
         switch w {
@@ -52,24 +54,37 @@ enum Theme {
     }
 }
 
-/// Current design canvas, kept up to date by `CanvasFit` so screens re-lay out on rotation.
+/// Live window metrics, kept up to date by `AdaptiveRoot` so screens re-lay out on rotation and resizing.
+/// `k` is the size the design is drawn at: on iPad it is exactly the scale the old fixed 1024 x 768 canvas
+/// had, so iPad looks the same as before. iPhone gets a floor of 0.75 so text stays readable.
 @Observable
-final class CanvasMetrics {
-    static let shared = CanvasMetrics()
-    var w: CGFloat = 1024
-    var h: CGFloat = 768
-    var portrait = false
+final class Metrics {
+    static let shared = Metrics()
+    /// Window size in points.
+    var size = CGSize(width: 1024, height: 768)
+    var k: CGFloat = 1
+
+    /// Window size in design points (what the old canvas size was).
+    var w: CGFloat { size.width / k }
+    var h: CGFloat { size.height / k }
+    var portrait: Bool { size.height > size.width }
+    /// Narrow window: iPhone in portrait or a slim iPad split view.
+    var compact: Bool { w < 700 }
+    /// Short window: iPhone in landscape.
+    var short: Bool { h < 700 }
+    /// Room for the side-by-side (landscape) arrangement of a screen.
+    var wide: Bool { !portrait && !compact }
+
+    func update(_ s: CGSize) {
+        guard s != size, s.width > 0, s.height > 0 else { return }
+        let long = max(s.width, s.height), side = min(s.width, s.height)
+        k = max(0.75, min(long / 1024, side / 768))
+        size = s
+    }
 }
 
-/// Landscape screens start from 1024 x 768 and portrait from 768 x 1024; the longer side then grows to fill the window.
-enum Canvas {
-    static var w: CGFloat { CanvasMetrics.shared.w }
-    static var h: CGFloat { CanvasMetrics.shared.h }
-    static var portrait: Bool { CanvasMetrics.shared.portrait }
-    /// Space left over around a fixed 1024 x 768 layout, so it can sit in the middle of the screen.
-    static var extraX: CGFloat { max(0, (w - 1024) / 2) }
-    static var extraY: CGFloat { max(0, (h - 768) / 2) }
-}
+/// Design size scaled for the current window: `pt(36)` is 36 points on iPad.
+func pt(_ v: CGFloat) -> CGFloat { v * Metrics.shared.k }
 
 /// Loads the bundled variable fonts. Weight is set through the font's wght axis, as the web build does.
 enum Fonts {
