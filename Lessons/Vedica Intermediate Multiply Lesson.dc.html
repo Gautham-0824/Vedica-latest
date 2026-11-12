@@ -1,0 +1,1635 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,600;9..40,700&family=Nunito:wght@700;800;900&display=swap" rel="stylesheet">
+<style>
+html,body{margin:0;height:100%;background:#e8edf2;}
+body{font-family:'DM Sans',system-ui,sans-serif;-webkit-font-smoothing:antialiased;overflow:hidden;color:#17233a}
+a{color:#0a84ff;text-decoration:none} a:hover{color:#0064d6}
+button{font:inherit;-webkit-tap-highlight-color:transparent}
+@keyframes vdRing{0%{transform:scale(.35);opacity:0}25%{opacity:.9}100%{transform:scale(1.8);opacity:0}}
+</style>
+</helmet>
+<div style="{{ outerStyle }}">
+  <div style="{{ deviceStyle }}">
+    <div data-screen-label="Lesson" style="{{ canvasStyle }}">
+
+      <div style="position:absolute;top:22px;left:36px;right:36px;height:40px;display:flex;align-items:center;justify-content:space-between;z-index:7">
+        <div style="display:flex;align-items:center;gap:8px;font-family:Nunito,sans-serif;font-size:21px;font-weight:800;letter-spacing:-0.03em;color:#17233a">
+          <span style="display:grid;place-items:center;width:28px;height:28px;border-radius:9px 9px 9px 3px;background:#0a84ff;color:#fff;font-size:16px;font-style:italic;box-shadow:0 5px 12px rgba(10,132,255,.22)">V</span>
+          <span>Vedica</span>
+        </div>
+        <div style="display:flex;align-items:center;gap:14px">
+        <div style="display:flex;align-items:baseline;gap:8px;font-size:15px;font-weight:600">
+          <span style="color:#8391a6">{{ topic }}</span>
+          <span style="color:#d3dbe4">·</span>
+          <span style="color:#0a84ff;font-weight:700">{{ stepNum }}</span>
+          <span style="color:#8290a5">{{ stepName }}</span>
+        </div>
+        <button onClick="{{ onClose }}" aria-label="Exit lesson" title="Exit lesson" style="width:40px;height:40px;border-radius:99px;border:1px solid #e1e8ef;background:#ffffff;display:grid;place-items:center;padding:0;color:#3a4860;cursor:pointer;box-shadow:0 4px 12px rgba(23,35,58,.05);transition:transform 140ms cubic-bezier(.3,.7,.4,1)" style-active="transform:scale(.92)">
+            <svg width="18" height="18" viewBox="0 0 24 24" style="fill:none;stroke:currentColor;stroke-width:2.6;stroke-linecap:round"><path d="M6 6l12 12M18 6 6 18"></path></svg>
+          </button>
+        </div>
+      </div>
+
+      <div style="position:absolute;top:62px;left:50%;transform:translateX(-50%);display:flex;gap:6px;z-index:5">
+        <sc-for list="{{ progress }}" as="p" hint-placeholder-count="7">
+          <button onClick="{{ p.go }}" aria-label="{{ p.label }}" style="{{ p.bst }}">
+            <div style="width:42px;height:5px;border-radius:99px;background:#e1e8ef;overflow:hidden">
+              <div style="{{ p.fill }}"></div>
+            </div>
+          </button>
+        </sc-for>
+      </div>
+
+      <div style="{{ finaleStyle }}"></div>
+      <div style="{{ spotStyle }}"></div>
+
+      <sc-for list="{{ boxes }}" as="b" hint-placeholder-count="0">
+        <div style="{{ b.st }}"><span style="{{ b.qs }}">{{ b.q }}</span></div>
+      </sc-for>
+      <svg width="1024" height="768" viewBox="0 0 1024 768" style="position:absolute;left:0;top:0;pointer-events:none;overflow:visible">
+        <path d="{{ a0.d }}" style="{{ a0.st }}"></path>
+        <path d="{{ a1.d }}" style="{{ a1.st }}"></path>
+        <path d="{{ a2.d }}" style="{{ a2.st }}"></path>
+      </svg>
+
+      <sc-for list="{{ nums }}" as="n" hint-placeholder-count="0">
+        <div style="{{ n.o }}"><div style="{{ n.i }}">{{ n.t }}</div></div>
+      </sc-for>
+
+      <div style="position:absolute;right:30px;top:236px;width:190px;display:flex;flex-direction:column;align-items:stretch;gap:8px;pointer-events:none;z-index:2">
+        <div style="{{ railHead }}">{{ railTitle }}</div>
+        <sc-for list="{{ rail }}" as="c" hint-placeholder-count="0">
+          <div role="button" title="{{ c.label }}" style="{{ c.st }}" onClick="{{ c.go }}">
+            <span style="flex-shrink:0;width:22px;height:22px;border-radius:99px;background:#eaf3ff;color:#0a84ff;display:grid;place-items:center;font-family:Nunito,sans-serif;font-size:12px;font-weight:800">{{ c.n }}</span>
+            <span style="font-family:Nunito,sans-serif;font-size:16px;font-weight:800;letter-spacing:-0.01em;color:#17233a;white-space:nowrap">{{ c.a }}<span style="{{ c.bs }}">{{ c.b }}</span></span>
+          </div>
+        </sc-for>
+      </div>
+
+      {{ ring }}
+      <div style="{{ handStyle }}">
+        <svg width="66" height="70" viewBox="-30 -18 60 64" style="display:block;overflow:visible;filter:drop-shadow(0 6px 10px rgba(23,35,58,.18))">
+          <path d="M-3 11V-11c0-4 6-4 6 0v11-5c0-4 6-4 6 0v7-4c0-4 6-4 6 0v7-2c0-4 6-4 6 1v8c0 11-7 18-18 18-9 0-14-4-18-11l-6-10c-2-4 3-8 6-4z" style="fill:#fff7ee;stroke:#23324b;stroke-width:2;stroke-linecap:round;stroke-linejoin:round"></path>
+        </svg>
+      </div>
+
+      <sc-if value="{{ showTap }}" hint-placeholder-val="{{ false }}">
+        <div onClick="{{ stageTap }}" style="position:absolute;left:0;right:0;top:110px;bottom:120px;cursor:pointer"></div>
+      </sc-if>
+
+      <sc-if value="{{ showPrompt }}" hint-placeholder-val="{{ false }}">
+        <div style="position:absolute;left:0;right:0;top:444px;display:flex;flex-direction:column;align-items:center;gap:10px">
+          <div style="display:flex;align-items:center;gap:16px;font-family:Nunito,sans-serif;font-weight:800;font-size:44px;letter-spacing:-0.02em;color:#17233a">
+            <span>=</span>
+            <div style="{{ inputStyle }}">{{ inputShown }}</div>
+          </div>
+          <div style="{{ hintStyle }}">{{ hintText }}</div>
+        </div>
+        <div style="position:absolute;left:0;right:0;top:572px;display:flex;justify-content:center;gap:8px">
+          <sc-for list="{{ keys }}" as="key" hint-placeholder-count="11">
+            <button onClick="{{ key.press }}" aria-label="{{ key.aria }}" style="width:62px;height:62px;border-radius:18px;border:1px solid #e3eaf1;background:#ffffff;color:#17233a;font-family:Nunito,sans-serif;font-size:28px;font-weight:800;cursor:pointer;box-shadow:0 1px 0 rgba(23,35,58,.05),0 6px 14px rgba(23,35,58,.06);transition:transform 120ms cubic-bezier(.3,.7,.4,1),background 120ms" style-active="transform:scale(.9);background:#eaf3ff">{{ key.label }}</button>
+          </sc-for>
+        </div>
+      </sc-if>
+
+      <sc-if value="{{ showDone }}" hint-placeholder-val="{{ false }}">
+        <div style="position:absolute;left:0;right:0;top:400px;display:flex;flex-direction:column;align-items:center;gap:12px">
+          <div style="font-family:Nunito,sans-serif;font-size:40px;font-weight:900;letter-spacing:-0.03em">You did it!</div>
+          <div style="height:34px;padding:0 16px;border-radius:99px;background:#eaf3ff;color:#0a84ff;font-size:15px;font-weight:700;display:flex;align-items:center">{{ sutra }}</div>
+          <div style="display:flex;gap:12px;margin-top:12px">
+            <button onClick="{{ watchAgain }}" style="height:56px;padding:0 26px;border-radius:99px;border:1px solid #e1e8ef;background:#ffffff;color:#3a4860;font-size:17px;font-weight:600;cursor:pointer;box-shadow:0 4px 12px rgba(23,35,58,.05);transition:transform 140ms cubic-bezier(.3,.7,.4,1)" style-active="transform:scale(.96)">Watch the lesson again</button>
+            <button onClick="{{ tryAnother }}" style="{{ tryStyle }}" style-active="transform:scale(.96)">Try another</button>
+            <sc-if value="{{ hasContinue }}" hint-placeholder-val="{{ false }}">
+              <button onClick="{{ onContinue }}" style="height:56px;padding:0 30px;border-radius:99px;border:0;background:#0a84ff;color:#ffffff;font-size:17px;font-weight:700;cursor:pointer;box-shadow:0 10px 24px rgba(10,132,255,.3);transition:transform 140ms cubic-bezier(.3,.7,.4,1)" style-active="transform:scale(.96)">{{ continueLabel }}</button>
+            </sc-if>
+          </div>
+        </div>
+      </sc-if>
+
+      <div style="position:absolute;top:100px;right:30px;display:flex;flex-direction:column;align-items:flex-end;gap:10px;z-index:9">
+        <button onClick="{{ openInfo }}" aria-label="About this sutra" title="About this sutra" style="width:48px;height:48px;border-radius:99px;border:1px solid #e1e8ef;background:#ffffff;color:#3a4860;display:grid;place-items:center;padding:0;cursor:pointer;box-shadow:0 4px 12px rgba(23,35,58,.06);transition:transform 140ms cubic-bezier(.3,.7,.4,1),color 160ms" style-hover="color:#0a84ff" style-active="transform:scale(.92)">
+          <svg width="24" height="24" viewBox="0 0 24 24" style="fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round"><circle cx="12" cy="12" r="9"></circle><path d="M12 11v5.5" style="stroke-width:2.4"></path><circle cx="12" cy="7.6" r="1.25" style="fill:currentColor;stroke:none"></circle></svg>
+        </button>
+        <div onMouseEnter="{{ menuOpen }}" onMouseLeave="{{ menuClose }}" style="position:relative;display:flex;justify-content:flex-end">
+          <button onClick="{{ toggleAudio }}" aria-label="{{ audioAria }}" title="{{ audioAria }}" style="{{ spkStyle }}" style-active="transform:scale(.92)">
+            <svg width="24" height="24" viewBox="0 0 24 24" style="fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round"><path d="M4 9.5h3.2L12 5.5v13l-4.8-4H4z" style="fill:currentColor"></path><path d="{{ spkWaves }}"></path></svg>
+          </button>
+          <div style="{{ menuStyle }}">
+            <div style="padding:6px 12px 8px;font-size:12px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:#8391a6">Narration</div>
+            <sc-for list="{{ langs }}" as="l" hint-placeholder-count="5">
+              <button onClick="{{ l.pick }}" style="{{ l.st }}" style-hover="background:#f2f6fb">
+                <span style="display:flex;flex-direction:column;align-items:flex-start;gap:1px">
+                  <span style="font-size:15px;font-weight:700">{{ l.native }}</span>
+                  <span style="font-size:12px;font-weight:500;color:#8391a6">{{ l.name }}</span>
+                </span>
+                <svg width="18" height="18" viewBox="0 0 24 24" style="{{ l.chk }}"><path d="m5 12.5 4.5 4.5L19 7.5"></path></svg>
+              </button>
+            </sc-for>
+          </div>
+        </div>
+      </div>
+
+      <sc-if value="{{ infoMount }}" hint-placeholder-val="{{ false }}">
+        <div onClick="{{ closeInfo }}" style="{{ backdropStyle }}">
+          <div onClick="{{ stop }}" role="dialog" aria-modal="true" aria-label="{{ info.title }}" style="{{ cardStyle }}">
+            <button onClick="{{ closeInfo }}" aria-label="Close" style="position:absolute;top:18px;right:18px;width:40px;height:40px;border-radius:99px;border:0;background:#f1f4f8;color:#3a4860;display:grid;place-items:center;padding:0;cursor:pointer" style-hover="background:#e6ebf1" style-active="transform:scale(.92)">
+              <svg width="18" height="18" viewBox="0 0 24 24" style="fill:none;stroke:currentColor;stroke-width:2.6;stroke-linecap:round"><path d="M6 6l12 12M18 6 6 18"></path></svg>
+            </button>
+            <div style="{{ info.tSt }}">{{ info.tA }}<span style="{{ info.hiSt }}">{{ info.tHi }}</span>{{ info.tB }}</div>
+            <div style="{{ info.exBox }}">
+              <span style="{{ info.qSt }}"><sc-for list="{{ info.exParts }}" as="x" hint-placeholder-count="1"><span style="{{ x.st }}">{{ x.t }}</span></sc-for></span>
+              <span style="{{ info.eqSt }}">=</span>
+              <span style="{{ info.aSt }}">{{ info.exA }}</span>
+            </div>
+            <sc-if value="{{ infoFull }}" hint-placeholder-val="{{ false }}">
+              <div style="margin-top:16px;display:flex;flex-direction:column;gap:12px;text-align:left">
+                <div>
+                  <div style="font-size:12px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:#8391a6">When to use it</div>
+                  <div style="margin-top:4px;font-size:15px;font-weight:500;line-height:1.4;color:#34425a">{{ info.when }}</div>
+                </div>
+                <div>
+                  <div style="font-size:12px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:#8391a6">Sutra</div>
+                  <div style="margin-top:4px;font-size:15px;font-weight:500;line-height:1.4;color:#34425a"><span style="font-weight:700;color:#17233a">{{ info.sutra }}</span>: {{ info.alt }}</div>
+                </div>
+                <div>
+                  <div style="font-size:12px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:#8391a6">How it works</div>
+                  <div style="margin-top:8px;display:flex;flex-direction:column;gap:8px">
+                    <sc-for list="{{ info.stepList }}" as="sp" hint-placeholder-count="3">
+                      <div style="display:flex;align-items:flex-start;gap:10px"><span style="flex-shrink:0;width:24px;height:24px;border-radius:99px;background:#eaf3ff;color:#0a84ff;display:grid;place-items:center;font-family:Nunito,sans-serif;font-size:13px;font-weight:800">{{ sp.n }}</span><span style="font-size:15px;font-weight:500;line-height:1.4;color:#34425a">{{ sp.t }}</span></div>
+                    </sc-for>
+                  </div>
+                </div>
+              </div>
+            </sc-if>
+            <button onClick="{{ closeInfo }}" style="margin:26px auto 0;display:block;min-width:160px;height:50px;padding:0 30px;border-radius:99px;border:0;background:#0a84ff;color:#ffffff;font-size:17px;white-space:nowrap;font-weight:700;cursor:pointer;box-shadow:0 10px 24px rgba(10,132,255,.28);transition:transform 140ms cubic-bezier(.3,.7,.4,1)" style-active="transform:scale(.97)">{{ startText }}</button>
+          </div>
+        </div>
+      </sc-if>
+
+      <div style="position:absolute;left:36px;right:36px;bottom:30px;display:grid;grid-template-columns:56px minmax(0,1fr) auto;align-items:center;gap:20px;z-index:6">
+        <button onClick="{{ back }}" aria-label="Previous step" style="{{ backStyle }}">
+          <svg width="24" height="24" viewBox="0 0 24 24" style="fill:none;stroke:currentColor;stroke-width:2.4;stroke-linecap:round;stroke-linejoin:round"><path d="m14.5 6-6 6 6 6"></path></svg>
+        </button>
+        <div aria-live="polite" aria-label="{{ capAria }}" style="{{ capStyle }}">
+          <sc-for list="{{ cap }}" as="seg" hint-placeholder-count="1"><span style="{{ seg.st }}">{{ seg.t }}</span></sc-for>
+        </div>
+        <div style="display:flex;align-items:center;gap:10px">
+          <button onClick="{{ replay }}" aria-label="Replay this step" style="height:56px;padding:0 18px 0 14px;display:flex;align-items:center;gap:7px;border-radius:99px;border:1px solid #e1e8ef;background:#ffffff;color:#3a4860;font-size:15px;font-weight:600;cursor:pointer;box-shadow:0 4px 12px rgba(23,35,58,.05);transition:transform 140ms" style-active="transform:scale(.95)">
+            <svg width="20" height="20" viewBox="0 0 24 24" style="fill:none;stroke:currentColor;stroke-width:2.3;stroke-linecap:round;stroke-linejoin:round"><path d="M4 12a8 8 0 1 0 2.3-5.7M4 5v5h5"></path></svg>
+            <span>Replay</span>
+          </button>
+          <button onClick="{{ next }}" aria-label="{{ nextAria }}" style="{{ nextStyle }}">
+            <span style="{{ nextLabel }}">{{ nextText }}</span>
+            <svg width="24" height="24" viewBox="0 0 24 24" style="flex-shrink:0;fill:none;stroke:currentColor;stroke-width:2.4;stroke-linecap:round;stroke-linejoin:round"><path d="{{ nextIcon }}"></path></svg>
+            <div style="{{ nextFill }}">
+              <span style="white-space:nowrap">{{ nextText }}</span>
+              <svg width="24" height="24" viewBox="0 0 24 24" style="flex-shrink:0;fill:none;stroke:currentColor;stroke-width:2.4;stroke-linecap:round;stroke-linejoin:round"><path d="{{ nextIcon }}"></path></svg>
+            </div>
+          </button>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;script&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;options&quot;:[&quot;dv&quot;,&quot;rd&quot;,&quot;x11&quot;,&quot;x9&quot;,&quot;m11&quot;,&quot;m101&quot;,&quot;m9&quot;,&quot;m99&quot;,&quot;m999&quot;,&quot;sq5&quot;,&quot;rd&quot;],&quot;default&quot;:&quot;x11&quot;,&quot;tsType&quot;:&quot;string&quot;,&quot;section&quot;:&quot;Lesson&quot;},&quot;startStep&quot;:{&quot;editor&quot;:&quot;int&quot;,&quot;default&quot;:0,&quot;min&quot;:0,&quot;max&quot;:6,&quot;tsType&quot;:&quot;number&quot;,&quot;section&quot;:&quot;Lesson&quot;},&quot;autoplay&quot;:{&quot;editor&quot;:&quot;boolean&quot;,&quot;default&quot;:false,&quot;tsType&quot;:&quot;boolean&quot;,&quot;section&quot;:&quot;Behavior&quot;},&quot;hand&quot;:{&quot;editor&quot;:&quot;boolean&quot;,&quot;default&quot;:true,&quot;tsType&quot;:&quot;boolean&quot;,&quot;section&quot;:&quot;Behavior&quot;},&quot;dim&quot;:{&quot;editor&quot;:&quot;range&quot;,&quot;default&quot;:0.14,&quot;min&quot;:0.05,&quot;max&quot;:0.5,&quot;step&quot;:0.01,&quot;tsType&quot;:&quot;number&quot;,&quot;section&quot;:&quot;Look&quot;},&quot;bezel&quot;:{&quot;editor&quot;:&quot;boolean&quot;,&quot;default&quot;:true,&quot;tsType&quot;:&quot;boolean&quot;,&quot;section&quot;:&quot;Look&quot;}}">const NQ = new URLSearchParams(location.search), NATIVE = NQ.has('native');
+const nativePost = (t) => { try { window.webkit.messageHandlers.vedica.postMessage(t); } catch (e) {} };
+const NATIVE_CONT = NATIVE ? () => nativePost('continue') : null;
+
+const INK = '#17233a', BLUE = '#0a84ff', ORANGE = '#e86f00', GREEN = '#1a9e62', MUTE = '#8391a6';
+const XE = 'cubic-bezier(.55,0,.25,1)', YE = 'cubic-bezier(.25,.9,.3,1.06)', DUR = '820ms', HAND_E = 'cubic-bezier(.45,0,.2,1)';
+const Z = 96;
+const digs = (n) => String(n).split('').map(Number);
+const xsOf = (n, cx, adv) => Array.from({ length: n }, (_, i) => cx + (i - (n - 1) / 2) * adv);
+const K = (P) => (id) => `${P.n}x${P.m}.${id}`;
+
+// ---------- scene toolkit ----------
+function mkScene() {
+  const S = { E: {}, B: {}, A: [], focus: null, hand: null, finale: null, win: false };
+  S.el = (id, t, x, y, o) => (S.E[id] = { t: String(t), x, y, o: 1, s: 1, c: INK, z: Z, w: 900, dl: 0, ...(o || {}) });
+  S.mod = (id, p) => { if (S.E[id]) Object.assign(S.E[id], p); else if (S.B[id]) Object.assign(S.B[id], p); };
+  S.box = (id, x, y, w, h, o) => (S.B[id] = { x, y, w, h, o: 1, s: 1, r: 22, dashed: false, c: '#e1e8ef', fill: '#ffffff', shadow: false, q: '', dl: 0, ...(o || {}) });
+  S.f = (...ids) => { S.focus = (S.focus || []).concat(ids.flat()); };
+  S.arrow = (i, p0, p1, o) => { S.A[i] = { p0, p1, c: BLUE, st: 1, bend: 0.28, dl: 0, ...(o || {}) }; };
+  S.hide = (ids, dy = 26) => ids.forEach(id => { const e = S.E[id]; if (e) Object.assign(e, { o: 0, y: e.y + dy }); });
+  return S;
+}
+function seq(S, items, cx, y, z, o) {
+  const w = (it) => (/^[0-9]$/.test(it.t) ? z * 0.62 : z * 0.6 * it.t.length);
+  const gaps = items.map((it, i) => (i === items.length - 1 ? 0 : (it.g ?? z * 0.24)));
+  const total = items.reduce((a, it, i) => a + w(it) + gaps[i], 0);
+  let x = cx - total / 2; const xs = [];
+  items.forEach((it, i) => {
+    const c = x + w(it) / 2; xs.push(c); x += w(it) + gaps[i];
+    S.el(it.id, it.t, c, y, { z, w: it.op ? 700 : 900, c: it.c || INK, ...(o || {}) });
+  });
+  return xs;
+}
+const numItems = (k, pfx, n, c) => digs(n).map((d, i, a) => ({ id: k(pfx + i), t: String(d), g: i < a.length - 1 ? 0 : undefined, c }));
+function problemRow(S, P, cx, y) {
+  const k = K(P), nI = numItems(k, 'n', P.n), mI = numItems(k, 'm', P.m);
+  const xs = seq(S, [...nI, { id: k('op'), t: '×', op: true }, ...mI], cx, y, Z);
+  const nIds = nI.map(i => i.id), mIds = mI.map(i => i.id);
+  return { nIds, mIds, all: [...nIds, k('op'), ...mIds], x0: xs[0], x1: xs[xs.length - 1] };
+}
+const label = (S, P) => S.el(K(P)('lbl'), `${P.n} × ${P.m}`, 512, 168, { z: 40, c: INK, w: 800 });
+function meet(S, P, ph) {
+  const r = problemRow(S, P, 512, 300);
+  if (ph === 0) S.hide(r.all);
+  if (ph >= 2) { r.mIds.forEach(id => S.mod(id, { c: BLUE })); S.f(r.mIds); S.hand = { k: r.mIds[r.mIds.length - 1] }; }
+  return r;
+}
+// number digits on a working row, multiplier faded, small label on top
+function work(S, P, y) {
+  const r = problemRow(S, P, 512, 300), k = K(P);
+  [k('op'), ...r.mIds].forEach(id => S.mod(id, { o: 0, s: 0.6 }));
+  const xs = xsOf(r.nIds.length, 512, 60);
+  r.nIds.forEach((id, i) => S.mod(id, { x: xs[i], y }));
+  label(S, P);
+  return r;
+}
+const green = (S, ids) => ids.forEach(id => S.mod(id, { c: GREEN }));
+function practiceScene(S, P, pr, SC) {
+  if (SC.pscene) return SC.pscene(S, P, pr);
+  const r = problemRow(S, P, 512, 250), T = SC.tasks && !P.plain ? SC.tasks(P) : null, t = pr.task || 0;
+  if (T && !pr.done && !(pr.ok && t === T.length - 1)) {
+    SC.taskScene(S, P, pr, t);
+    // Guided practice: point the hand at the highlighted number, as the fractions lesson does.
+    if (!S.hand && S.focus) { const h = S.focus.find(id => S.E[id]); if (h) S.hand = { k: h }; }
+  }
+  if (!T && pr.wrong >= 2 && !pr.ok && !pr.again) {
+    r.nIds.forEach(id => S.mod(id, { c: BLUE }));
+    S.f(r.nIds, SC.hint(S, P)); S.hand = { k: r.nIds[r.nIds.length - 1] };
+  }
+  if ((pr.ok && (!T || t === T.length - 1)) || pr.done) { green(S, r.all); S.finale = { x: 512, y: 250, w: r.x1 - r.x0 + 130, h: 150 }; }
+}
+// the trick itself, used by tests
+function trick(n, m) {
+  if (m === 11) { const [a, b] = digs(n), s = a + b; return Number(`${a + (s >= 10 ? 1 : 0)}${s % 10}${b}`); }
+  if (m === 101) return Number(`${n}${n}`);
+  const k = String(m).length, left = n - 1;
+  return Number(`${left}${digs(String(left).padStart(k, '0')).map(d => 9 - d).join('')}`);
+}
+
+// ---------- lesson 1: × 11 and 101 ----------
+const RY = 320, BY = 530, SPL = [416, 608];
+function x11Split(S, P) {
+  const r = work(S, P, RY), k = K(P);
+  r.nIds.forEach((id, i) => S.mod(id, { x: SPL[i] }));
+  S.box(k('gap'), 512, RY, 86, 120, { dashed: true, c: BLUE, fill: 'rgba(10,132,255,.05)' });
+  return r;
+}
+function x11Bubble(S, P, boxO, txtO, dl = 0) {
+  const k = K(P), [a, b] = digs(P.n), s = a + b;
+  S.box(k('bub'), 512, BY, 330, 104, { shadow: true, r: 28, o: boxO });
+  const sI = digs(s).map((d, i, arr) => ({ id: k(arr.length === 2 && i === 0 ? 't' : 'u'), t: String(d), g: i < arr.length - 1 ? 0 : undefined, c: ORANGE }));
+  seq(S, [{ id: k('ba'), t: String(a) }, { id: k('bp'), t: '+', op: true }, { id: k('bb'), t: String(b) }, { id: k('be'), t: '=', op: true }, ...sI], 512, BY, 52, { o: txtO, dl });
+  return { ids: [k('ba'), k('bp'), k('bb'), k('be'), ...sI.map(i => i.id)], rest: [k('ba'), k('bp'), k('bb'), k('be')], u: k('u'), t: sI.length === 2 ? k('t') : null };
+}
+const x11Arrows = (S, st) => {
+  S.arrow(0, [SPL[0] + 8, RY + 60], [458, BY - 60], { st, bend: 0.22 });
+  S.arrow(1, [SPL[1] - 8, RY + 60], [566, BY - 60], { st, bend: -0.22 });
+};
+function x11Drop(S, P, b) {
+  const k = K(P);
+  S.mod(b.u, { x: 512, y: RY, s: Z / 52, dl: 0 });
+  S.mod(k('bub'), { o: 0, s: 0.9 }); b.rest.forEach(id => S.mod(id, { o: 0 }));
+  S.mod(k('gap'), { o: 0, s: 1.1 }); S.A.forEach(a => a && (a.st = 3));
+}
+
+const X11 = {
+  topic: 'Times 11 and 101',
+  sutra: 'Ekadhikena Purvena / Antyayor Dasakepi',
+  practice: [{ n: 23, m: 11 }, { n: 45, m: 101 }, { n: 67, m: 11, plain: true }, { n: 32, m: 101, plain: true }],
+  steps: [
+    { name: 'Meet the problem', times: [0, 500, 1500], end: 2600, P: { n: 32, m: 11 },
+      cap: () => 'Times 11 looks like long work. **Watch this.**', scene: meet },
+    { name: 'Split', times: [0, 450, 1500, 2300], end: 3000, P: { n: 32, m: 11 },
+      cap: () => 'Pull the digits apart. Leave a **gap in the middle**.', sum: (P) => { const [a, b] = digs(P.n); return `Split: ${a} _ ${b}`; },
+      scene: (S, P, ph) => {
+        const r = work(S, P, RY), k = K(P);
+        S.box(k('gap'), 512, RY, 86, 120, { dashed: true, c: BLUE, fill: 'rgba(10,132,255,.05)', o: ph >= 3 ? 1 : 0, s: ph >= 3 ? 1 : 0.8 });
+        if (ph >= 1) { S.f(r.nIds); S.hand = { x: 512, y: RY + 44 }; }
+        if (ph >= 2) r.nIds.forEach((id, i) => S.mod(id, { x: SPL[i] }));
+        if (ph >= 3) S.f(k('gap'));
+      } },
+    { name: 'Add them', times: [0, 450, 1400, 2400], end: 3100, P: { n: 32, m: 11 },
+      cap: (P) => { const [a, b] = digs(P.n); return `Add the two digits. **${a} + ${b} = ${a + b}**.`; }, sum: (P) => { const [a, b] = digs(P.n); return `${a} + ${b} = ${a + b}`; },
+      scene: (S, P, ph) => {
+        const r = x11Split(S, P), k = K(P), b = x11Bubble(S, P, ph >= 2 ? 1 : 0, ph >= 3 ? 1 : 0);
+        if (ph === 1) { S.mod(r.nIds[0], { c: BLUE }); S.f(r.nIds[0], k('gap')); S.hand = { k: r.nIds[0] }; }
+        if (ph >= 2) { r.nIds.forEach(id => S.mod(id, { c: BLUE })); x11Arrows(S, ph >= 3 ? 2 : 1); S.f(r.nIds, k('gap'), k('bub'), b.ids); S.hand = { k: r.nIds[1] }; }
+        if (ph >= 3) S.hand = { x: 512, y: BY + 46 };
+      } },
+    { name: 'Drop it in', times: [0, 400, 1400, 2300], end: 3200, P: { n: 32, m: 11 },
+      cap: (P) => `Drop the ${(digs(P.n)[0] + digs(P.n)[1]) % 10} in the middle. **${P.n * P.m}**.`, hl: GREEN, sum: (P) => `${P.n} × ${P.m} = ${P.n * P.m}`,
+      scene: (S, P, ph) => {
+        const r = x11Split(S, P), k = K(P), b = x11Bubble(S, P, 1, 1); x11Arrows(S, 2);
+        S.f(b.u, k('gap')); S.hand = { k: b.u };
+        if (ph >= 1) S.mod(b.u, { y: BY - 64, s: 1.2 });
+        if (ph >= 2) { x11Drop(S, P, b); S.f(r.nIds); }
+        if (ph >= 3) {
+          const xs = xsOf(3, 512, 60), ids = [r.nIds[0], b.u, r.nIds[1]];
+          ids.forEach((id, i) => S.mod(id, { x: xs[i] })); green(S, ids);
+          S.finale = { x: 512, y: RY, w: 300, h: 170 }; S.focus = null; S.hand = null; S.win = true;
+        }
+      } },
+    { name: 'When it is 10 or more', times: [0, 450, 1500, 2500, 3400], end: 4200, P: { n: 78, m: 11 },
+      cap: (P) => `If the sum is 10 or more, carry the 1 to the left. **${P.n * P.m}**.`, hl: GREEN, group: 'Case 2: sum 10 or more', sum: (P) => { const [a, b] = digs(P.n); return [`${a} + ${b} = ${a + b}`, `Carry 1: ${P.n * P.m}`]; },
+      scene: (S, P, ph) => {
+        const k = K(P), r = ph >= 1 ? x11Split(S, P) : work(S, P, RY), [a] = digs(P.n);
+        if (ph === 0) S.hide([...r.nIds, k('lbl')]);
+        S.el(k('nb'), a + 1, SPL[0], RY, { o: 0, s: 0.6, c: ORANGE });
+        const b = x11Bubble(S, P, ph >= 1 ? 1 : 0, ph >= 1 ? 1 : 0, ph === 1 ? 700 : 0);
+        if (ph === 1) { r.nIds.forEach(id => S.mod(id, { c: BLUE })); x11Arrows(S, 1); S.f(r.nIds, k('gap'), k('bub'), b.ids); S.hand = { x: 512, y: BY + 46 }; }
+        if (ph >= 2) {
+          x11Arrows(S, 2);
+          S.mod(b.t, { x: SPL[0], y: RY, s: 1.4, o: 0, od: 640 });
+          S.mod(r.nIds[0], { o: 0, s: 0.7, dl: 600 });
+          S.mod(k('nb'), { o: 1, s: 1, dl: 640 });
+          S.f(b.t, r.nIds[0], k('nb'), b.u, k('gap')); S.hand = { k: r.nIds[0] };
+        }
+        if (ph >= 3) { x11Drop(S, P, b); S.f(k('nb'), b.u, r.nIds[1]); S.hand = { k: b.u }; }
+        if (ph >= 4) {
+          const xs = xsOf(3, 512, 60), ids = [k('nb'), b.u, r.nIds[1]];
+          ids.forEach((id, i) => S.mod(id, { x: xs[i], dl: 0 })); S.mod(r.nIds[0], { x: xs[0] }); S.mod(b.t, { x: xs[0] });
+          green(S, ids); S.finale = { x: 512, y: RY, w: 300, h: 170 }; S.focus = null; S.hand = null; S.win = true;
+        }
+      } },
+    { name: 'Times 101', times: [0, 450, 1500, 2400], end: 3200, P: { n: 32, m: 101 },
+      cap: (P) => `For 101, just write the 2-digit number twice. **${P.n * P.m}**.`, hl: GREEN, sum: (P) => `${P.n} × ${P.m} = ${P.n * P.m}`,
+      scene: (S, P, ph) => {
+        const k = K(P), r = work(S, P, RY), nd = digs(P.n), x4 = xsOf(4, 512, 60), g = nd.map((_, i) => k('g' + i));
+        if (ph === 0) S.hide([...r.nIds, k('lbl')]);
+        nd.forEach((d, i) => S.el(g[i], d, S.E[r.nIds[i]].x, RY, { o: 0 }));
+        if (ph >= 1) { r.nIds.forEach(id => S.mod(id, { c: BLUE })); S.f(r.nIds); S.hand = { k: r.nIds[1] }; }
+        if (ph >= 2) {
+          r.nIds.forEach((id, i) => S.mod(id, { x: x4[i], c: INK }));
+          g.forEach((id, i) => S.mod(id, { x: x4[i + 2], y: RY - 52, o: 0.4, c: BLUE }));
+          S.f(r.nIds, g); S.hand = { k: g[1] };
+        }
+        if (ph >= 3) {
+          g.forEach(id => S.mod(id, { y: RY, o: 1 })); green(S, [...r.nIds, ...g]);
+          S.finale = { x: 512, y: RY, w: 360, h: 170 }; S.focus = null; S.hand = null; S.win = true;
+        }
+      } },
+    { name: 'Your turn', times: [0, 500], end: 700 },
+  ],
+  hint: (S, P) => {
+    const n = String(P.n * P.m).length, xs = xsOf(n, 512, 74);
+    return xs.map((x, i) => { const id = K(P)('hs' + i); S.box(id, x, 362, 62, 62, { dashed: true, c: '#cbd7e3', fill: 'transparent', q: '?', r: 18 }); return id; });
+  },
+  hintText: (P) => {
+    const [a, b] = digs(P.n);
+    if (P.m === 101) return 'Close! Just write the number twice, side by side.';
+    if (a + b >= 10) return 'Close! If the middle sum is 10 or more, carry the 1 to the left.';
+    return 'Close! Add the two digits first, then put the answer in the middle.';
+  },
+  replayFor: (P) => { const [a, b] = digs(P.n); return P.m === 101 ? [5] : a + b >= 10 ? [4] : [1, 2, 3]; },
+  random: () => {
+    for (;;) {
+      const a = 1 + Math.floor(Math.random() * 8), b = 1 + Math.floor(Math.random() * 9);
+      if (a + b >= 10 && a === 9) continue;
+      return { n: a * 10 + b, m: Math.random() < 0.3 ? 101 : 11 };
+    }
+  },
+};
+
+// ---------- lesson 2: × 9, 99, 999 ----------
+const WY = 270, AY = 430, CY = 616;
+function x9Layout(P) {
+  const k = digs(P.n).length, adv = k >= 3 ? 54 : 60, sc = k >= 3 ? 0.88 : 1, G = 56, half = k * adv;
+  return { k, adv, sc, L: xsOf(k, 512 - G / 2 - half / 2, adv), R: xsOf(k, 512 + G / 2 + half / 2, adv), J: xsOf(2 * k, 512, adv) };
+}
+function x9Minus(S, P, r, on) {
+  const k = K(P), last = r.nIds[r.nIds.length - 1], lx = S.E[last].x;
+  S.el(k('mn'), '−1', lx + 36, WY - 130, { z: 40, c: ORANGE, o: 0 });
+  S.el(k('nb'), digs(P.n - 1).slice(-1)[0], lx, WY, { o: 0, s: 0.6, c: ORANGE });
+  if (on) { S.mod(k('mn'), { y: WY - 78, o: 1 }); S.mod(last, { o: 0, s: 0.7, dl: 500 }); S.mod(k('nb'), { o: 1, s: 1, dl: 540 }); }
+}
+function x9Left(S, P, r, lay, on) {
+  const k = K(P), ld = digs(P.n - 1), last = ld.length - 1;
+  if (on) [...r.nIds, k('nb')].forEach(id => S.mod(id, { o: 0 }));
+  ld.forEach((d, i) => {
+    const src = S.E[i === last ? k('nb') : r.nIds[i]];
+    S.el(k('L' + i), d, on ? lay.L[i] : src.x, on ? AY : WY, { o: on ? 1 : 0, s: on ? lay.sc : 1 });
+    S.box(k('rs' + i), lay.R[i], AY, Math.round(58 * lay.sc), Math.round(84 * lay.sc), { dashed: true, c: '#cbd7e3', fill: 'transparent', q: '?', r: 18, o: on ? 1 : 0 });
+  });
+  return ld.map((_, i) => k('L' + i));
+}
+function x9Base(S, P) {
+  const r = work(S, P, WY), lay = x9Layout(P), k = K(P);
+  x9Minus(S, P, r, true); S.mod(k('mn'), { o: 0 });
+  const Ls = x9Left(S, P, r, lay, true);
+  return { r, lay, Ls };
+}
+function x9Partners(S, P, lay, placed) {
+  const k = K(P);
+  return digs(P.n - 1).map((d, i) => { const id = k('R' + i); S.el(id, 9 - d, lay.R[i], AY, { z: 48, s: 2 * lay.sc, c: ORANGE }); if (placed) S.mod(k('rs' + i), { o: 0 }); return id; });
+}
+function x9Join(S, P, lay, ids, ph) {
+  if (ph >= 1) { ids.forEach((id, j) => S.mod(id, { x: lay.J[j] })); S.f(ids); }
+  if (ph >= 2) { green(S, ids); S.finale = { x: 512, y: AY, w: ids.length * lay.adv + 110, h: 160 }; S.focus = null; S.hand = null; S.win = true; }
+}
+
+const X9 = {
+  topic: 'Times 9, 99, 999',
+  sutra: 'Ekanyunena Purvena: by one less than the previous one',
+  practice: [{ n: 36, m: 99 }, { n: 124, m: 999 }, { n: 58, m: 99, plain: true }, { n: 463, m: 999, plain: true }],
+  steps: [
+    { name: 'Meet the problem', times: [0, 500, 1500], end: 2600, P: { n: 47, m: 99 },
+      cap: () => 'Times 99 sounds scary. **It is not.**', scene: meet },
+    { name: 'Take 1 away', times: [0, 800, 2200, 3700, 5200], end: 6200, P: { n: 47, m: 99 },
+      cap: (P) => `Take 1 away from ${P.n}. That is the first part: **${P.n - 1}**.`, hl: ORANGE, sum: (P) => `${P.n} − 1 = ${P.n - 1}`,
+      scene: (S, P, ph) => {
+        const r = work(S, P, WY), lay = x9Layout(P), k = K(P), last = r.nIds[r.nIds.length - 1], ld = digs(P.n - 1);
+        x9Minus(S, P, r, false);
+        const card = ph >= 1 && ph < 4;
+        S.box(k('mb'), 512, CY, lay.k >= 3 ? 420 : 340, 104, { shadow: true, r: 28, o: card ? 1 : 0, s: card ? 1 : 0.9 });
+        const res = ld.map((_, i) => k('mr' + i));
+        const xs = seq(S, [{ id: k('ma'), t: String(P.n) }, { id: k('mm'), t: '−', op: true }, { id: k('m1'), t: '1', c: ORANGE }, { id: k('me'), t: '=', op: true },
+          ...ld.map((d, i) => ({ id: res[i], t: String(d), c: ORANGE, g: i < ld.length - 1 ? 0 : undefined }))], 512, CY, 52, { o: card ? 1 : 0 });
+        [k('mm'), k('m1'), k('me')].forEach(id => S.mod(id, { o: ph >= 2 && card ? 1 : 0 }));
+        res.forEach(id => S.mod(id, { o: ph >= 3 && card ? 1 : 0 }));
+        const Ls = x9Left(S, P, r, lay, ph >= 4);
+        if (ph >= 1 && ph < 4) { const mx = (S.E[r.nIds[0]].x + S.E[last].x) / 2; S.arrow(0, [mx, WY + 60], [mx, CY - 62], { st: ph >= 2 ? 2 : 1, bend: 0 }); }
+        if (ph === 0) { r.nIds.forEach(id => S.mod(id, { c: BLUE })); S.f(r.nIds); S.hand = { k: last }; }
+        if (ph === 1) { S.mod(last, { c: ORANGE }); S.f(last, k('mb'), k('ma')); S.hand = { k: last }; }
+        if (ph === 2) { S.mod(last, { c: ORANGE }); S.f(k('mb'), k('ma'), k('mm'), k('m1'), k('me')); S.hand = { k: k('m1') }; }
+        if (ph === 3) { S.f(k('mb'), k('ma'), k('mm'), k('m1'), k('me'), res); S.hand = { k: res[res.length - 1] }; }
+        if (ph >= 4) { S.f(Ls, lay.R.map((_, i) => k('rs' + i))); S.hand = { k: Ls[Ls.length - 1] }; }
+      } },
+    { name: 'Find the partners', times: [0, 800, 2400, 4000, 5600, 7000], end: 7800, P: { n: 47, m: 99 },
+      cap: (P) => 'Partners make 9. ' + digs(P.n - 1).map(d => `**9 − ${d} = ${9 - d}.**`).join(' '), hl: ORANGE, sum: (P) => digs(P.n - 1).map(d => `9 − ${d} = ${9 - d}`),
+      scene: (S, P, ph) => {
+        const { lay, Ls } = x9Base(S, P), k = K(P);
+        digs(P.n - 1).forEach((d, i) => {
+          const a = 1 + 2 * i, b = a + 1; if (ph < a) return;
+          const parts = [k(`c${i}a`), k(`c${i}p`), k('R' + i), k(`c${i}e`), k(`c${i}n`)];
+          S.box(k('cb' + i), 512, CY, 300, 92, { shadow: true, r: 28 });
+          const xs = seq(S, [{ id: parts[4], t: '9' }, { id: parts[1], t: '−', op: true }, { id: parts[0], t: String(d), c: BLUE }, { id: parts[3], t: '=', op: true }, { id: parts[2], t: String(9 - d), c: ORANGE }], 512, CY, 48);
+          const arr = (st) => S.arrow(i % 3, [lay.L[i], AY + 54], [xs[2], CY - 46], { st, bend: 0.04 });
+          if (ph >= b) { S.mod(parts[2], { x: lay.R[i], y: AY, s: 2 * lay.sc }); S.mod(k('rs' + i), { o: 0 }); }
+          if (ph >= a + 2) { S.mod(k('cb' + i), { o: 0, s: 0.9 }); [0, 1, 3, 4].forEach(j => S.mod(parts[j], { o: 0 })); }
+          if (ph === a) { S.mod(Ls[i], { c: BLUE }); S.f(Ls[i], k('cb' + i), parts); arr(1); S.hand = { k: Ls[i] }; }
+          if (ph === b) { S.f(parts[2], Ls[i]); arr(2); S.hand = { k: parts[2] }; }
+        });
+      } },
+    { name: 'Join them', times: [0, 900, 2400], end: 3400, P: { n: 47, m: 99 },
+      cap: (P) => `Put them side by side. **${P.n * P.m}**.`, hl: GREEN, sum: (P) => `${P.n} × ${P.m} = ${P.n * P.m}`,
+      scene: (S, P, ph) => {
+        const { lay, Ls } = x9Base(S, P);
+        x9Join(S, P, lay, [...Ls, ...x9Partners(S, P, lay, true)], ph);
+      } },
+    { name: 'Bigger numbers', times: [0, 450, 1500, 2600, 3300], end: 3900, P: { n: 235, m: 999 },
+      cap: () => 'For 999 it is the same idea, with **three digits on each side**.', sum: (P) => [`${P.n} − 1 = ${P.n - 1}`, `Partners: ${digs(P.n - 1).map(d => 9 - d).join('')}`, `Answer: ${P.n * P.m}`],
+      scene: (S, P, ph) => {
+        const r = work(S, P, WY), lay = x9Layout(P), k = K(P);
+        if (ph === 0) S.hide([...r.nIds, k('lbl')]);
+        x9Minus(S, P, r, ph >= 1);
+        if (ph === 1) { S.f(r.nIds, k('nb'), k('mn')); S.hand = { k: k('nb') }; }
+        const Ls = x9Left(S, P, r, lay, ph >= 2);
+        if (ph >= 2) { S.mod(k('mn'), { o: 0 }); S.f(Ls); }
+        const Rs = digs(P.n - 1).map((d, i) => {
+          const id = k('R' + i), dl = i * 300;
+          S.el(id, 9 - d, lay.R[i], AY, { z: 48, s: 0.5, o: 0, c: ORANGE });
+          if (ph >= 3) {
+            S.mod(id, { x: lay.R[i], s: 2 * lay.sc, o: 1, dl }); S.mod(k('rs' + i), { o: 0, dl: dl + 400 });
+            S.arrow(i, [lay.L[i], AY - 56], [lay.R[i], AY - 56], { st: ph >= 4 ? 3 : 1, bend: -0.32, c: ORANGE, dl });
+          }
+          return id;
+        });
+        if (ph === 3) { S.f(Ls, Rs); S.hand = { k: Rs[2] }; }
+        if (ph >= 4) x9Join(S, P, lay, [...Ls, ...Rs], 2);
+      } },
+    { name: 'Why it works', times: [0, 1300, 2700, 4100], end: 5200, P: { n: 47, m: 99 },
+      cap: () => '99 is just 100 take away 1. So 47 × 99 is **4700 minus 47**. Same answer.', hl: GREEN, sum: (P) => `${P.n * (P.m + 1)} − ${P.n} = ${P.n * P.m}`,
+      scene: (S, P, ph) => {
+        const k = K(P), lines = [`${P.n} × ${P.m}`, `${P.n} × ${P.m + 1} − ${P.n}`, `${P.n * (P.m + 1)} − ${P.n}`, `${P.n * P.m}`];
+        lines.forEach((t, i) => S.el(k('w' + i), t, 512, 330 + (i < ph ? -44 : i > ph ? 44 : 0), { z: 72, o: i === ph ? 1 : 0 }));
+        if (ph === 3) { S.mod(k('w3'), { c: GREEN }); S.finale = { x: 512, y: 330, w: 300, h: 150 }; S.f(k('w3')); S.hand = { k: k('w3') }; S.win = true; }
+      } },
+    { name: 'Your turn', times: [0, 500], end: 700 },
+  ],
+  hint: (S, P) => {
+    const ld = digs(P.n - 1), xs = xsOf(ld.length, 512, 200);
+    return ld.map((d, i) => { const id = K(P)('hc' + i); S.box(id, xs[i], 362, 180, 64, { r: 20, shadow: true, q: `9 − ${d} = ?`, qz: 26, qc: INK }); return id; });
+  },
+  hintText: () => 'Close! Take 1 away from the number first. That is the left part.',
+  replayFor: (P) => (String(P.n).length >= 3 ? [4] : [1, 2, 3]),
+  random: () => {
+    const k = 1 + Math.floor(Math.random() * 3);
+    for (;;) {
+      const n = Number(Array.from({ length: k }, () => 1 + Math.floor(Math.random() * 9)).join(''));
+      if (n >= 2) return { n, m: 10 ** k - 1 };
+    }
+  },
+};
+
+const pick = (steps, idx, P, over) => idx.map(i => { const s = steps[i]; return s.P ? { ...s, P, ...((over || {})[i] || {}) } : s; });
+const dN = (k) => Number(Array.from({ length: k }, () => 1 + Math.floor(Math.random() * 9)).join(''));
+const whyCap = { cap: (P) => `${P.m} is just ${P.m + 1} take away 1. So ${P.n} × ${P.m} is **${P.n * (P.m + 1)} minus ${P.n}**. Same answer.` };
+// guided practice: one small sum at a time, in a card under the problem
+const exTaskScene = (SC) => (S, P, pr, t) => {
+  const T = (SC.tasks(P) || [])[t], k = K(P);
+  if (!T || !T.ex) return;
+  if (T.d != null) S.mod(k('n' + T.d), { c: BLUE });
+  S.box(k('tb' + t), 512, 368, Math.max(280, T.ex.join(' ').length * 30 + 60), 84, { shadow: true, r: 26 });
+  seq(S, T.ex.map((x, i) => ({ id: k(`te${t}_${i}`), t: x, op: i === 1 })), 512, 368, 46);
+  S.f(T.d != null ? k('n' + T.d) : [], k('tb' + t), T.ex.map((_, i) => k(`te${t}_${i}`)));
+};
+const taskHintOf = (SC) => (P, t) => { const T = SC.tasks(P); return T && T[t] ? T[t].hint : SC.hintText(P); };
+X11.tasks = (P) => {
+  const [a, b] = digs(P.n), s = a + b;
+  if (P.m === 101) {
+    return [
+      { cap: `Your turn. Write **${P.n}** twice: ${P.n}, then ${P.n} again. What is **${P.n} × 101**?`, q: `${P.n} × 101`, ans: P.n * 101, hint: `Close! Write ${P.n}, then ${P.n} again right after it.` },
+    ];
+  }
+  const out = [{ cap: `Your turn: ${P.n} × 11. Add the digits: **${a} + ${b}**.`, q: `${a} + ${b}`, ans: s, ex: [String(a), '+', String(b)], hint: 'Close! Just add the two digits.' }];
+  if (s >= 10) out.push({ cap: `${s} is 10 or more, so this is **Case 2**. Carry the 1: **${a} + 1**.`, q: `${a} + 1`, ans: a + 1, d: 0, ex: [String(a), '+', '1'], hint: 'Close! Add the carried 1 to the front digit.' });
+  out.push({ cap: s >= 10 ? `Put it together. What is **${P.n} × 11**?` : `${s} is below 10, so this is **Case 1**. Put it together. What is **${P.n} × 11**?`, q: `${P.n} × 11`, ans: P.n * 11, hint: s >= 10 ? `Close! ${a + 1}, then ${s % 10} in the middle, then ${b}.` : `Close! ${a}, then ${s} in the middle, then ${b}.` });
+  return out;
+};
+X11.taskScene = exTaskScene(X11);
+X9.tasks = (P) => {
+  const L = P.n - 1, ld = digs(String(L).padStart(String(P.m).length, '0'));
+  return [
+    { cap: `Your turn. Take 1 away: **${P.n} − 1**.`, q: `${P.n} − 1`, ans: L, ex: [String(P.n), '−', '1'], hint: 'Close! Just count back one.' },
+    ...ld.map(d => ({ cap: `Find the partner that makes 9: **9 − ${d}**.`, q: `9 − ${d}`, ans: 9 - d, ex: ['9', '−', String(d)], hint: 'Close! Which digit makes 9?' })),
+    { cap: `Put it together. What is **${P.n} × ${P.m}**?`, q: `${P.n} × ${P.m}`, ans: P.n * P.m, hint: `Close! ${L}, then the partners: ${ld.map(d => 9 - d).join('')}.` },
+  ];
+};
+X9.taskScene = exTaskScene(X9);
+X9.taskHint = taskHintOf(X9);
+X11.taskHint = taskHintOf(X11);
+X11.practice = [{ n: 23, m: 11 }, { n: 45, m: 101 }, { n: 67, m: 11, plain: true }, { n: 32, m: 101, plain: true }];
+const CASE1 = 'Case 1: digits add to less than 10', CASE2 = 'Case 2: digits add to 10 or more';
+[1, 2, 3].forEach(i => { X11.steps[i] = { ...X11.steps[i], group: CASE1 }; });
+const M11 = { ...X11, topic: 'Times 11', practice: [{ n: 23, m: 11 }, { n: 67, m: 11 }, { n: 85, m: 11, plain: true }, { n: 42, m: 11, plain: true }],
+  steps: [
+    ...pick(X11.steps, [1, 2, 3], { n: 32, m: 11 }, { 1: { cap: () => 'Times 11 has **two cases**. Case 1: the two digits add up to **less than 10**, like 32. Pull the digits apart and leave a gap.' } }).map(s => ({ ...s, group: CASE1 })),
+    ...pick(X11.steps, [1, 2, 4], { n: 78, m: 11 }, { 1: { cap: () => 'Case 2: the two digits add up to **10 or more**, like 78. Pull the digits apart again.' },
+      4: { name: 'Carry the 1', cap: () => '15 is too big. Write **5**, carry **1**: 7 + 1 = 8. **858**.', sum: (P) => `Carry 1: ${P.n * P.m}` } }).map(s => ({ ...s, group: CASE2 })),
+    X11.steps[6],
+  ],
+  replayFor: (P) => { const [a, b] = digs(P.n); return a + b >= 10 ? [3, 4, 5] : [0, 1, 2]; },
+  random: () => ({ n: (1 + Math.floor(Math.random() * 8)) * 10 + 1 + Math.floor(Math.random() * 9), m: 11 }) };
+const M101 = { ...X11, topic: 'Times 101', practice: [{ n: 45, m: 101 }, { n: 23, m: 101 }, { n: 78, m: 101, plain: true }, { n: 56, m: 101, plain: true }],
+  steps: pick(X11.steps, [0, 5, 6], { n: 32, m: 101 }, { 0: { cap: () => 'This trick is for **2-digit numbers** times 101. It looks like long work. **Watch this.**' } }),
+  replayFor: () => [1], random: () => ({ n: 10 + Math.floor(Math.random() * 90), m: 101 }) };
+function tenStep(S, P, ph, from, to, done) {
+  const k = K(P); label(S, P);
+  S.el(k('tf'), from, 512, ph >= 1 ? 262 : 340, { z: ph >= 1 ? 46 : 72, c: ph >= 1 ? MUTE : INK });
+  S.el(k('tt'), to, 512, 372, { z: 72, o: ph >= 1 ? 1 : 0, s: ph >= 1 ? 1 : 0.7, c: done ? GREEN : INK });
+  if (ph === 0) { S.f(k('tf')); S.hand = { k: k('tf') }; }
+  if (ph >= 1) { S.f(k('tf'), k('tt')); S.hand = { k: k('tt') }; }
+  if (done && ph >= 2) { S.finale = { x: 512, y: 372, w: 340, h: 150 }; S.focus = null; S.hand = null; S.win = true; }
+}
+const v9 = (P) => { const [a, b] = digs(P.n); return { a, b, L: P.n - (a + 1), R: 10 - b }; };
+function m9Front(S, P, ph) {
+  const r = work(S, P, RY), k = K(P), { a } = v9(P), src = S.E[r.nIds[0]];
+  S.mod(r.nIds[0], { c: BLUE });
+  S.box(k('bub'), 512, BY, 330, 104, { shadow: true, r: 28, o: ph >= 1 ? 1 : 0 });
+  const xs = seq(S, [{ id: k('fa'), t: String(a), c: BLUE }, { id: k('fp'), t: '+', op: true }, { id: k('f1'), t: '1' }, { id: k('fe'), t: '=', op: true }, { id: k('fr'), t: String(a + 1), c: ORANGE }], 512, BY, 52);
+  if (ph < 1) S.mod(k('fa'), { x: src.x, y: RY, o: 0, s: Z / 52 });
+  [k('fp'), k('f1'), k('fe')].forEach(id => S.mod(id, { o: ph >= 2 ? 1 : 0 }));
+  S.mod(k('fr'), { o: ph >= 3 ? 1 : 0 });
+  if (ph >= 1) S.arrow(0, [src.x, RY + 60], [xs[0], BY - 60], { st: ph >= 2 ? 2 : 1, bend: 0.22 });
+  if (ph === 0) { S.f(r.nIds[0]); S.hand = { k: r.nIds[0] }; }
+  if (ph === 1) { S.f(r.nIds[0], k('fa'), k('bub')); S.hand = { k: k('fa') }; }
+  if (ph === 2) { S.f(k('bub'), k('fa'), k('fp'), k('f1'), k('fe')); S.hand = { k: k('f1') }; }
+  if (ph >= 3) { S.f(k('bub'), k('fa'), k('fp'), k('f1'), k('fe'), k('fr')); S.hand = { k: k('fr') }; }
+}
+const m9Steps = (P) => [
+    { name: 'One more than the front', times: [0, 700, 1700, 2600], end: 3400, P, hl: ORANGE,
+      cap: (P) => { const { a } = v9(P); return `Look at the front digit, ${a}. One more than it: **${a} + 1 = ${a + 1}**.`; }, sum: (P) => { const { a } = v9(P); return `${a} + 1 = ${a + 1}`; },
+      scene: m9Front },
+    { name: 'Take it away', times: [0, 900, 1900], end: 2700, P,
+      cap: (P) => { const { a, L } = v9(P); return `Take ${a + 1} away: **${P.n} − ${a + 1} = ${L}**.`; }, sum: (P) => { const { a, L } = v9(P); return `${P.n} − ${a + 1} = ${L}`; },
+      scene: (S, P, ph) => { const { a, L } = v9(P); tenStep(S, P, ph, `${P.n} − ${a + 1}`, `${L}`); } },
+    { name: 'Last digit from 10', times: [0, 900, 1900], end: 2700, P, hl: ORANGE,
+      cap: (P) => { const { b, R } = v9(P); return `Now the back: the last digit from 10. **10 − ${b} = ${R}**.`; }, sum: (P) => { const { b, R } = v9(P); return `10 − ${b} = ${R}`; },
+      scene: (S, P, ph) => { const { b, R } = v9(P); tenStep(S, P, ph, `10 − ${b}`, `${R}`); } },
+    { name: 'Join them', times: [0, 900, 1900], end: 2700, P, hl: GREEN,
+      cap: (P) => { const { L, R } = v9(P); return `Put the two parts side by side. ${L} and ${R} make **${P.n * 9}**.`; }, sum: (P) => `Answer: ${P.n * 9}`,
+      scene: (S, P, ph) => { const { L, R } = v9(P); tenStep(S, P, ph, `${L}  |  ${R}`, `${P.n * 9}`, true); } },
+];
+const M9 = { ...X9, topic: 'Times 9', sutra: 'Ekanyunena Purvena and Nikhilam', practice: [{ n: 36, m: 9 }, { n: 58, m: 9 }, { n: 24, m: 9, plain: true }, { n: 73, m: 9, plain: true }],
+  steps: [...m9Steps({ n: 47, m: 9 }), ...m9Steps({ n: 83, m: 9 }), { name: 'Your turn', times: [0, 500], end: 700 }],
+  tasks: (P) => {
+    const { a, b, L, R } = v9(P);
+    return [
+      { cap: `Your turn. One more than the front digit: **${a} + 1**.`, q: `${a} + 1`, ans: a + 1, d: 0, ex: [String(a), '+', '1'], hint: 'Close! Just add 1 to the front digit.' },
+      { cap: `Take it away from ${P.n}: **${P.n} − ${a + 1}**.`, q: `${P.n} − ${a + 1}`, ans: L, ex: [String(P.n), '−', String(a + 1)], hint: `Close! Count back ${a + 1} from ${P.n}.` },
+      { cap: `Now the last digit from 10: **10 − ${b}**.`, q: `10 − ${b}`, ans: R, d: 1, ex: ['10', '−', String(b)], hint: 'Close! What makes 10 with the last digit?' },
+      { cap: `Put it together. What is **${P.n} × 9**?`, q: `${P.n} × 9`, ans: P.n * 9, hint: `Close! ${L}, then ${R}.` },
+    ];
+  },
+  hint: (S, P) => { const { a, b } = v9(P), k = K(P);
+    S.box(k('hc0'), 400, 362, 220, 64, { r: 20, shadow: true, q: `${P.n} − ${a + 1} = ?`, qz: 26, qc: INK });
+    S.box(k('hc1'), 640, 362, 160, 64, { r: 20, shadow: true, q: `10 − ${b} = ?`, qz: 26, qc: ORANGE });
+    return [k('hc0'), k('hc1')]; },
+  hintText: () => 'Close! Front: take away one more than the front digit. Back: last digit from 10.',
+  replayFor: (P, t) => [[0], [1], [2], [0, 1, 2, 3]][t] || [0, 1, 2, 3], random: () => ({ n: dN(2), m: 9 }) };
+M9.taskScene = exTaskScene(M9);
+M9.taskHint = taskHintOf(M9);
+// three partners need two more phases than two
+const P3 = { times: [0, 800, 2400, 4000, 5600, 7200, 8800, 10200], end: 11000 };
+const M99 = { ...X9, topic: 'Times 99', practice: [{ n: 36, m: 99 }, { n: 58, m: 99 }, { n: 23, m: 99, plain: true }, { n: 71, m: 99, plain: true }],
+  steps: pick(X9.steps, [1, 2, 3, 6], { n: 47, m: 99 }),
+  replayFor: () => [0, 1, 2], random: () => ({ n: dN(2), m: 99 }) };
+const M999 = { ...X9, topic: 'Times 999', practice: [{ n: 124, m: 999 }, { n: 356, m: 999 }, { n: 812, m: 999, plain: true }, { n: 463, m: 999, plain: true }],
+  steps: pick(X9.steps, [1, 2, 3, 6], { n: 235, m: 999 }, { 2: P3 }),
+  replayFor: () => [0, 1, 2], random: () => ({ n: dN(3), m: 999 }) };
+// ---------- squaring numbers ending in 5 ----------
+const sqA = (P) => Math.floor(P.n / 10);
+function sqBubble(S, P, boxO, txtO, resO) {
+  const k = K(P), a = sqA(P), b = a + 1;
+  S.box(k('bub'), 512, BY, 330, 104, { shadow: true, r: 28, o: boxO });
+  const pI = digs(a * b).map((d, i, arr) => ({ id: k('p' + i), t: String(d), g: i < arr.length - 1 ? 0 : undefined, c: ORANGE }));
+  const xs = seq(S, [{ id: k('ba'), t: String(a) }, { id: k('bx'), t: '×', op: true }, { id: k('bb'), t: String(b) }, { id: k('be'), t: '=', op: true }, ...pI], 512, BY, 52, { o: txtO });
+  pI.forEach(p => S.mod(p.id, { o: resO }));
+  return { xs, pIds: pI.map(p => p.id), rest: [k('ba'), k('bx'), k('bb'), k('be')] };
+}
+function sqPlace(S, P, ph) {
+  const r = work(S, P, RY), k = K(P), bb = sqBubble(S, P, 1, 1, 1);
+  S.mod(r.nIds[0], { c: BLUE }); S.mod(r.nIds[1], { o: 0.25 });
+  const J = xsOf(String(P.n * P.n).length, 512, 60), pl = bb.pIds.length;
+  S.el(k('t2'), 2, J[pl], RY, { o: 0, s: 0.6, c: ORANGE });
+  if (ph >= 1) {
+    bb.pIds.forEach((id, i) => S.mod(id, { x: J[i], y: RY, s: Z / 52 }));
+    S.mod(k('bub'), { o: 0, s: 0.9 }); bb.rest.forEach(id => S.mod(id, { o: 0 })); S.mod(r.nIds[0], { o: 0 });
+    S.f(bb.pIds); S.hand = { k: bb.pIds[pl - 1] };
+  }
+  if (ph >= 2) {
+    S.mod(k('t2'), { o: 1, s: 1 }); S.mod(r.nIds[1], { x: J[pl + 1], o: 1, c: ORANGE });
+    S.f(k('t2'), r.nIds[1]); S.hand = { k: k('t2') };
+  }
+  return { ids: [...bb.pIds, k('t2'), r.nIds[1]], pIds: bb.pIds, w: J.length * 60 + 110 };
+}
+function sqSucc(S, P, boxO, txtO, resO) {
+  const k = K(P), a = sqA(P);
+  S.box(k('sbub'), 512, BY, 330, 104, { shadow: true, r: 28, o: boxO });
+  const rI = digs(a + 1).map((d, i, arr) => ({ id: k('sr' + i), t: String(d), g: i < arr.length - 1 ? 0 : undefined, c: ORANGE }));
+  const xs = seq(S, [{ id: k('sa'), t: String(a) }, { id: k('sp'), t: '+', op: true }, { id: k('s1'), t: '1' }, { id: k('se'), t: '=', op: true }, ...rI], 512, BY, 52, { o: txtO });
+  rI.forEach(p => S.mod(p.id, { o: resO }));
+  return { xs, res: rI.map(p => p.id), rest: [k('sa'), k('sp'), k('s1'), k('se')] };
+}
+const SQ5 = {
+  topic: '2-digit squares ending in 5',
+  sutra: 'Ekadhikena Purvena: by one more than the previous one',
+  practice: [{ n: 25, m: 25 }, { n: 65, m: 65 }], // the 2 on-your-own problems are on the Practice time screen
+  steps: [
+    { name: 'Meet the problem', times: [0, 500, 1500], end: 2600, P: { n: 35, m: 35 },
+      cap: () => 'Squaring means a number times itself. **Watch this.**', scene: meet },
+    { name: 'Look in front of the 5', times: [0, 450, 1400], end: 2300, P: { n: 35, m: 35 },
+      cap: (P) => `Leave the 5 for a moment. Look at the digit in front: **${sqA(P)}**.`, sum: (P) => `In front: ${sqA(P)}`,
+      scene: (S, P, ph) => {
+        const r = work(S, P, RY);
+        if (ph >= 1) { S.mod(r.nIds[0], { c: BLUE }); S.f(r.nIds[0]); S.hand = { k: r.nIds[0] }; }
+        if (ph >= 2) S.mod(r.nIds[1], { o: 0.25 });
+      } },
+    { name: 'Find the successor', times: [0, 450, 1400, 2300], end: 3000, P: { n: 35, m: 35 },
+      cap: (P) => { const a = sqA(P); return `Find its successor, the number just after it. Add 1: **${a} + 1 = ${a + 1}**.`; }, hl: ORANGE, sum: (P) => `${sqA(P)} + 1 = ${sqA(P) + 1}`,
+      scene: (S, P, ph) => {
+        const r = work(S, P, RY), k = K(P);
+        S.mod(r.nIds[0], { c: BLUE }); S.mod(r.nIds[1], { o: 0.25 });
+        const sb = sqSucc(S, P, ph >= 1 ? 1 : 0, ph >= 1 ? 1 : 0, ph >= 2 ? 1 : 0);
+        if (ph >= 1) S.arrow(0, [S.E[r.nIds[0]].x, RY + 52], [sb.xs[0] - 6, BY - 62], { st: ph >= 2 ? 2 : 1, bend: 0.25 });
+        if (ph === 1) { S.f(r.nIds[0], k('sbub'), sb.rest); S.hand = { k: k('s1') }; }
+        if (ph >= 2) { S.f(k('sbub'), sb.res); S.hand = { k: sb.res[sb.res.length - 1] }; }
+      } },
+    { name: 'Multiply them together', times: [0, 500, 1500, 2500], end: 3300, P: { n: 35, m: 35 },
+      cap: (P) => { const a = sqA(P); return `Now multiply the number by its successor. **${a} × ${a + 1} = ${a * (a + 1)}**.`; }, hl: ORANGE, sum: (P) => { const a = sqA(P); return `${a} × ${a + 1} = ${a * (a + 1)}`; },
+      scene: (S, P, ph) => {
+        const r = work(S, P, RY), k = K(P);
+        S.mod(r.nIds[0], { c: BLUE }); S.mod(r.nIds[1], { o: 0.25 });
+        const sb = sqSucc(S, P, ph >= 1 ? 0 : 1, ph >= 1 ? 0 : 1, ph >= 1 ? 0 : 1);
+        const bb = sqBubble(S, P, ph >= 1 ? 1 : 0, ph >= 1 ? 1 : 0, ph >= 3 ? 1 : 0);
+        S.mod(k('bb'), { c: ORANGE });
+        if (ph === 0) { S.f(k('sbub'), sb.res); S.hand = { k: sb.res[sb.res.length - 1] }; }
+        if (ph >= 2) S.arrow(0, [S.E[r.nIds[0]].x, RY + 52], [bb.xs[0] - 6, BY - 62], { st: ph >= 3 ? 2 : 1, bend: 0.25 });
+        if (ph === 1 || ph === 2) { S.f(k('bub'), bb.rest); S.hand = { k: ph === 1 ? k('bb') : k('ba') }; }
+        if (ph >= 3) { S.f(k('bub'), bb.pIds); S.hand = { k: bb.pIds[bb.pIds.length - 1] }; }
+      } },
+    { name: 'Bring it up', times: [0, 600], end: 1900, P: { n: 35, m: 35 },
+      cap: (P) => { const a = sqA(P); return `Carry the **${a * (a + 1)}** up to the front. That is the first part of the answer.`; }, hl: ORANGE, sum: (P) => { const a = sqA(P); return `Front: ${a * (a + 1)} _ _`; },
+      scene: (S, P, ph) => { const f = sqPlace(S, P, ph); if (ph === 0) { S.f(K(P)('bub'), f.pIds); S.hand = { k: f.pIds[f.pIds.length - 1] }; } } },
+    { name: 'Write 25 on the end', times: [0, 500, 1500, 2600], end: 3400, P: { n: 35, m: 35 },
+      cap: () => 'Now the last digit. **5 × 5 = 25**, so write 25 on the end.', hl: ORANGE, sum: () => '5 × 5 = 25',
+      scene: (S, P, ph) => {
+        const k = K(P), f = sqPlace(S, P, ph >= 3 ? 2 : 1), five = S.E[k('n1')];
+        S.box(k('fbub'), 512, BY, 330, 104, { shadow: true, r: 28, o: ph >= 1 && ph < 3 ? 1 : 0, s: ph >= 3 ? 0.9 : 1 });
+        const xs = seq(S, [{ id: k('fa'), t: '5' }, { id: k('fx'), t: '×', op: true }, { id: k('fb'), t: '5' }, { id: k('fe'), t: '=', op: true }, { id: k('f0'), t: '2', g: 0, c: ORANGE }, { id: k('f1'), t: '5', c: ORANGE }], 512, BY, 52, { o: ph >= 1 && ph < 3 ? 1 : 0 });
+        [k('f0'), k('f1')].forEach(id => S.mod(id, { o: ph === 2 ? 1 : 0 }));
+        if (ph >= 1 && ph < 3) { S.mod(k('n1'), { o: 1, c: BLUE }); S.arrow(0, [five.x, RY + 52], [xs[0] - 6, BY - 62], { st: ph >= 2 ? 2 : 1, bend: -0.25 }); }
+        if (ph === 1) { S.f(k('n1'), k('fbub'), [k('fa'), k('fx'), k('fb'), k('fe')]); S.hand = { k: k('fb') }; }
+        if (ph === 2) { S.f(k('fbub'), k('f0'), k('f1')); S.hand = { k: k('f1') }; }
+        if (ph >= 3) { S.f(k('t2'), k('n1')); S.hand = { k: k('t2') }; }
+      } },
+    { name: 'Read the answer', times: [0, 500], end: 1700, P: { n: 35, m: 35 },
+      cap: (P) => `That is the whole trick. ${P.n} × ${P.n} = **${P.n * P.n}**.`, hl: GREEN, sum: (P) => `${P.n}² = ${P.n * P.n}`,
+      scene: (S, P, ph) => {
+        const f = sqPlace(S, P, 2);
+        if (ph >= 1) { green(S, f.ids); S.finale = { x: 512, y: RY, w: f.w, h: 160 }; S.focus = null; S.hand = null; S.win = true; }
+        else { S.f(f.ids); }
+      } },
+    { name: 'Your turn', times: [0, 500], end: 700 },
+  ],
+  tasks: (P) => {
+    const a = sqA(P);
+    return [
+      { cap: `Your turn. What is the successor of **${a}**?`, q: `${a} + 1`, ans: a + 1, d: 0, ex: [String(a), '+', '1'] },
+      { cap: `Now multiply them together: **${a} × ${a + 1}**.`, q: `${a} × ${a + 1}`, ans: a * (a + 1), d: 0, ex: [String(a), '×', String(a + 1)] },
+      { cap: 'The last digit is 5. What is **5 × 5**?', q: '5 × 5', ans: 25, d: 1, ex: ['5', '×', '5'] },
+      { cap: `Put it together. What is **${P.n} × ${P.n}**?`, q: `${P.n} × ${P.n}`, ans: P.n * P.n },
+    ];
+  },
+  taskScene: (S, P, pr, t) => {
+    const k = K(P), T = SQ5.tasks(P)[t];
+    if (!T.ex) return;
+    S.mod(k('n' + T.d), { c: BLUE });
+    S.box(k('tb' + t), 512, 368, 280, 84, { shadow: true, r: 26 });
+    seq(S, T.ex.map((x, i) => ({ id: k(`te${t}_${i}`), t: x, op: i === 1, c: i === 2 && t === 1 ? ORANGE : INK })), 512, 368, 46);
+    S.f(k('n' + T.d), k('tb' + t), T.ex.map((_, i) => k(`te${t}_${i}`)));
+  },
+  hint: (S, P) => {
+    const a = sqA(P), k = K(P);
+    S.box(k('hc0'), 412, 362, 200, 64, { r: 20, shadow: true, q: `${a} × ${a + 1} = ?`, qz: 26, qc: INK });
+    S.box(k('hc1'), 632, 362, 140, 64, { r: 20, shadow: true, q: 'then 25', qz: 26, qc: ORANGE });
+    return [k('hc0'), k('hc1')];
+  },
+  hintText: () => 'Close! Add 1 to the front digit, multiply the two, then write 25.',
+  taskHint: (P, t) => ['Close! The successor is the next number. Just add 1.', 'Close! Multiply the front digit by its successor.', 'Close! 5 × 5 is always the same.', 'Close! Write your first answer, then 25 on the end.'][t],
+  replayFor: (P, t) => (t === 0 ? [1] : t === 1 ? [2] : t === 2 ? [4] : [1, 2, 3, 4]),
+  random: () => { const n = (1 + Math.floor(Math.random() * 9)) * 10 + 5; return { n, m: n }; },
+};
+{
+  const P95 = { n: 95, m: 95 };
+  const v = (i, f, o) => { const s = SQ5.steps[i]; return { ...s, P: P95, times: s.times.map(t => Math.round(t * f)), end: Math.round(s.end * f), ...o }; };
+  SQ5.steps.splice(SQ5.steps.length - 1, 0,
+    v(1, 1.5, { name: 'A bigger one: 95', cap: () => 'Now a bigger one: **95 × 95**. Leave the 5. The digit in front is **9**.' }),
+    v(2, 1.6, { name: 'Successor of 9', cap: () => 'The successor of 9 is the number right after it. **9 + 1 = 10**.' }),
+    v(3, 1.6, { name: 'Multiply 9 × 10', cap: () => 'Multiply 9 by its successor, 10. **9 × 10 = 90**.' }),
+    v(4, 1.6, { name: 'Bring the 90 up', cap: () => 'Carry the whole **90** up to the front. Both digits, 9 and 0, come with it.' }),
+    v(5, 1.5, { name: '5 × 5 on the end', cap: () => 'The last digit is still 5. **5 × 5 = 25**. Write 25 on the end.' }),
+    v(6, 1.5, { name: 'Read the answer', cap: () => 'So **95 × 95 = 9025**. The same trick works, even when the successor is 10.' }));
+}
+
+SQ5.steps.shift(); // the Start card already introduces the problem
+
+// ---------- recurring decimals: 1/19 by Ekadhikena Purvena ----------
+function rdGen(m, n) {
+  const e = (m + 1) / 10, out = [{ d: 1, c: 0, v: 1 }];
+  while (out.length < n) { const p = out[out.length - 1], v = p.d * e + p.c; out.push({ d: v % 10, c: Math.floor(v / 10), v }); }
+  return out;
+}
+const P19 = { n: 1, m: 19 }, RK = K(P19), G19 = rdGen(19, 18);
+const RCX = 620, RADV = 36, RAY = 420, RBY = 548;
+const rpos = (i) => RCX + (17 - i - 8.5) * RADV;
+function rdFrac(S, big) {
+  const x = big ? 512 : 300, s = big ? 1 : 0.46, y0 = big ? 236 : 176, yb = big ? 304 : 207, y1 = big ? 372 : 238;
+  S.el(RK('fn'), '1', x, y0, { s });
+  S.box(RK('fb'), x, yb, 150, 8, { fill: INK, c: INK, r: 99, s });
+  S.el(RK('fd0'), '1', x - 29 * s, y1, { s });
+  S.el(RK('fd1'), '9', x + 29 * s, y1, { s });
+  return [RK('fn'), RK('fd0'), RK('fd1')];
+}
+function rdTop(S) {
+  rdFrac(S, false);
+  S.el(RK('mx'), '×', 356, 207, { z: 40, w: 700, c: ORANGE });
+  S.el(RK('er'), '2', 386, 207, { z: 52, c: ORANGE });
+}
+function rdRow(S, upto, o = {}) {
+  S.el(RK('pre'), '0.', rpos(17) - 50, RAY, { z: 46, o: upto >= 0 || o.pre ? 1 : 0 });
+  for (let i = 0; i < 18; i++) {
+    const on = i <= upto || (o.extra && o.extra.includes(i)), from = o.pair && i >= 9 ? rpos(i - 9) : rpos(Math.max(0, i - 1));
+    S.el(RK('d' + i), G19[i].d, on ? rpos(i) : from, on || !(o.pair && i >= 9) ? RAY : RAY - 70, { z: 46, o: on ? 1 : 0, s: on ? 1 : 0.6 });
+    if (G19[i].c && i < 9) S.el(RK('c' + i), G19[i].c, rpos(i) - 18, RAY + 40, { z: 26, c: ORANGE, o: on && !o.noCarry ? 1 : 0 });
+  }
+}
+const rIds = (a, b) => Array.from({ length: b - a + 1 }, (_, j) => RK('d' + (a + j)));
+function rdChip(S, i, on) {
+  S.el(RK('x2'), '×2', i > 0 ? (rpos(i) + rpos(i - 1)) / 2 : rpos(0), RAY - 62, { z: 28, w: 800, c: ORANGE, o: on ? 1 : 0 });
+}
+function rdBubble(S, lines, cur) {
+  S.box(RK('cb'), RCX, RBY, 380, 96, { shadow: true, r: 28, o: cur ? 1 : 0 });
+  lines.forEach(([id, t], j) => S.el(RK(id), t, RCX, RBY + (j + 1 < cur ? -26 : j + 1 > cur ? 26 : 0), { z: 46, o: j + 1 === cur ? 1 : 0 }));
+}
+const RD_LINES = [['ct1', '8 × 2 = 16'], ['ct2', '6 × 2 + 1 = 13'], ['ct3', '3 × 2 + 1 = 7'], ['ct4', '7 × 2 = 14'], ['ct5', '4 × 2 + 1 = 9']];
+const cIf = (S, ...ids) => ids.filter(id => S.E[id]);
+
+const RDEC = {
+  topic: 'Recurring decimals',
+  sutra: 'Ekadhikena Purvena: by one more than the previous one',
+  practice: [{ n: 1, m: 29 }, { n: 1, m: 39 }],
+  steps: [
+    { name: 'Meet the problem', times: [0, 500, 1500], end: 2600, P: P19,
+      cap: () => 'Let’s turn **1/19** into a decimal. Long division would take ages. **Watch this.**',
+      scene: (S, P, ph) => {
+        const ids = rdFrac(S, true);
+        if (ph === 0) { S.hide(ids); S.mod(RK('fb'), { o: 0, s: 0.6 }); }
+        if (ph >= 2) { S.mod(RK('fd0'), { c: BLUE }); S.mod(RK('fd1'), { c: BLUE }); S.f(RK('fd0'), RK('fd1'), RK('fb')); S.hand = { k: RK('fd1') }; }
+      } },
+    { name: 'One more than the previous', times: [0, 450, 1400, 2400], end: 3200, P: P19, hl: ORANGE,
+      cap: () => 'Cover the 9 in 19. Add one to the 1: **1 + 1 = 2**.',
+      sum: () => 'Multiplier: 2',
+      scene: (S, P, ph) => {
+        rdFrac(S, true);
+        S.box(RK('eb'), 512, RBY, 300, 96, { shadow: true, r: 28, o: ph >= 2 ? 1 : 0 });
+        const ids = [RK('ea'), RK('ep'), RK('e1'), RK('ee'), RK('er')];
+        const xs = seq(S, [{ id: ids[0], t: '1' }, { id: ids[1], t: '+', op: true }, { id: ids[2], t: '1' }, { id: ids[3], t: '=', op: true }, { id: ids[4], t: '2', c: ORANGE }], 512, RBY, 52, { o: ph >= 2 ? 1 : 0 });
+        S.mod(ids[4], { o: ph >= 3 ? 1 : 0 });
+        if (ph >= 1) { S.mod(RK('fd1'), { o: 0.25 }); S.mod(RK('fd0'), { c: BLUE }); }
+        if (ph === 1) { S.f(RK('fd0')); S.hand = { k: RK('fd0') }; }
+        if (ph >= 2) S.arrow(0, [S.E[RK('fd0')].x, 372 + 54], [xs[0] - 6, RBY - 56], { st: ph >= 3 ? 2 : 1, bend: 0.25 });
+        if (ph === 2) { S.f(RK('fd0'), RK('eb'), ids.slice(0, 4)); S.hand = { k: ids[2] }; }
+        if (ph >= 3) { S.f(RK('eb'), ids[4]); S.hand = { k: ids[4] }; }
+      } },
+    { name: 'Start from the right', times: [0, 700, 2000, 3300, 4600], end: 5600, P: P19,
+      cap: () => 'Write **1** at the far right. Multiply it by 2 and write the answer to its left. Keep going.',
+      sum: () => '1 → 2 → 4 → 8',
+      scene: (S, P, ph) => {
+        rdTop(S);
+        const up = Math.max(-1, ph - 1); rdRow(S, up);
+        rdBubble(S, [['db1', '1 × 2 = 2'], ['db2', '2 × 2 = 4'], ['db3', '4 × 2 = 8']], ph >= 2 ? ph - 1 : 0);
+        S.el(RK('dir'), '← work right to left', rpos(4), RAY - 68, { z: 22, w: 700, c: MUTE, o: ph >= 1 ? 1 : 0 });
+        if (ph === 0) { S.f(RK('mx'), RK('er')); S.hand = { k: RK('er') }; }
+        if (ph === 1) { S.mod(RK('d0'), { c: BLUE }); S.f(RK('d0'), RK('dir')); S.hand = { k: RK('d0') }; }
+        if (ph >= 2) { S.mod(RK('d' + up), { c: BLUE }); S.f(RK('d' + up), RK('d' + (up - 1)), RK('cb'), RK('db' + (ph - 1)), RK('dir')); S.hand = { k: RK('d' + up) }; }
+      } },
+    { name: 'Carry the tens', times: [0, 700, 2300, 3900, 5500, 7100, 8700, 10300, 11900], end: 13000, P: P19, hl: ORANGE,
+      cap: () => 'Two digits? Write the right one, **carry** the left one.',
+      sum: () => ['8 × 2 = 16', '6 × 2 + 1 = 13', '3 × 2 + 1 = 7'],
+      scene: (S, P, ph) => {
+        rdTop(S);
+        const up = [3, 3, 4, 4, 4, 5, 5, 5, 6][ph], cur = [0, 1, 1, 2, 3, 3, 4, 5, 5][ph]; rdRow(S, up);
+        rdBubble(S, [['k1', '8 × 2 = 16'], ['k2', '6 × 2 = 12'], ['k3', '12 + 1 = 13'], ['k4', '3 × 2 = 6'], ['k5', '6 + 1 = 7']], cur);
+        if (ph >= 5) S.mod(RK('c4'), { o: 0.3 });
+        if (ph >= 8) S.mod(RK('c5'), { o: 0.3 });
+        const B = [RK('cb'), RK('k' + cur)];
+        if (ph === 0) { S.f(rIds(0, 3)); S.hand = { k: RK('d3') }; }
+        if (ph === 1) { S.mod(RK('d3'), { c: BLUE }); S.f(RK('d3'), B); S.hand = { k: RK('k1') }; }
+        if (ph === 2) { S.mod(RK('d4'), { c: BLUE }); S.f(RK('d4'), RK('c4'), B); S.hand = { k: RK('c4') }; }
+        if (ph === 3) { S.mod(RK('d4'), { c: BLUE }); S.f(RK('d4'), B); S.hand = { k: RK('d4') }; }
+        if (ph === 4) { S.f(RK('c4'), B); S.hand = { k: RK('c4') }; }
+        if (ph === 5) { S.mod(RK('d5'), { c: BLUE }); S.f(RK('d5'), RK('c5'), B); S.hand = { k: RK('d5') }; }
+        if (ph === 6) { S.mod(RK('d5'), { c: BLUE }); S.f(RK('d5'), B); S.hand = { k: RK('d5') }; }
+        if (ph === 7) { S.f(RK('c5'), B); S.hand = { k: RK('c5') }; }
+        if (ph === 8) { S.mod(RK('d6'), { c: BLUE }); S.f(RK('d6'), B); S.hand = { k: RK('d6') }; }
+      } },
+    { name: 'The pattern', times: [0, 900, 3000, 5100, 7200], end: 9000, P: P19,
+      cap: () => 'Every digit follows the **same 3 moves**. Learn these and you can do the rest.',
+      sum: () => '× 2, add, carry',
+      scene: (S, P, ph) => {
+        rdTop(S); rdRow(S, 6);
+        [4, 5].forEach(i => S.mod(RK('c' + i), { o: 0.3 }));
+        S.box(RK('pc'), RCX, 552, 470, 172, { shadow: true, r: 28, o: ph >= 1 ? 1 : 0, s: ph >= 1 ? 1 : 0.94 });
+        const L = ['1.  Multiply the last digit by 2', '2.  Add the carry, if there is one', '3.  Write the ones, carry the tens'];
+        L.forEach((t, i) => S.el(RK('pl' + i), t, RCX, 500 + i * 52, { z: 25, w: 800, o: ph >= i + 2 ? 1 : 0, c: ph === i + 2 ? BLUE : INK }));
+        if (ph === 0) { S.f(rIds(0, 6)); S.hand = { k: RK('d6') }; }
+        if (ph === 1) { S.f(RK('pc')); S.hand = null; }
+        if (ph >= 2 && ph <= 4) { S.f(RK('pc'), Array.from({ length: ph - 1 }, (_, i) => RK('pl' + i))); S.hand = { x: RCX + 200, y: 500 + (ph - 2) * 52 + 12 }; }
+        if (ph >= 5) { S.f(RK('pc'), RK('pl0'), RK('pl1'), RK('pl2')); S.hand = null; }
+      } },
+    { name: 'Halfway there', times: [0, 900, 3100, 5300, 7500, 9700, 11900], end: 13400, P: P19,
+      cap: () => '7 × 2 = **14**: write 4, carry 1. 4 × 2 + 1 = **9**.',
+      sum: () => ['7 × 2 = 14', '4 × 2 + 1 = 9'],
+      scene: (S, P, ph) => {
+        rdTop(S);
+        const up = [6, 6, 7, 7, 7, 8, 8][ph], cur = [0, 1, 1, 2, 3, 3, 0][ph]; rdRow(S, up);
+        [4, 5].forEach(i => S.mod(RK('c' + i), { o: 0.3 }));
+        if (ph >= 5) S.mod(RK('c7'), { o: 0.3 });
+        rdBubble(S, [['h1', '7 × 2 = 14'], ['h2', '4 × 2 = 8'], ['h3', '8 + 1 = 9']], cur);
+        S.el(RK('hl'), 'first 9 digits', (rpos(0) + rpos(8)) / 2, RAY - 68, { z: 24, w: 800, c: BLUE, o: ph >= 6 ? 1 : 0 });
+        const B = [RK('cb'), RK('h' + cur)];
+        if (ph === 0) { S.f(rIds(0, 6)); S.hand = { k: RK('d6') }; }
+        if (ph === 1) { S.mod(RK('d6'), { c: BLUE }); S.f(RK('d6'), B); S.hand = { k: RK('h1') }; }
+        if (ph === 2) { S.mod(RK('d7'), { c: BLUE }); S.f(RK('d7'), RK('c7'), B); S.hand = { k: RK('c7') }; }
+        if (ph === 3) { S.mod(RK('d7'), { c: BLUE }); S.f(RK('d7'), B); S.hand = { k: RK('d7') }; }
+        if (ph === 4) { S.f(RK('c7'), B); S.hand = { k: RK('c7') }; }
+        if (ph === 5) { S.mod(RK('d8'), { c: BLUE }); S.f(RK('d8'), B); S.hand = { k: RK('d8') }; }
+        if (ph >= 6) { rIds(0, 8).forEach(id => S.mod(id, { c: BLUE })); S.f(rIds(0, 8), RK('hl')); S.hand = { k: RK('d8') }; }
+      } },
+    { name: 'The other half', times: [0, 1000, 3200, 5600, 8000, 10400], end: 12600, P: P19, hl: ORANGE,
+      cap: () => 'Shortcut! The other half is **9 minus** each digit.',
+      sum: () => 'Partners make 9',
+      scene: (S, P, ph) => {
+        rdTop(S);
+        const extra = ph >= 5 ? null : ph === 4 ? [15, 16, 17] : ph === 3 ? [16, 17] : ph === 2 ? [17] : [];
+        rdRow(S, extra ? 8 : 17, { pair: true, noCarry: ph >= 2, extra });
+        for (let j = 0; j < 9; j++) { const i = 17 - j, filled = !extra || extra.includes(i); S.box(RK('s' + j), rpos(i), RAY, 30, 52, { dashed: true, c: '#cbd7e3', fill: 'transparent', r: 10, o: ph >= 1 && !filled ? 1 : 0, dl: ph >= 5 ? (8 - j) * 260 : 0 }); }
+        for (let i = 9; i < 18; i++) S.mod(RK('d' + i), { c: ORANGE, dl: ph >= 5 ? (14 - i) * 260 : 0 });
+        rdBubble(S, [['ch1', '9 − 9 = 0'], ['ch2', '9 − 4 = 5'], ['ch3', '9 − 7 = 2']], ph >= 2 && ph <= 4 ? ph - 1 : 0);
+        if (ph >= 2) S.arrow(0, [rpos(8), RAY - 36], [rpos(17), RAY - 36], { st: ph === 2 ? 1 : 3, bend: 0.3, c: ORANGE });
+        if (ph >= 3) S.arrow(1, [rpos(7), RAY - 36], [rpos(16), RAY - 36], { st: ph === 3 ? 1 : 3, bend: 0.3, c: ORANGE });
+        if (ph >= 4) S.arrow(2, [rpos(6), RAY - 36], [rpos(15), RAY - 36], { st: ph === 4 ? 1 : 3, bend: 0.3, c: ORANGE });
+        if (ph <= 1) rIds(0, 8).forEach(id => S.mod(id, { c: BLUE }));
+        if (ph === 0) { S.f(rIds(0, 8)); S.hand = { k: RK('d8') }; }
+        if (ph === 1) { S.f(rIds(0, 8), Array.from({ length: 9 }, (_, j) => RK('s' + j))); S.hand = { x: rpos(17), y: RAY + 40 }; }
+        if (ph === 2) { S.mod(RK('d8'), { c: BLUE }); S.f(RK('d8'), RK('d17'), RK('cb'), RK('ch1')); S.hand = { k: RK('d17') }; }
+        if (ph === 3) { S.mod(RK('d7'), { c: BLUE }); S.f(RK('d7'), RK('d16'), RK('cb'), RK('ch2')); S.hand = { k: RK('d16') }; }
+        if (ph === 4) { S.mod(RK('d6'), { c: BLUE }); S.f(RK('d6'), RK('d15'), RK('cb'), RK('ch3')); S.hand = { k: RK('d15') }; }
+        if (ph >= 5) { S.f(rIds(0, 17)); S.hand = { k: RK('d9') }; }
+      } },
+    { name: 'Read the answer', times: [0, 600], end: 1900, P: P19, hl: GREEN,
+      cap: () => '**1/19 = 0.052631578947368421**. After 18 digits, the pattern repeats forever.',
+      sum: () => 'Repeats every 18',
+      scene: (S, P, ph) => {
+        rdTop(S); rdRow(S, 17, { noCarry: true });
+        S.box(RK('bar'), RCX, RAY - 38, 18 * RADV, 5, { fill: GREEN, c: GREEN, r: 99, o: ph >= 1 ? 1 : 0, s: ph >= 1 ? 1 : 0.4 });
+        if (ph === 0) { S.f(rIds(0, 17), RK('pre')); }
+        if (ph >= 1) { green(S, [...rIds(0, 17), RK('pre')]); S.finale = { x: 590, y: RAY, w: 760, h: 150 }; S.win = true; }
+      } },
+    { name: 'Your turn', times: [0, 500], end: 700 },
+  ],
+  tasks: (P) => {
+    const m = P.m, a = (m - 9) / 10, e = a + 1, G = rdGen(m, 12);
+    const i = G.findIndex((g, j) => j > 0 && G[j - 1].c > 0), p = G[i - 1], q3 = p.d + ' × ' + e + ' + ' + p.c;
+    return [
+      { cap: 'Look at **1/' + m + '**. What is one more than the digit before the 9?', q: a + ' + 1', ans: e, ex: [String(a), '+', '1'] },
+      { cap: 'Start with **1** on the right. Multiply by ' + e + '. What comes next?', q: '1 × ' + e, ans: e, ex: ['1', '×', String(e)] },
+      { cap: 'Keep going. What is **' + e + ' × ' + e + '**?', q: e + ' × ' + e, ans: e * e, ex: [String(e), '×', String(e)] },
+      { cap: G[i - 2].d + ' × ' + e + ' = ' + p.v + ': write ' + p.d + ', carry ' + p.c + '. Now what is **' + q3 + '**?', q: q3, ans: G[i].v, ex: q3.split(' ') },
+    ];
+  },
+  pscene: (S, P, pr) => {
+    const k = K(P), T = RDEC.tasks(P), t = pr.task || 0, dd = digs(P.m), e = String((P.m + 1) / 10);
+    S.el(k('pn'), '1', 512, 196, { z: 64 });
+    S.box(k('pb'), 512, 238, 104, 6, { fill: INK, c: INK, r: 99 });
+    dd.forEach((d, i) => S.el(k('pd' + i), d, 512 + (i - 0.5) * 40, 282, { z: 64 }));
+    const ids = [k('pn'), k('pd0'), k('pd1')];
+    const fin = pr.done || (pr.ok && t === T.length - 1);
+    if (!fin) {
+      if (t === 0) { S.mod(k('pd0'), { c: BLUE }); S.mod(k('pd1'), { o: 0.3 }); }
+      const X = T[t].ex;
+      S.box(k('tb' + t), 512, 368, Math.max(240, X.length * 50 + 60), 84, { shadow: true, r: 26 });
+      seq(S, X.map((x, j) => ({ id: k('te' + t + '_' + j), t: x, op: x === '×' || x === '+', c: t > 0 && x === e && j === 2 ? ORANGE : INK })), 512, 368, 46);
+      S.f(ids, k('tb' + t), X.map((_, j) => k('te' + t + '_' + j)));
+    } else { green(S, ids); S.mod(k('pb'), { fill: GREEN, c: GREEN }); S.finale = { x: 512, y: 240, w: 210, h: 190 }; }
+  },
+  doneCap: (P) => '**1/' + P.m + '** works the same way. Same trick, every time.',
+  hint: () => [],
+  hintText: () => 'Close! Use the multiplier from the lesson.',
+  taskHint: (P, t) => ['Close! Drop the 9. Add 1 to the digit in front of it.', 'Close! Multiply the 1 by the multiplier.', 'Close! Multiply the last digit by the multiplier again.', 'Close! Multiply first, then add the carry.'][t],
+  replayFor: (P, t) => (t === 0 ? [1] : t < 3 ? [2] : [3, 4]),
+  random: () => ({ n: 1, m: [29, 39, 49, 59, 69, 79, 89][Math.floor(Math.random() * 7)] }),
+};
+// ---------- division near a base: Nikhilam ----------
+const PD = { n: 1234, m: 98 }, DK = K(PD);
+const DLX = [380, 440], DRX = [580, 640], DY1 = 330, DY2 = 410, DY3 = 500, DS = 0.75;
+function dvRow(S, split, o = {}) {
+  seq(S, [...numItems(DK, 'n', 1234), { id: DK('op'), t: '÷', op: true }, ...numItems(DK, 'm', 98)], 512, 300, Z);
+  S.el(DK('lbl'), '1234 ÷ 98', 512, 168, { z: 36, c: MUTE, w: 800, o: split ? 1 : 0 });
+  S.el(DK('dd'), '100 − 98 = 2', 512, 214, { z: 30, c: ORANGE, w: 800, o: split ? 1 : 0 });
+  S.box(DK('bar'), 506, 415, 6, 230, { fill: INK, c: INK, r: 99, o: split ? 1 : 0, s: split ? 1 : 0.5 });
+  S.el(DK('ls'), o.ans ? 'quotient' : 'left', 410, 262, { z: 24, w: 800, c: o.ans ? GREEN : MUTE, o: o.labels ? 1 : 0 });
+  S.el(DK('rs'), o.ans ? 'remainder' : 'right', 610, 262, { z: 24, w: 800, c: o.ans ? GREEN : MUTE, o: o.labels ? 1 : 0 });
+  if (split) {
+    [DK('op'), DK('m0'), DK('m1')].forEach(id => S.mod(id, { o: 0, s: 0.6 }));
+    [0, 1].forEach(i => S.mod(DK('n' + i), { x: DLX[i], y: DY1, s: DS, c: BLUE }));
+    [2, 3].forEach(i => S.mod(DK('n' + (i)), { x: DRX[i - 2], y: DY1, s: DS }));
+  }
+  return { L: [DK('n0'), DK('n1')], R: [DK('n2'), DK('n3')] };
+}
+function dvCol(S, show24, show58) {
+  S.el(DK('pl'), '+', 538, DY2, { s: DS, w: 700, c: ORANGE, o: show24 ? 1 : 0 });
+  ['2', '4'].forEach((d, i) => S.el(DK('t' + i), d, show24 ? DRX[i] : 512 + (i - 0.5) * 34 + 90, show24 ? DY2 : 640, { s: DS, c: ORANGE, o: show24 ? 1 : 0 }));
+  S.box(DK('ln'), 600, 455, 150, 5, { fill: INK, c: INK, r: 99, o: show58 ? 1 : 0, s: show58 ? 1 : 0.4 });
+  ['5', '8'].forEach((d, i) => S.el(DK('r' + i), d, DRX[i], show58 ? DY3 : DY3 - 30, { s: DS, o: show58 ? 1 : 0 }));
+}
+const DIV = {
+  topic: 'Dividing near a base',
+  sutra: 'Nikhilam: all from 9 and the last from 10',
+  practice: [{ n: 1321, m: 98 }, { n: 2412, m: 97 }],
+  steps: [
+    { name: 'Meet the problem', times: [0, 500, 1600], end: 2800, P: PD,
+      cap: () => 'Let’s divide **1234 by 98**. Long division is slow. There is a faster way.',
+      scene: (S, P, ph) => {
+        dvRow(S, false);
+        const all = [DK('n0'), DK('n1'), DK('n2'), DK('n3'), DK('op'), DK('m0'), DK('m1')];
+        if (ph === 0) S.hide(all);
+        if (ph >= 2) { S.mod(DK('m0'), { c: BLUE }); S.mod(DK('m1'), { c: BLUE }); S.f(DK('m0'), DK('m1')); S.hand = { k: DK('m1') }; }
+      } },
+    { name: 'How far from 100?', times: [0, 700, 2100, 3500], end: 4600, P: PD, hl: ORANGE,
+      cap: () => '98 is very close to **100**. How far away is it? **100 − 98 = 2**.',
+      sum: () => '100 − 98 = 2',
+      scene: (S, P, ph) => {
+        dvRow(S, false);
+        S.box(DK('db'), 512, 470, 400, 100, { shadow: true, r: 28, o: ph >= 2 ? 1 : 0, s: ph >= 2 ? 1 : 0.94 });
+        const ids = ['e0', 'e1', 'e2', 'e3', 'e4'].map(DK);
+        seq(S, [{ id: ids[0], t: '100' }, { id: ids[1], t: '−', op: true }, { id: ids[2], t: '98', c: BLUE }, { id: ids[3], t: '=', op: true }, { id: ids[4], t: '2', c: ORANGE }], 512, 470, 56, { o: ph >= 2 ? 1 : 0 });
+        if (ph < 3) { S.mod(ids[3], { o: 0 }); S.mod(ids[4], { o: 0 }); }
+        if (ph >= 1) { S.mod(DK('m0'), { c: BLUE }); S.mod(DK('m1'), { c: BLUE }); }
+        if (ph === 1) { S.f(DK('m0'), DK('m1')); S.hand = { k: DK('m1') }; }
+        if (ph >= 2) S.arrow(0, [S.E[DK('m0')].x, 356], [ids[2] && S.E[ids[2]].x, 414], { st: ph >= 3 ? 2 : 1, bend: 0.25 });
+        if (ph === 2) { S.f(DK('db'), ids.slice(0, 3)); S.hand = { k: ids[2] }; }
+        if (ph >= 3) { S.f(DK('db'), ids); S.hand = { k: ids[4] }; }
+      } },
+    { name: 'Split the number', times: [0, 900, 2500], end: 3800, P: PD,
+      cap: () => '100 has **two zeros**, so split off the **last two digits**: 12 | 34.',
+      sum: () => '1234 → 12 | 34',
+      scene: (S, P, ph) => {
+        const r = dvRow(S, ph >= 1, { labels: ph >= 2 });
+        if (ph === 0) { S.f(r.R); S.hand = { k: DK('n3') }; }
+        if (ph === 1) { S.f(r.L, r.R, DK('bar')); S.hand = { k: DK('bar') }; }
+        if (ph >= 2) { S.f(r.L, r.R, DK('bar'), DK('ls'), DK('rs')); S.hand = null; }
+      } },
+    { name: 'Multiply the left', times: [0, 800, 2300, 3800], end: 5000, P: PD, hl: ORANGE,
+      cap: () => 'Multiply by the gap: **12 × 2 = 24**.',
+      sum: () => '12 × 2 = 24',
+      scene: (S, P, ph) => {
+        const r = dvRow(S, true, { labels: true });
+        dvCol(S, ph >= 3, false);
+        S.box(DK('mb'), 512, 640, 330, 92, { shadow: true, r: 28, o: ph >= 1 ? 1 : 0, s: ph >= 1 ? 1 : 0.94 });
+        const ids = ['q0', 'q1', 'q2', 'q3', 'q4'].map(DK);
+        seq(S, [{ id: ids[0], t: '12', c: BLUE }, { id: ids[1], t: '×', op: true }, { id: ids[2], t: '2', c: ORANGE }, { id: ids[3], t: '=', op: true }, { id: ids[4], t: '24', c: ORANGE }], 512, 640, 50, { o: ph >= 1 ? 1 : 0 });
+        if (ph < 2) { S.mod(ids[3], { o: 0 }); S.mod(ids[4], { o: 0 }); }
+        if (ph === 0) { S.f(r.L, DK('dd')); S.hand = { k: DK('n1') }; }
+        if (ph === 1) { S.f(r.L, DK('mb'), ids.slice(0, 3)); S.hand = { k: ids[2] }; }
+        if (ph === 2) { S.f(DK('mb'), ids); S.hand = { k: ids[4] }; }
+        if (ph >= 3) { S.f(r.R, DK('t0'), DK('t1'), DK('pl')); S.hand = { k: DK('t1') }; }
+      } },
+    { name: 'Add to the right', times: [0, 800, 2300], end: 3600, P: PD,
+      cap: () => 'Now add on the right side: **34 + 24 = 58**.',
+      sum: () => '34 + 24 = 58',
+      scene: (S, P, ph) => {
+        const r = dvRow(S, true, { labels: true });
+        dvCol(S, true, ph >= 2);
+        if (ph === 0) { S.f(r.R, DK('t0'), DK('t1'), DK('pl')); S.hand = { k: DK('n3') }; }
+        if (ph === 1) { S.f(r.R, DK('t0'), DK('t1'), DK('pl'), DK('ln')); S.hand = { k: DK('ln') }; }
+        if (ph >= 2) { S.mod(DK('r0'), { c: BLUE }); S.mod(DK('r1'), { c: BLUE }); S.f(r.R, DK('t0'), DK('t1'), DK('pl'), DK('ln'), DK('r0'), DK('r1')); S.hand = { k: DK('r1') }; }
+      } },
+    { name: 'Read the answer', times: [0, 800, 2000], end: 3200, P: PD, hl: GREEN,
+      cap: () => 'Answer **12**, remainder **58**: **1234 ÷ 98 = 12 R 58**.',
+      sum: () => '12 R 58',
+      scene: (S, P, ph) => {
+        const r = dvRow(S, true, { labels: true, ans: ph >= 1 });
+        dvCol(S, true, true);
+        if (ph === 0) { S.f(r.L, DK('r0'), DK('r1')); S.hand = { k: DK('n1') }; }
+        if (ph >= 1) { green(S, [...r.L, DK('r0'), DK('r1')]); S.f(r.L, DK('r0'), DK('r1'), DK('ls'), DK('rs')); }
+        if (ph >= 2) { S.finale = { x: 510, y: 390, w: 420, h: 330 }; S.win = true; }
+      } },
+    { name: 'Your turn', times: [0, 500], end: 700 },
+  ],
+  tasks: (P) => {
+    const d = 100 - P.m, L = Math.floor(P.n / 100), R = P.n % 100, Rs = String(R).padStart(2, '0');
+    return [
+      { cap: `Divide **${P.n} by ${P.m}**. How far is ${P.m} from 100?`, q: `100 − ${P.m}`, ans: d, ex: ['100', '−', String(P.m)] },
+      { cap: `Split it: **${L} | ${Rs}**. Multiply the left side by ${d}.`, q: `${L} × ${d}`, ans: L * d, ex: [String(L), '×', String(d)] },
+      { cap: `Add that to the right side. This is the **remainder**.`, q: `${Rs} + ${L * d}`, ans: R + L * d, ex: [Rs, '+', String(L * d)] },
+    ];
+  },
+  pscene: (S, P, pr) => {
+    const k = K(P), T = DIV.tasks(P), t = pr.task || 0, L = Math.floor(P.n / 100), R = P.n % 100;
+    seq(S, [...numItems(k, 'pn', P.n), { id: k('po'), t: '÷', op: true }, ...numItems(k, 'pm', P.m)], 512, 206, 64);
+    const ids = [...digs(P.n).map((_, i) => k('pn' + i)), k('po'), ...digs(P.m).map((_, i) => k('pm' + i))];
+    S.el(k('ps'), `${L} | ${String(R).padStart(2, '0')}`, 512, 276, { z: 34, c: MUTE, w: 800, o: t >= 1 ? 1 : 0 });
+    const fin = pr.done || (pr.ok && t === T.length - 1);
+    if (!fin) {
+      if (t === 0) digs(P.m).forEach((_, i) => S.mod(k('pm' + i), { c: BLUE }));
+      const X = T[t].ex;
+      S.box(k('tb' + t), 512, 380, Math.max(260, X.length * 56 + 70), 84, { shadow: true, r: 26 });
+      seq(S, X.map((x, j) => ({ id: k('te' + t + '_' + j), t: x, op: x === '×' || x === '+' || x === '−', c: t === 1 && j === 2 ? ORANGE : INK })), 512, 380, 46);
+      S.f(ids, k('ps'), k('tb' + t), X.map((_, j) => k('te' + t + '_' + j)));
+    } else {
+      S.el(k('pa'), `${L} R ${R + L * (100 - P.m)}`, 512, 380, { z: 64, c: GREEN });
+      green(S, ids); S.f(ids, k('pa')); S.finale = { x: 512, y: 290, w: 360, h: 260 };
+    }
+  },
+  doneCap: (P) => { const L = Math.floor(P.n / 100), r = P.n % 100 + L * (100 - P.m); return `**${P.n} ÷ ${P.m} = ${L} R ${r}**. Same trick, every time.`; },
+  hint: () => [],
+  hintText: () => 'Close! Use the gap from 100.',
+  taskHint: (P, t) => ['Close! Take the divisor away from 100.', 'Close! Multiply the left side by the gap.', 'Close! Add your answer to the last two digits.'][t],
+  replayFor: (P, t) => [[1], [3], [4]][t],
+  random: () => {
+    for (;;) {
+      const m = [97, 98, 99][Math.floor(Math.random() * 3)], d = 100 - m, L = 11 + Math.floor(Math.random() * (Math.floor(80 / d) - 10));
+      const maxR = Math.min(99, m - 1 - L * d); if (maxR < 10) continue;
+      const R = 10 + Math.floor(Math.random() * (maxR - 9));
+      return { n: L * 100 + R, m };
+    }
+  },
+};
+X9.steps = [...pick(X9.steps, [1, 2, 3], { n: 47, m: 99 }), ...pick(X9.steps, [1, 2, 3], { n: 235, m: 999 }, { 2: P3 }), X9.steps[6]];
+X9.replayFor = (P) => (String(P.n).length >= 3 ? [3, 4, 5] : [0, 1, 2]);
+const SCRIPTS = { dv: DIV, rd: RDEC, x11: X11, x9: X9, m11: M11, m101: M101, m9: M9, m99: M99, m999: M999, sq5: SQ5 };
+new Set(Object.values(SCRIPTS)).forEach(SC => {
+  if (!SC.steps[0] || SC.steps[0].name !== 'Meet the problem') return;
+  SC.steps = SC.steps.slice(1);
+  const rf = SC.replayFor; SC.replayFor = (...a) => rf(...a).map(i => i - 1).filter(i => i >= 0);
+});
+const INFO = {
+  x11: { title: 'Multiplying Numbers with 11', when: 'When multiplying any multi-digit number directly by 11.',
+    sutra: 'Ekadhikena Purvena / Antyayor Dasakepi', alt: 'Direct Addition Method',
+    steps: ['Keep the first and last digits as the outer bounds.', 'Add adjacent pairs of digits from right to left.', 'Carry over if the sum exceeds 9.'] },
+  x9: { title: 'Multiplying by 9, 99 and 999', when: 'When multiplying a number by 9, 99 or 999, with at least as many nines as the number has digits.',
+    sutra: 'Ekanyunena Purvena', alt: 'One less than the previous',
+    steps: ['Subtract 1 from the number to get the left part.', 'Subtract each digit of the left part from 9 to get the right part.', 'Join the two parts.'] },
+};
+INFO.m11 = { ...INFO.x11, when: 'When multiplying a 2-digit number by 11. There are two cases.',
+  steps: ['Add the two digits together.', 'Case 1, the sum is less than 10: put the sum in the middle. 32 × 11: 3 + 2 = 5, so 352.', 'Case 2, the sum is 10 or more: put its last digit in the middle and carry the 1 to the front digit. 78 × 11: 7 + 8 = 15, so 858.'] };
+INFO.rd = { title: 'Recurring Decimals with 19', when: 'When turning 1 over a number ending in 9 into a decimal.', sutra: 'Ekadhikena Purvena', alt: 'By one more than the previous one', steps: [] };
+INFO.sq5 = { title: 'Squaring 2-Digit Numbers Ending in 5', when: 'When squaring a 2-digit number that ends in 5, like 35 or 85.', sutra: 'Ekadhikena Purvena', alt: 'By one more than the previous one',
+  steps: ['Take the digit in front of the 5.', 'Find its successor by adding 1. 3 + 1 = 4.', 'Multiply the two together. 3 × 4 = 12.', 'The last digit is 5, and 5 × 5 = 25. Write 25 on the end. 35 × 35 = 1225.', 'If the front digit is 9, its successor is 10. 9 × 10 = 90, so 95 × 95 = 9025.'] };
+INFO.m101 = { title: 'Multiplying 2-Digit Numbers with 101', when: 'Only for 2-digit numbers multiplied by 101, like 32 × 101.', sutra: INFO.x11.sutra, alt: INFO.x11.alt,
+  steps: ['Write the two-digit number down.', 'Write the same two digits again right after it.', 'That is the answer: 32 × 101 = 3232.'] };
+INFO.m9 = { title: 'Multiplying by 9', when: 'When multiplying a two-digit number by 9.', sutra: 'Ekanyunena Purvena', alt: 'By one less than the previous one (with Nikhilam: the last from 10)',
+  steps: ['Add 1 to the front digit. 4 + 1 = 5.', 'Take that away from the number. 47 − 5 = 42. That is the front of the answer.', 'Take the last digit from 10. 10 − 7 = 3. That is the back.', 'Join them: 42 and 3 make 423.'] };
+INFO.m99 = { ...INFO.x9, title: 'Multiplying by 99', when: 'When multiplying any two-digit number by 99.' };
+INFO.m999 = { ...INFO.x9, title: 'Multiplying by 999', when: 'When multiplying any three-digit number by 999.' };
+INFO.dv = { title: 'Dividing by Numbers Near 100', when: 'When dividing by a number just below 100, like 97, 98 or 99.', sutra: 'Nikhilam Navatashcaramam Dashatah', alt: 'All from 9 and the last from 10', steps: [] };
+const LANGS = [['en', 'English', 'English', 'en-IN']];
+const RKEY = 'vedica-resume';
+const resumeGet = (id) => { try { return JSON.parse(localStorage.getItem(RKEY) || '{}')[id]; } catch (e) { return undefined; } };
+const resumeSet = (id, step) => { try { const r = JSON.parse(localStorage.getItem(RKEY) || '{}'); if (step == null) delete r[id]; else r[id] = step; localStorage.setItem(RKEY, JSON.stringify(r)); } catch (e) {} };
+const LKEY = 'vedica-narration';
+const AUTO = 5000;
+const TESTS = [[32, 11, 352], [78, 11, 858], [67, 11, 737], [32, 101, 3232], [47, 99, 4653], [235, 999, 234765], [36, 99, 3564], [124, 999, 123876]];
+
+class Component extends DCLogic {
+  state = { step: 0, phase: 0, done: false, capIn: false, auto: false, k: 1, pr: null, infoMount: false, infoShow: false, menu: false, audio: false, lang: 'en' };
+  timers = [];
+  seen = {}; order = []; last = {}; rseen = {}; bseen = {}; border = []; blast = {}; akey = []; alast = [];
+
+  scr() { return NQ.get('script') || this.props.script; }
+  sc() { return SCRIPTS[this.scr()] || X11; }
+  lastIdx() { return this.sc().steps.length - 1; }
+  freshPr(list) { return { list: list || this.sc().practice.slice(), pi: 0, task: 0, input: '', wrong: 0, ok: false, bad: false, shake: 0, replay: null, done: false, again: false }; }
+  startAuto(step) { this.stopAuto(); if (step >= this.lastIdx() || this.state.infoMount) return; this.af = setTimeout(() => this.setState({ auto: true }), 40); const t0 = Date.now(), go = () => { if (window.__vdBusy && window.__vdBusy() && Date.now() - t0 < AUTO + 12000) this.at = setTimeout(go, 250); else this.next(); }; this.at = setTimeout(go, AUTO + 40); } // waits for the narration to finish
+  stopAuto() { clearTimeout(this.at); clearTimeout(this.af); this.setState({ auto: false }); }
+  later(fn, ms) { this.timers.push(setTimeout(fn, ms)); }
+  // Waits at least ms, then until the voice has finished its line, so no line is cut off by the next one.
+  afterTalk(fn, ms) { const t0 = Date.now(), go = () => { if (window.__vdBusy && window.__vdBusy() && Date.now() - t0 < ms + 12000) this.later(go, 200); else fn(); }; this.later(go, ms); }
+  clear() { this.timers.forEach(clearTimeout); this.timers = []; }
+  buzz(ms) { try { navigator.vibrate && navigator.vibrate(ms); } catch (e) {} }
+
+  componentDidMount() {
+    this.rm = typeof matchMedia === 'function' && matchMedia('(prefers-reduced-motion: reduce)').matches;
+    const fails = TESTS.filter(([n, m, want]) => trick(n, m) !== want || n * m !== want);
+    if (G19.slice().reverse().map(g => g.d).join('') !== '052631578947368421') console.log('[Vedica] recurring decimal test FAILED');
+    console.log(fails.length ? `[Vedica] trick tests FAILED: ${JSON.stringify(fails)}` : `[Vedica] ${TESTS.length}/${TESTS.length} trick tests pass`);
+    this.onResize = () => this.setState({ k: Math.min((innerWidth - 32) / 1056, (innerHeight - 32) / 800, 1.3) });
+    this.onKey = (e) => {
+      const s = this.state;
+      if (s.infoMount) { if (e.key === 'Escape') this.closeInfo(); return; }
+      if (/^[0-9]$/.test(e.key)) return this.press(e.key);
+      if (e.key === 'Backspace') return this.del();
+      if (e.key === 'ArrowRight') return this.next();
+      if (e.key === 'ArrowLeft') return this.back();
+      if (e.key === ' ' && s.step < this.lastIdx()) { e.preventDefault(); return this.stageTap(); }
+      if (e.key === 'r' || e.key === 'R') return this.go(s.step);
+    };
+    try { const v = JSON.parse(localStorage.getItem(LKEY) || 'null'); if (v) this.setState({ lang: 'en', audio: !!v.audio }); } catch (e) {}
+    if (!this.props.embedded) { this.onResize(); addEventListener('resize', this.onResize); }
+    addEventListener('keydown', this.onKey);
+    const s0 = Math.min(this.props.startStep ?? 0, this.lastIdx()), saved = resumeGet(this.scr());
+    if (s0 === 0 && saved > 0 && saved <= this.lastIdx()) this.go(saved);
+    else if (s0 === 0) { this.pending = () => this.go(0); this.openInfo(); } else this.go(s0);
+  }
+  componentDidUpdate(pp) {
+    if (NATIVE && this.state.pr && this.state.pr.done && !this.posted) { this.posted = true; nativePost('done'); }
+    if (pp.script !== this.props.script) { this.clear(); const saved = resumeGet(this.scr()); if (saved > 0 && saved <= this.lastIdx()) this.go(saved, { list: this.sc().practice.slice() }); else { this.pending = () => this.go(0, { list: this.sc().practice.slice() }); this.openInfo(); } }
+    if (this.state.audio && this.state.capIn && this.capNow && this.capNow !== this.spoken) this.speak();
+  }
+  speak() {
+    this.spoken = this.capNow;
+    const ss = typeof speechSynthesis !== 'undefined' ? speechSynthesis : null; if (!ss || !this.capNow) return;
+    const u = new SpeechSynthesisUtterance(this.capNow.replace(/×/g, ' times ').replace(/÷/g, ' divided by ').replace(/²/g, ' squared').replace(/=/g, ' equals ').replace(/(\d+)\/(\d+)/g, '$1 over $2'));
+    const vs = ss.getVoices();
+    const v = vs.find(v => /^en[-_]IN/i.test(v.lang)) || vs.find(v => /^en[-_](GB|US)/i.test(v.lang)) || vs.find(v => /^en/i.test(v.lang));
+    u.lang = v ? v.lang : 'en-US'; if (v) u.voice = v;
+    u.rate = 0.95;
+    this.utt = u; // keep a reference so Chrome does not drop it mid-sentence
+    clearTimeout(this.st);
+    const say = () => { try { ss.resume(); ss.speak(u); } catch (e) {} };
+    if (ss.speaking || ss.pending) { ss.cancel(); this.st = setTimeout(say, 120); } else say();
+  }
+  savePref() { try { localStorage.setItem(LKEY, JSON.stringify({ lang: this.state.lang, audio: this.state.audio })); } catch (e) {} }
+  openInfo(full) { this.stopAuto(); this.setState({ infoFull: !!full }); clearTimeout(this.it); this.setState({ infoMount: true, menu: false }); this.it = setTimeout(() => this.setState({ infoShow: true }), 20); }
+  closeInfo() { clearTimeout(this.it); this.setState({ infoShow: false }); const p = this.pending; this.pending = null; this.it = setTimeout(() => { this.setState({ infoMount: false }); if (p) p(); else if (this.state.done) this.startAuto(this.state.step); }, 260); }
+  componentWillUnmount() { clearTimeout(this.at); clearTimeout(this.af); clearTimeout(this.st); clearTimeout(this.it); clearTimeout(this.mt); try { speechSynthesis.cancel(); } catch (e) {} this.clear(); cancelAnimationFrame(this.raf); removeEventListener('resize', this.onResize); removeEventListener('keydown', this.onKey); }
+
+  go(step, opts = {}) {
+    this.clear();
+    resumeSet(this.scr(), step);
+    const SC = this.sc(), last = this.lastIdx(), def = SC.steps[step];
+    const pr = step === last ? this.freshPr(opts.list) : this.state.pr;
+    this.stopAuto();
+    this.setState({ step, phase: 0, done: false, capIn: false, pr });
+    this.later(() => this.setState({ capIn: true }), 40);
+    def.times.forEach((t, i) => { if (i > 0) this.later(() => this.setState({ phase: i }), t); });
+    this.later(() => {
+      this.setState({ done: step < last });
+      this.startAuto(step);
+      if (step < last && this.props.autoplay) this.later(() => this.go(step + 1), 1600);
+    }, def.end);
+  }
+  next() { const s = this.state.step, last = this.lastIdx(); if (s === last && (this.props.onContinue || NATIVE_CONT)) { resumeSet(this.scr(), null); return (this.props.onContinue || NATIVE_CONT)(); } this.go(s < last ? s + 1 : 0); }
+  back() { const s = this.state.step; if (s > 0) this.go(s - 1); else if (this.props.onExit) this.props.onExit(); }
+  stageTap() {
+    const s = this.state, def = this.sc().steps[s.step];
+    if (s.step >= this.lastIdx()) return;
+    if (!s.done) { this.clear(); this.setState({ phase: def.times.length - 1, done: true, capIn: true }); this.startAuto(s.step); }
+    else this.next();
+  }
+
+  curP() { const pr = this.state.pr; return pr.list[pr.pi]; }
+  setPr(patch) { this.setState(s => ({ pr: { ...s.pr, ...patch } })); }
+  press(d) {
+    const { step, phase, pr } = this.state;
+    if (step !== this.lastIdx() || phase < 1 || !pr || pr.ok || pr.replay || pr.done) return;
+    const P = this.curP(), SC = this.sc(), T = SC.tasks && !P.plain ? SC.tasks(P) : null, t = pr.task || 0, ans = String(T ? T[t].ans : P.n * P.m);
+    const input = ((pr.bad ? '' : pr.input) + d).slice(0, ans.length);
+    if (input.length < ans.length) return this.setPr({ input, bad: false, again: false });
+    if (input === ans) {
+      this.buzz([12, 40, 12]);
+      this.setPr({ input, ok: true, bad: false, again: false });
+      this.afterTalk(() => this.setState(s => {
+        const p = s.pr, end = p.pi >= p.list.length - 1;
+        if (T && t < T.length - 1) return { pr: { ...p, task: t + 1, input: '', ok: false, wrong: 0, again: false } };
+        return { pr: end ? { ...p, done: true } : { ...p, pi: p.pi + 1, task: 0, input: '', ok: false, wrong: 0, again: false } };
+      }), T && t < T.length - 1 ? 1100 : 1400);
+    } else {
+      this.buzz(8);
+      const wrong = pr.wrong + 1;
+      this.setPr({ input, bad: true, wrong, again: false });
+      [-12, 10, -7, 5, 0].forEach((x, i) => this.later(() => this.setPr({ shake: x }), 60 * (i + 1)));
+      if (wrong >= 3) this.later(() => this.startReplay(), 1100);
+    }
+  }
+  del() { const { step, pr } = this.state; if (step !== this.lastIdx() || !pr || pr.ok || pr.replay) return; this.setPr({ input: pr.bad ? '' : pr.input.slice(0, -1), bad: false }); }
+  startReplay() {
+    const SC = this.sc(), list = SC.replayFor(this.curP(), this.state.pr.task || 0);
+    // One step at a time: the next step starts only after the voice finishes the current one.
+    const play = (i) => {
+      if (i >= list.length) return this.setPr({ replay: null, wrong: 0, input: '', again: true });
+      const si = list[i], def = SC.steps[si];
+      this.setPr({ replay: { s: si, ph: 0 }, input: '', bad: false });
+      def.times.forEach((tt, ph) => { if (ph > 0) this.later(() => this.setPr({ replay: { s: si, ph } }), tt); });
+      this.afterTalk(() => play(i + 1), def.end + 700);
+    };
+    play(0);
+  }
+
+  frame() {
+    const st = this.state, SC = this.sc(), last = this.lastIdx(), S = mkScene();
+    if (st.step < last) { const d = SC.steps[st.step]; d.scene(S, d.P, st.phase); }
+    else if (st.pr && st.phase >= 1) {
+      const P = this.curP();
+      if (st.pr.replay) SC.steps[st.pr.replay.s].scene(S, P, st.pr.replay.ph);
+      else practiceScene(S, P, st.pr, SC);
+    }
+    return S;
+  }
+
+  renderVals() {
+    const st = this.state, F = this.frame(), SC = this.sc(), last = this.lastIdx(), pr = st.pr || this.freshPr();
+    const dimAmt = this.props.dim ?? 0.32, rm = this.rm;
+    const fs = F.focus ? new Set(F.focus) : null;
+    const dim = (k) => (fs ? !fs.has(k) && !String(k).endsWith('.lbl') : false);
+    let fresh = false;
+
+    // digits
+    Object.keys(F.E).forEach(id => { if (!this.seen[id]) { this.seen[id] = 2; this.order.push(id); fresh = true; } });
+    const nums = this.order.map(id => {
+      const isNew = this.seen[id] === 2;
+      let e = F.E[id];
+      if (e) this.last[id] = e; else e = { ...this.last[id], o: 0, dl: 0, od: undefined };
+      const d = dim(id), op = isNew ? 0 : e.o * (d ? dimAmt : 1);
+      const dl = isNew ? 0 : e.dl, od = e.od ?? dl;
+      return {
+        t: e.t,
+        o: { position: 'absolute', left: 0, top: 0, transform: `translateX(${e.x}px)`, transition: rm || isNew ? 'none' : `transform ${DUR} ${XE} ${dl}ms`, pointerEvents: 'none' },
+        i: {
+          position: 'absolute', left: 0, top: 0, whiteSpace: 'nowrap',
+          transform: `translateY(${e.y}px) translate(-50%,-50%) scale(${e.s})`,
+          opacity: op, filter: 'blur(0px)', color: e.c,
+          fontFamily: 'Nunito, sans-serif', fontWeight: e.w, fontSize: e.z, lineHeight: 1, letterSpacing: '-0.03em', fontVariantNumeric: 'tabular-nums',
+          transition: isNew ? 'none' : `${rm ? '' : `transform ${DUR} ${YE} ${dl}ms, `}opacity 480ms ease ${od}ms, filter 480ms ease, color 420ms ease ${dl}ms`,
+        },
+      };
+    });
+    // boxes
+    Object.keys(F.B).forEach(id => { if (!this.bseen[id]) { this.bseen[id] = 2; this.border.push(id); fresh = true; } });
+    const boxes = this.border.map(id => {
+      const isNew = this.bseen[id] === 2;
+      let b = F.B[id];
+      if (b) this.blast[id] = b; else b = { ...this.blast[id], o: 0, dl: 0 };
+      const d = dim(id);
+      return {
+        q: b.q,
+        st: {
+          position: 'absolute', left: 0, top: 0, width: b.w, height: b.h, boxSizing: 'border-box', borderRadius: b.r,
+          border: b.dashed ? `2.5px dashed ${b.c}` : `1px solid ${b.c}`, background: b.fill, display: 'grid', placeItems: 'center',
+          transform: `translate(${b.x - b.w / 2}px, ${b.y - b.h / 2}px) scale(${isNew ? b.s * 0.9 : b.s})`,
+          opacity: isNew ? 0 : b.o * (d ? 0.35 : 1),
+          boxShadow: b.shadow ? '0 14px 34px rgba(23,35,58,.10), 0 1px 0 rgba(23,35,58,.04)' : 'none',
+          transition: isNew ? 'none' : `${rm ? '' : `transform ${DUR} ${YE} ${b.dl}ms, `}opacity 420ms ease ${b.dl}ms`,
+        },
+        qs: { fontFamily: 'Nunito, sans-serif', fontWeight: 800, fontSize: b.qz || b.h * 0.42, color: b.qc || '#c0ccd8', whiteSpace: 'nowrap' },
+      };
+    });
+    // arrows
+    const arrow = (i) => {
+      let a = F.A[i];
+      if (a) this.alast[i] = a; else a = this.alast[i] ? { ...this.alast[i], st: 3 } : null;
+      if (!a) return { d: '', st: { opacity: 0 } };
+      let d, len;
+      if (this.scr() === 'sq5') {
+      const [x0, y0] = a.p0, [x1, y1] = a.p1, dx = x1 - x0, dy = y1 - y0, L = Math.hypot(dx, dy) || 1;
+      const f = (p) => `${p[0].toFixed(1)} ${p[1].toFixed(1)}`;
+      if (Math.abs(dy) < 12) {
+        // same row: a shallow arc so neighbouring links don't sit on top of each other
+        const c = [x0 + dx / 2 + (-dy / L) * a.bend * L, y0 + dy / 2 + (dx / L) * a.bend * L];
+        d = `M${f([x0, y0])} Q${f(c)} ${f([x1, y1])}`;
+        len = 0; let prev = [x0, y0];
+        for (let j = 1; j <= 24; j++) { const t = j / 24, u = 1 - t, p = [u * u * x0 + 2 * u * t * c[0] + t * t * x1, u * u * y0 + 2 * u * t * c[1] + t * t * y1]; len += Math.hypot(p[0] - prev[0], p[1] - prev[1]); prev = p; }
+      } else {
+        d = `M${f([x0, y0])} L${f([x0, y1])}`; len = Math.abs(dy);
+        if (this.scr() === 'sq5') { const sy = Math.sign(dy) || 1; d += ` M${f([x0 - 10, y1 - 12 * sy])} L${f([x0, y1])} L${f([x0 + 10, y1 - 12 * sy])}`; len += 34; }
+      }
+      len += 2;
+      } else {
+      const [x0, y0] = a.p0, [x1, y1] = a.p1, dx = x1 - x0, dy = y1 - y0, L = Math.hypot(dx, dy) || 1, px = -dy / L, py = dx / L, bb = a.bend * L;
+      const c1 = [x0 + dx * 0.3 + px * bb * 1.08 - 2, y0 + dy * 0.3 + py * bb * 1.08 + 2], c2 = [x0 + dx * 0.72 + px * bb * 0.9 + 3, y0 + dy * 0.72 + py * bb * 0.9 - 2];
+      const tx = x1 - c2[0], ty = y1 - c2[1], tl = Math.hypot(tx, ty) || 1, ux = tx / tl, uy = ty / tl, h = 15, an = 0.5;
+      const head = (s) => [x1 - h * (ux * Math.cos(an) - s * uy * Math.sin(an)), y1 - h * (uy * Math.cos(an) + s * ux * Math.sin(an))];
+      const f = (p) => `${p[0].toFixed(1)} ${p[1].toFixed(1)}`;
+      len = 0; let prev = [x0, y0];
+      for (let j = 1; j <= 24; j++) {
+        const t = j / 24, u = 1 - t;
+        const p = [u * u * u * x0 + 3 * u * u * t * c1[0] + 3 * u * t * t * c2[0] + t * t * t * x1, u * u * u * y0 + 3 * u * u * t * c1[1] + 3 * u * t * t * c2[1] + t * t * t * y1];
+        len += Math.hypot(p[0] - prev[0], p[1] - prev[1]); prev = p;
+      }
+      len += 2 * h + 4;
+      d = `M${f([x0, y0])} C${f(c1)} ${f(c2)} ${f([x1, y1])} M${f(head(1))} L${f([x1, y1])} L${f(head(-1))}`;
+      }
+      const isNew = this.akey[i] !== d; if (isNew) { this.akey[i] = d; if (a.st === 1) fresh = true; }
+      const hidden = isNew && a.st === 1;
+      return { d, st: {
+        fill: 'none', stroke: a.c, strokeWidth: this.scr() === 'sq5' ? 6 : 5, strokeLinecap: 'round', strokeLinejoin: 'round',
+        strokeDasharray: `${len} ${len}`, strokeDashoffset: hidden ? len : 0,
+        opacity: a.st === 1 ? 1 : a.st === 2 ? 0.4 : 0,
+        transition: isNew ? 'none' : `stroke-dashoffset ${rm ? 0 : 1400}ms ${HAND_E} ${a.dl}ms, opacity 450ms ease`,
+      } };
+    };
+    const a0 = arrow(0), a1 = arrow(1), a2 = arrow(2);
+    if (fresh) {
+      cancelAnimationFrame(this.raf);
+      this.raf = requestAnimationFrame(() => { this.raf = requestAnimationFrame(() => {
+        Object.keys(this.seen).forEach(k => { if (this.seen[k] === 2) this.seen[k] = 1; });
+        Object.keys(this.bseen).forEach(k => { if (this.bseen[k] === 2) this.bseen[k] = 1; });
+        Object.keys(this.rseen).forEach(k => { if (this.rseen[k] === 2) this.rseen[k] = 1; });
+        this.forceUpdate();
+      }); });
+    }
+    // recap rail: finished steps of the current example fly to the right and stay
+    const isLastStep = st.step === last, rcur = SC.steps[st.step];
+    const rItems = [];
+    if (!isLastStep && rcur.P) SC.steps.forEach((s, i) => {
+      if (i > st.step || !s.sum || !s.P || (i === st.step && !st.done)) return;
+      if (s.P.n !== rcur.P.n || s.P.m !== rcur.P.m) return;
+      [].concat(s.sum(s.P)).forEach((txt, j) => rItems.push({ id: `${this.scr()}-${i}-${j}`, step: i, n: i + 1, txt, hl: s.hl || BLUE }));
+    });
+    if (isLastStep && SC.tasks && pr.list && !pr.replay) {
+      const PP = this.curP(), TT = (!PP.plain && SC.tasks(PP)) || [];
+      TT.forEach((T, i) => { if (i < (pr.task || 0) || (i === (pr.task || 0) && pr.ok)) rItems.push({ id: `${this.scr()}-p${pr.pi}-${i}`, step: -1, n: i + 1, txt: `${T.q} = ${T.ans}`, hl: GREEN }); });
+    }
+    const rail = rItems.map((c, j) => {
+      const isNew = !this.rseen[c.id]; if (isNew) { this.rseen[c.id] = 2; fresh = true; }
+      const born = this.rseen[c.id] === 2, m = c.txt.match(/^(.*(?:= |: ))(.+)$/);
+      return { n: j + 1, label: c.step < 0 ? '' : `Replay step ${c.step + 1}`, go: () => { if (c.step >= 0) this.go(c.step); }, a: m ? m[1] : c.txt, b: m ? m[2] : '', bs: { color: c.hl },
+        st: { height: 40, width: '100%', boxSizing: 'border-box', padding: '0 14px 0 7px', pointerEvents: 'auto', cursor: 'pointer', whiteSpace: 'nowrap', overflow: 'visible', position: 'relative', display: 'flex', alignItems: 'center', gap: 8, flexShrink: 0,
+          borderRadius: 99, background: '#ffffff', border: '1px solid #edf1f5', boxShadow: '0 1px 0 rgba(23,35,58,.03), 0 6px 16px rgba(23,35,58,.06)',
+          transform: born ? 'translateX(12px) scale(.9)' : 'translateX(0) scale(1)',
+          opacity: born ? 0 : 1,
+          transition: born ? 'none' : `transform ${rm ? 0 : 520}ms cubic-bezier(.3,1.3,.5,1), opacity 320ms ease` } };
+    });
+    Object.keys(this.rseen).forEach(id => { if (!rItems.some(c => c.id === id)) delete this.rseen[id]; });
+    if (rItems.some(c => this.rseen[c.id] === 2)) {
+      cancelAnimationFrame(this.rraf);
+      this.rraf = requestAnimationFrame(() => { this.rraf = requestAnimationFrame(() => {
+        Object.keys(this.rseen).forEach(k => { if (this.rseen[k] === 2) this.rseen[k] = 1; });
+        this.forceUpdate();
+      }); });
+    }
+    if (F.win && !this.wasWin) this.buzz(20);
+    this.wasWin = F.win;
+
+    // spotlight
+    let spotStyle = { position: 'absolute', left: 0, top: 0, width: 300, height: 200, opacity: 0, pointerEvents: 'none', transition: `transform ${DUR} ${XE}, width ${DUR} ${XE}, height ${DUR} ${XE}, opacity 500ms ease` };
+    if (fs) {
+      let x0 = 1e9, y0 = 1e9, x1 = -1e9, y1 = -1e9;
+      F.focus.forEach(k => {
+        const e = F.E[k], b = F.B[k];
+        if (e && e.o) { const h = (e.z * e.s) / 2 + 10, w = h * Math.max(1, e.t.length * 0.6); x0 = Math.min(x0, e.x - w); x1 = Math.max(x1, e.x + w); y0 = Math.min(y0, e.y - h); y1 = Math.max(y1, e.y + h); }
+        if (b && b.o) { x0 = Math.min(x0, b.x - b.w / 2); x1 = Math.max(x1, b.x + b.w / 2); y0 = Math.min(y0, b.y - b.h / 2); y1 = Math.max(y1, b.y + b.h / 2); }
+      });
+      if (x1 > x0) {
+        const w = x1 - x0 + 200, h = y1 - y0 + 170;
+        spotStyle = { ...spotStyle, width: w, height: h, opacity: 1, borderRadius: '50%',
+          background: 'radial-gradient(closest-side, rgba(10,132,255,.11), rgba(10,132,255,.04) 60%, rgba(10,132,255,0))',
+          transform: `translate(${(x0 + x1) / 2 - w / 2}px, ${(y0 + y1) / 2 - h / 2}px)` };
+      }
+    }
+    if (F.finale) this.lastFin = F.finale;
+    const fin = this.lastFin || { x: 512, y: 320, w: 300, h: 170 };
+    const finaleStyle = {
+      position: 'absolute', left: 0, top: 0, width: fin.w, height: fin.h, borderRadius: 36, background: '#ffffff',
+      boxShadow: '0 24px 60px rgba(23,35,58,.12), 0 2px 8px rgba(23,35,58,.05)',
+      transform: `translate(${fin.x - fin.w / 2}px, ${fin.y - fin.h / 2}px) scale(${F.finale ? 1 : 0.88})`,
+      opacity: F.finale ? 1 : 0, pointerEvents: 'none',
+      transition: `transform 700ms cubic-bezier(.3,1.3,.5,1), opacity 450ms ease, width 500ms ease, height 500ms ease`,
+    };
+
+    // hand
+    let hx = 512, hy = 500, hv = 0;
+    if (F.hand && (this.props.hand ?? true)) {
+      const e = F.hand.k ? F.E[F.hand.k] : null;
+      if (e) { hx = e.x + 10; hy = e.y + e.z * e.s * 0.42; hv = 1; }
+      else if (!F.hand.k) { hx = F.hand.x; hy = F.hand.y; hv = 1; }
+      if (hv) this.lastHand = [hx, hy];
+    }
+    if (!hv && this.lastHand) [hx, hy] = this.lastHand;
+    const handStyle = {
+      position: 'absolute', left: 0, top: 0, pointerEvents: 'none', zIndex: 4,
+      transform: `translate(${hx - 33}px, ${hy - 4}px) rotate(-14deg) scale(${hv ? 1 : 0.8})`, transformOrigin: '33px 4px',
+      opacity: hv, transition: `transform ${rm ? 0 : 1000}ms ${HAND_E}, opacity 380ms ease`,
+    };
+    const ring = hv ? React.createElement('div', { key: `${Math.round(hx)}-${Math.round(hy)}-${st.step}`, style: {
+      position: 'absolute', left: hx - 24, top: hy - 24, width: 48, height: 48, borderRadius: '50%', zIndex: 3,
+      border: '3px solid rgba(10,132,255,.45)', pointerEvents: 'none', animation: 'vdRing 1.5s 1s ease-out infinite both' } }) : null;
+
+    // caption
+    const prac = st.step === last && st.phase >= 1;
+    const P = prac ? this.curP() : null;
+    let capStr, hl = BLUE;
+    if (st.step < last) { const d = SC.steps[st.step]; capStr = d.cap(d.P); hl = d.hl || BLUE; }
+    else if (!P) capStr = 'Your turn.';
+    else if (pr.replay) { const d = SC.steps[pr.replay.s]; capStr = d.cap(P); hl = d.hl || BLUE; }
+    else if (pr.done) { capStr = SC.doneCap ? SC.doneCap(P) : `**${P.n} × ${P.m} = ${P.n * P.m}**. Same trick, every time.`; hl = GREEN; }
+    else if (SC.tasks && !P.plain && SC.tasks(P) && pr.ok) { const T = SC.tasks(P)[pr.task || 0]; capStr = `**Yes!** ${T.q} = ${T.ans}.`; hl = GREEN; }
+    else if (SC.tasks && !P.plain && SC.tasks(P)) { capStr = SC.tasks(P)[pr.task || 0].cap; hl = (pr.task || 0) === 1 ? ORANGE : BLUE; }
+    else if (pr.ok) { capStr = `**Yes!** ${P.n} × ${P.m} = ${P.n * P.m}.`; hl = GREEN; }
+    else capStr = `${P.plain ? 'On your own now.' : 'Your turn.'} What is **${P.n} × ${P.m}**?`;
+    this.capNow = capStr.replace(/\*\*/g, '');
+    const cap = capStr.split('**').map((t, i) => ({ t, st: i % 2 ? { color: hl, fontWeight: 800 } : {} })).filter(s => s.t);
+    const capStyle = {
+      textAlign: 'center', fontFamily: 'Nunito, sans-serif', fontSize: 23, fontWeight: 700, color: '#34425a',
+      letterSpacing: '-0.01em', lineHeight: 1.3, textWrap: 'balance',
+      opacity: st.capIn ? 1 : 0, transform: `translateY(${st.capIn ? 0 : 8}px)`, filter: st.capIn ? 'blur(0px)' : 'blur(4px)',
+      transition: st.capIn ? 'opacity 450ms ease, transform 550ms cubic-bezier(.32,.72,0,1), filter 450ms ease' : 'none',
+    };
+
+    const pkey = (s) => (s && s.P ? `${s.P.n}x${s.P.m}` : '');
+    const groups = [];
+    SC.steps.forEach((s, i) => { if (i === last) return; const g = groups[groups.length - 1], key = pkey(s) + (s.group || ''); if (g && g.key === key) g.idx.push(i); else groups.push({ key, idx: [i], P: s.P, group: s.group }); });
+    const multi = groups.length > 1;
+    const grpOf = (i) => groups.findIndex(g => g.idx.includes(i));
+    const progress = SC.steps.map((s, i) => {
+      let w = 0, tr = 'none';
+      if (i < st.step) w = 100;
+      else if (i === st.step) {
+        if (st.step < last) { if (st.done) { w = 100; tr = 'width 300ms ease'; } else if (st.capIn) { w = 100; tr = `width ${s.end}ms linear`; } }
+        else { w = ((pr.pi + (pr.done || pr.ok ? 1 : 0)) / pr.list.length) * 100; tr = 'width 600ms cubic-bezier(.32,.72,0,1)'; }
+      }
+      const gi = i === last ? groups.length : grpOf(i), first = i > 0 && (i === last || groups[gi].idx[0] === i);
+      return { label: `Go to ${s.name}`, go: () => this.go(i), bst: { padding: '12px 0', border: 0, background: 'transparent', cursor: 'pointer', marginLeft: multi && first ? 14 : 0 }, fill: { height: '100%', width: `${w}%`, background: BLUE, borderRadius: 99, transition: tr } };
+    });
+
+    let hintText = 'Use the trick from the lesson.';
+    if (P && pr.wrong > 0) hintText = SC.taskHint && !P.plain ? SC.taskHint(P, pr.task || 0) : SC.hintText(P);
+    if (pr.again) hintText = 'Your turn again.';
+    if (pr.ok) hintText = 'That’s it.';
+    const inCol = pr.ok ? GREEN : pr.bad ? ORANGE : BLUE;
+    const inputStyle = {
+      minWidth: 100, height: 78, padding: '0 18px', boxSizing: 'border-box', borderRadius: 22,
+      border: `3px solid ${inCol}`, background: pr.ok ? '#eefaf3' : pr.bad ? '#fff5eb' : '#f4f9ff',
+      display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 46, letterSpacing: '0.02em',
+      color: pr.input ? inCol : '#b5c3d2',
+      transform: `translateX(${pr.shake}px) scale(${pr.ok ? 1.06 : 1})`,
+      transition: 'transform 110ms ease, border-color 200ms, background 200ms, color 200ms',
+    };
+    const keys = ['1', '2', '3', '4', '5', '6', '7', '8', '9', '0'].map(d => ({ label: d, aria: d, press: () => this.press(d) }))
+      .concat([{ label: '⌫', aria: 'Delete', press: () => this.del() }]);
+
+    const isLast = st.step === last, cont = isLast && !!(this.props.onContinue || NATIVE_CONT);
+    const autoMode = !isLast;
+    const expanded = autoMode || (cont && pr.done);
+    const nextStyle = {
+      position: 'relative', height: 56, width: expanded ? (cont ? 150 : 124) : 56, borderRadius: 99, border: 0, cursor: 'pointer', overflow: 'hidden',
+      display: 'flex', alignItems: 'center', justifyContent: 'center', gap: expanded ? 6 : 0, padding: 0,
+      background: autoMode ? '#ffffff' : expanded ? BLUE : '#e7f1fd', color: autoMode ? BLUE : expanded ? '#fff' : BLUE,
+      boxShadow: autoMode ? `inset 0 0 0 2px ${BLUE}, 0 6px 16px rgba(10,132,255,.14)` : expanded ? '0 10px 24px rgba(10,132,255,.3)' : 'none', fontSize: 17, fontWeight: 700,
+      transition: 'width 520ms cubic-bezier(.32,.72,0,1), background 300ms ease, color 300ms ease, box-shadow 300ms ease, gap 520ms',
+    };
+    const filling = autoMode && st.auto;
+    const nextFill = {
+      position: 'absolute', inset: 0, display: autoMode ? 'flex' : 'none', alignItems: 'center', justifyContent: 'center', gap: 6,
+      borderRadius: 99, background: BLUE, color: '#fff', pointerEvents: 'none',
+      clipPath: filling ? 'inset(0 0 0 0)' : 'inset(0 100% 0 0)', transition: filling ? `clip-path ${AUTO}ms linear` : 'none',
+    };
+    const nextLabel = { maxWidth: expanded ? (cont ? 86 : 60) : 0, opacity: expanded ? 1 : 0, overflow: 'hidden', whiteSpace: 'nowrap', transition: 'max-width 520ms cubic-bezier(.32,.72,0,1), opacity 300ms ease' };
+    const backOff = st.step === 0 && !this.props.onExit;
+    const backStyle = {
+      width: 56, height: 56, borderRadius: 99, border: '1px solid #e1e8ef', background: '#fff', display: 'grid', placeItems: 'center', padding: 0,
+      color: backOff ? '#c3ccd6' : '#3a4860', cursor: backOff ? 'default' : 'pointer', boxShadow: '0 4px 12px rgba(23,35,58,.05)',
+    };
+
+    const k = st.k, bezel = !NATIVE && (this.props.bezel ?? true), emb = !!this.props.embedded;
+    const deviceStyle = {
+      flexShrink: 0, width: 1056, height: 800, boxSizing: 'border-box', padding: 16, borderRadius: 50,
+      background: bezel ? '#14171c' : 'transparent',
+      boxShadow: bezel ? '0 40px 90px rgba(20,30,48,.22), inset 0 0 0 1.5px #2b3038' : 'none',
+      transform: `scale(${k})`, transformOrigin: 'center',
+    };
+    const canvasStyle = { position: 'relative', width: 1024, height: 768, overflow: 'hidden', borderRadius: bezel ? 34 : NATIVE ? 0 : 24, background: '#fffefa' };
+    if (emb) { Object.assign(deviceStyle, { width: 1024, height: 768, padding: 0, borderRadius: 0, background: 'transparent', boxShadow: 'none', transform: 'none' }); canvasStyle.borderRadius = 0; }
+    const outerStyle = emb ? { position: 'absolute', inset: 0 } : { position: 'relative', width: '100vw', height: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', background: NATIVE ? '#fffefa' : '#e8edf2', overflow: 'hidden' };
+    const PRI = { height: 56, padding: '0 30px', borderRadius: 99, border: 0, background: BLUE, color: '#ffffff', fontSize: 17, fontWeight: 700, cursor: 'pointer', boxShadow: '0 10px 24px rgba(10,132,255,.3)', transition: 'transform 140ms cubic-bezier(.3,.7,.4,1)' };
+    const SEC = { height: 56, padding: '0 26px', borderRadius: 99, border: '1px solid #e1e8ef', background: '#ffffff', color: '#3a4860', fontSize: 17, fontWeight: 600, cursor: 'pointer', boxShadow: '0 4px 12px rgba(23,35,58,.05)', transition: 'transform 140ms cubic-bezier(.3,.7,.4,1)' };
+
+    const EX = { dv: ['1234 ÷ 98', '12 R 58'], rd: ['1/19', '0.0526…'], x11: ['32 × 11', '352'], m11: ['32 × 11', '352'], m101: ['32 × 101', '3232'], x9: ['47 × 99', '4653'], m9: ['47 × 9', '423'], m99: ['47 × 99', '4653'], m999: ['235 × 999', '234765'], sq5: ['35²', '1225'] };
+    const ex = EX[this.scr()] || EX.x11;
+    const info = { ...(INFO[this.scr()] || INFO.x11), exQ: ex[0], exA: ex[1] };
+    { const m = info.title.match(/\d+(?!-)/) || info.title.match(/Unlike/), i = m ? m.index : info.title.length;
+      info.tA = info.title.slice(0, i); info.tHi = m ? m[0] : ''; info.tB = m ? info.title.slice(i + m[0].length) : '';
+      const tfs = Math.min(32, Math.floor(430 / (info.title.length * 0.6)));
+      info.tSt = { padding: st.infoFull ? '4px 44px 0' : '8px 44px 0', textAlign: 'center', fontFamily: 'Nunito, sans-serif', fontSize: tfs, fontWeight: 900, letterSpacing: '-0.03em', lineHeight: 1.2, color: '#17233a', whiteSpace: 'nowrap' };
+      info.hiSt = { display: 'inline-block', fontSize: '1.3em', lineHeight: 1, verticalAlign: '-0.06em', color: '#0a84ff', transform: st.infoShow ? 'translateY(0) scale(1)' : 'translateY(6px) scale(.7)', opacity: st.infoShow ? 1 : 0,
+        transition: (st.infoShow ? 'transform 600ms cubic-bezier(.3,1.3,.5,1) 260ms, opacity 300ms ease 260ms' : 'opacity 150ms ease') }; }
+    { const q = info.exQ, on = st.infoShow, parts = [];
+      const hiAt = q.includes('×') ? [[q.indexOf('×') + 2, q.length]] : q.includes('²') ? [[q.length - 2, q.length - 1]] : [...q.matchAll(/\/(\d+)/g)].map(m => [m.index + 1, m.index + 1 + m[1].length]);
+      let c = 0;
+      hiAt.forEach(([a, b], k) => { if (a > c) parts.push({ t: q.slice(c, a), st: {} });
+        parts.push({ t: q.slice(a, b), st: { display: 'inline-block', fontSize: q.includes('²') ? '1em' : '1.3em', lineHeight: 1, color: '#0a84ff', transform: on ? 'translateY(0) scale(1)' : 'translateY(8px) scale(.8)', opacity: on ? 1 : 0,
+          transition: on ? `transform 600ms cubic-bezier(.3,1.3,.5,1) ${620 + k * 120}ms, opacity 300ms ease ${620 + k * 120}ms` : 'none' } });
+        c = b; });
+      if (c < q.length) parts.push({ t: q.slice(c), st: {} });
+      info.exParts = parts; }
+    { const fs = (info.exQ + info.exA).length > 12 ? 40 : 52; info.qSt = { fontSize: fs, color: '#17233a' }; info.aSt = { fontSize: fs, color: '#17233a' }; info.eqSt = { fontSize: fs, color: '#17233a' }; }
+    info.stepList = (info.steps && info.steps.length ? info.steps : SC.steps.slice(0, -1).map(s => s.name)).map((t, i) => ({ n: i + 1, t }));
+    // info.lessonSteps = SC.steps.slice(0, -1).map(s => s.name);
+    info.exBox = { ...{ marginTop: "24px", height: "150px", padding: "0 20px", boxSizing: "border-box", borderRadius: "20px", background: "#f5f8fb", alignContent: "center", display: "flex", alignItems: "center", justifyContent: "center", gap: "14px", fontFamily: "Nunito,sans-serif", fontWeight: "900", letterSpacing: "-0.03em", whiteSpace: "nowrap" }, marginTop: st.infoFull ? '16px' : '24px', height: st.infoFull ? '100px' : '150px' };
+    const sh = st.infoShow, EO = 'cubic-bezier(.2,.8,.2,1)';
+    const backdropStyle = { position: 'absolute', inset: 0, zIndex: 20, display: 'grid', placeItems: 'center', background: 'rgba(23,35,58,.32)', backdropFilter: 'blur(6px)', WebkitBackdropFilter: 'blur(6px)', opacity: sh ? 1 : 0, transition: `opacity ${sh ? 280 : 220}ms ease-out` };
+    const cardStyle = { position: 'relative', width: 560, padding: st.infoFull ? '24px 28px 22px' : '30px 32px 28px', maxHeight: 'calc(100% - 48px)', overflowY: 'auto', maxWidth: 'calc(100% - 64px)', boxSizing: 'border-box', padding: '30px 32px 28px', borderRadius: 32, background: '#ffffff', boxShadow: '0 30px 80px rgba(23,35,58,.24), 0 2px 8px rgba(23,35,58,.06)',
+      opacity: sh ? 1 : 0, transform: `translateY(${sh ? 0 : 14}px) scale(${sh ? 1 : 0.92})`, transition: rm ? 'opacity 200ms ease-out' : `transform ${sh ? 380 : 240}ms ${EO}, opacity ${sh ? 260 : 200}ms ease-out` };
+    const on = st.audio;
+    const spkStyle = { width: 48, height: 48, borderRadius: 99, border: on ? '1px solid #0a84ff' : '1px solid #e1e8ef', background: on ? '#0a84ff' : '#ffffff', color: on ? '#ffffff' : '#3a4860', display: 'grid', placeItems: 'center', padding: 0, cursor: 'pointer',
+      boxShadow: on ? '0 8px 18px rgba(10,132,255,.28)' : '0 4px 12px rgba(23,35,58,.06)', transition: 'transform 140ms cubic-bezier(.3,.7,.4,1), background 200ms, color 200ms' };
+    const menuStyle = { position: 'absolute', right: 58, top: 0, width: 200, padding: 6, boxSizing: 'border-box', borderRadius: 20, background: 'rgba(255,255,255,.96)', backdropFilter: 'blur(20px)', WebkitBackdropFilter: 'blur(20px)',
+      border: '1px solid #e6ecf2', boxShadow: '0 18px 44px rgba(23,35,58,.16)', display: 'flex', flexDirection: 'column', gap: 2,
+      opacity: st.menu ? 1 : 0, transform: `translateX(${st.menu ? 0 : 8}px) scale(${st.menu ? 1 : 0.96})`, transformOrigin: 'right top', pointerEvents: st.menu ? 'auto' : 'none', transition: `opacity 180ms ease-out, transform 220ms ${EO}` };
+    const langs = LANGS.map(([id, name, native]) => { const sel = st.lang === id; return { name, native,
+      st: { display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 8, width: '100%', padding: '8px 12px', border: 0, borderRadius: 14, background: sel ? '#eaf3ff' : 'transparent', color: sel ? '#0a84ff' : '#17233a', cursor: 'pointer', textAlign: 'left' },
+      chk: { flexShrink: 0, fill: 'none', stroke: '#0a84ff', strokeWidth: 2.6, strokeLinecap: 'round', strokeLinejoin: 'round', opacity: sel ? 1 : 0 },
+      pick: () => { this.spoken = null; this.setState({ lang: id, audio: true }, () => { this.savePref(); this.speak(); }); } }; });
+    const langName = (LANGS.find(l => l[0] === st.lang) || LANGS[0])[1];
+
+    return {
+      info, infoMount: st.infoMount, backdropStyle, cardStyle, openInfo: () => this.openInfo(true), infoFull: !!st.infoFull, startText: st.infoFull ? 'Got it' : 'Start', closeInfo: () => this.closeInfo(), stop: (e) => e.stopPropagation(),
+      spkStyle, menuStyle, langs, spkWaves: on ? 'M15.5 9a4 4 0 0 1 0 6M18 6.5a7.5 7.5 0 0 1 0 11' : 'm16 9.5 5 5m0-5-5 5',
+      audioAria: on ? 'Narration on' : 'Narration off',
+      menuOpen: () => {},
+      menuClose: () => { clearTimeout(this.mt); this.mt = setTimeout(() => this.setState({ menu: false }), 160); },
+      toggleAudio: () => { this.spoken = null; this.setState(s => ({ audio: !s.audio }), () => { this.savePref(); if (!this.state.audio) { clearTimeout(this.st); try { speechSynthesis.cancel(); } catch (e) {} } else if (this.spoken !== this.capNow) this.speak(); }); },
+      onClose: () => { try { speechSynthesis.cancel(); } catch (e) {} if (this.props.onClose) this.props.onClose(); else if (this.props.onExit) this.props.onExit(); else if (NATIVE) nativePost('exit'); else this.go(0); },
+      deviceStyle, canvasStyle, outerStyle,
+      topic: SC.topic, stepNum: isLast ? 'Practice' : multi ? (() => { const g = groups[grpOf(st.step)]; return `${g.group ? g.group.split(':')[0] + ' · ' : ''}${g.P.n} × ${g.P.m} · Step ${g.idx.indexOf(st.step) + 1} of ${g.idx.length}`; })() : `Step ${st.step + 1} of ${last}`, stepName: isLast ? (() => { const L = pr.list || [], g = L.filter(x => !x.plain).length, Q = L[pr.pi] || {}; return Q.plain ? `On your own ${pr.pi - g + 1} of ${L.length - g}` : `Guided ${pr.pi + 1} of ${g}`; })() : SC.steps[st.step].name,
+      progress, nums, boxes, rail, railTitle: isLastStep ? 'Your work' : 'Steps', railHead: { padding: '0 0 2px 4px', fontSize: 12, fontWeight: 700, letterSpacing: '.08em', textTransform: 'uppercase', color: '#8391a6', opacity: rail.length ? 1 : 0, transition: 'opacity 300ms ease' }, a0, a1, a2, spotStyle, finaleStyle, handStyle, ring,
+      showTap: !isLast && !st.infoMount, stageTap: () => this.stageTap(),
+      showPrompt: prac && !pr.done && !pr.replay, showDone: prac && pr.done,
+      inputShown: pr.input || '?', inputStyle, hintText,
+      hintStyle: { fontSize: 16, fontWeight: 600, color: pr.wrong && !pr.ok && !pr.again ? '#a8662a' : pr.ok ? GREEN : '#8a97aa', transition: 'color 200ms', textAlign: 'center', maxWidth: 560 },
+      keys, sutra: SC.sutra,
+      tryAnother: () => this.go(last, { list: [SC.random()] }),
+      watchAgain: () => this.go(0),
+      cap, capStyle, capAria: cap.map(s => s.t).join(''),
+      back: () => this.back(), backStyle,
+      replay: () => this.go(st.step),
+      next: () => this.next(), nextStyle, nextLabel, nextFill, nextText: cont ? 'Continue' : 'Next',
+      hasContinue: !!(this.props.onContinue || NATIVE_CONT), onContinue: () => (this.props.onContinue || NATIVE_CONT) && (this.props.onContinue || NATIVE_CONT)(),
+      continueLabel: this.props.continueLabel || NQ.get('label') || 'Continue to practice', tryStyle: (this.props.onContinue || NATIVE_CONT) ? SEC : PRI,
+      nextAria: cont ? 'Continue' : isLast ? 'Start the lesson again' : 'Next step',
+      nextIcon: isLast && !cont ? 'M20 12a8 8 0 1 1-2.3-5.7M20 5v5h-5' : 'm9.5 6 6 6-6 6',
+    };
+  }
+}
+</script>
+</body>
+</html>
