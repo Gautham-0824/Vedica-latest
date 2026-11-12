@@ -78,7 +78,7 @@ struct WorkScreen: View {
                 Text("Vedica").font(Theme.round(21, .heavy)).tracking(pt(-0.6)).foregroundColor(Theme.ink)
                     .accessibilityHidden(true)
                 Spacer()
-                Text(QuizData.names[z.id] ?? "").font(Theme.text(15, .semibold)).foregroundColor(Color(hex: 0x8290a5)).padding(.trailing, pt(6))
+                Text(QuizData.name(z.id)).font(Theme.text(15, .semibold)).foregroundColor(Color(hex: 0x8290a5)).padding(.trailing, pt(6))
                     .lineLimit(1).minimumScaleFactor(0.7)
                 RoundIconButton(d: IconPath.close, size: 40, icon: 18, stroke: 2.6) { z.stopAuto(); nav.closeQuiz() }
                     .accessibilityLabel("Close")
@@ -99,7 +99,7 @@ struct WorkScreen: View {
 
     private var titleBlock: some View {
         VStack(alignment: .leading, spacing: pt(6)) {
-            Text(z.quiz ? "Quiz: \(QuizData.names[z.id] ?? "")" : "Practice time")
+            Text(z.quiz ? "Quiz: \(QuizData.name(z.id))" : "Practice time")
                 .font(Theme.round(34, .black)).foregroundColor(Theme.ink)
                 .lineLimit(1).minimumScaleFactor(0.6)
                 .accessibilityAddTraits(.isHeader)
@@ -152,7 +152,25 @@ struct WorkScreen: View {
 
     @ViewBuilder private var problem: some View {
         let q = z.q
-        if q.isFraction {
+        VStack(spacing: pt(10)) {
+            if !q.note.isEmpty {
+                Text(q.note.uppercased())
+                    .font(Theme.text(12, .bold)).tracking(pt(0.9))
+                    .foregroundColor(Theme.blue)
+                    .lineLimit(1).minimumScaleFactor(0.7)
+                    .padding(.horizontal, pt(14)).frame(height: pt(26))
+                    .background(Capsule().fill(Theme.soft))
+                    .accessibilityHidden(true)
+            }
+            problemRow(q)
+        }
+        .accessibilityElement(children: .contain)
+        .accessibilityLabel(q.spoken)
+    }
+
+    @ViewBuilder private func problemRow(_ q: QuizQ) -> some View {
+        switch q.shape {
+        case .fraction:
             HStack(spacing: pt(18)) {
                 frac(q.a, q.b)
                 Text("+").font(Theme.round(52, .heavy)).foregroundColor(Theme.blue)
@@ -164,20 +182,35 @@ struct WorkScreen: View {
                     box(.bot, z.bot, width: 116, height: 76)
                 }
             }
-            .accessibilityElement(children: .contain)
-            .accessibilityLabel("\(q.a) over \(q.b) plus \(q.c) over \(q.d)")
-        } else {
+        case .times:
             HStack(spacing: pt(16)) {
-                if q.x == q.m {
-                    Text("\(q.x)\u{00B2}").font(Theme.round(52, .heavy)).foregroundColor(Theme.ink)
-                } else {
-                    Text("\(q.x) \u{00D7} \(q.m)").font(Theme.round(52, .heavy)).foregroundColor(Theme.ink)
-                }
+                Text(q.x == q.m ? "\(q.x)\u{00B2}" : "\(q.x) \u{00D7} \(q.m)")
+                    .font(Theme.round(52, .heavy)).foregroundColor(Theme.ink)
+                    .lineLimit(1).minimumScaleFactor(0.6)
                 Text("=").font(Theme.round(52, .heavy)).foregroundColor(Theme.muted)
                 box(.top, z.top, width: 196, height: 88)
             }
-            .accessibilityElement(children: .contain)
-            .accessibilityLabel(q.x == q.m ? "\(q.x) squared" : "\(q.x) times \(q.m)")
+            .padding(.horizontal, pt(20))
+        case .expr:
+            HStack(spacing: pt(14)) {
+                Text(q.prompt)
+                    .font(Theme.round(exprSize(q.prompt), .heavy)).foregroundColor(Theme.ink)
+                    .lineLimit(1).minimumScaleFactor(0.45)
+                Text("=").font(Theme.round(40, .heavy)).foregroundColor(Theme.muted)
+                box(.top, z.top, width: 150, height: 84)
+            }
+            .padding(.horizontal, pt(28))
+        }
+    }
+
+    /// Long prompts such as `(x\u{00B2}+11x+24) \u{00F7} (x+3)` start smaller so they stay on one line.
+    private func exprSize(_ s: String) -> CGFloat {
+        switch s.count {
+        case ...6: return 52
+        case ...10: return 44
+        case ...15: return 36
+        case ...20: return 30
+        default: return 26
         }
     }
 

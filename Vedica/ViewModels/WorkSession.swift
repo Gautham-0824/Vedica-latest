@@ -7,7 +7,7 @@ enum AnsStatus { case none, ok, bad }
 enum WorkMode { case practice, quiz }
 
 struct AnswerRecord {
-    var question: Question
+    var question: QuizQ
     var top: String, bot: String
     var ok: Bool
     var part: Part?
@@ -23,7 +23,7 @@ final class WorkSession {
     var mode = WorkMode.quiz
     var id = "frac"
     var fromQuizzes = false
-    var questions: [Question] = QuizData.questions("frac")
+    var questions: [QuizQ] = QuizData.questions("frac")
     var index = 0
     var top = ""
     var bot = ""
@@ -40,7 +40,7 @@ final class WorkSession {
     var padStrokes: [[CGPoint]] = []
     private var auto: Task<Void, Never>?
 
-    var q: Question { questions[min(index, questions.count - 1)] }
+    var q: QuizQ { questions[min(index, questions.count - 1)] }
     var quiz: Bool { mode == .quiz }
     var isLast: Bool { index >= questions.count - 1 }
     var score: Int { records.filter(\.ok).count }

@@ -52,7 +52,7 @@ struct ResultsScreen: View {
             .accessibilityLabel("\(z.score) of \(total) correct")
             Text(headline).font(Theme.round(30, .black)).foregroundColor(Theme.ink).padding(.top, pt(14))
                 .accessibilityAddTraits(.isHeader)
-            Text("Quiz: \(QuizData.names[z.id] ?? "")").font(Theme.text(16, .semibold)).foregroundColor(Theme.sub)
+            Text("Quiz: \(QuizData.name(z.id))").font(Theme.text(16, .semibold)).foregroundColor(Theme.sub)
                 .lineLimit(1).minimumScaleFactor(0.8).padding(.top, pt(4))
             HStack(spacing: 0) {
                 stat("Total time", clockText(z.totalMs))
@@ -62,7 +62,7 @@ struct ResultsScreen: View {
             .padding(.vertical, pt(14))
             .background(RoundedRectangle(cornerRadius: pt(20), style: .continuous).fill(Theme.panel))
             .padding(.top, pt(16))
-            if let line = QuizData.doneLines[z.id], z.score > 0 {
+            if let line = QuizData.doneLine(z.id), z.score > 0 {
                 HStack(spacing: pt(8)) {
                     Image(systemName: "star.fill").font(.system(size: pt(14))).foregroundColor(Theme.orange)
                         .accessibilityHidden(true)
@@ -129,6 +129,7 @@ struct ResultsScreen: View {
                 .accessibilityLabel(r.ok ? "Correct" : "Wrong")
             VStack(alignment: .leading, spacing: pt(1)) {
                 Text(r.question.text).font(Theme.round(19, .heavy)).foregroundColor(Theme.ink)
+                    .lineLimit(1).minimumScaleFactor(0.6)
                 Text(r.ok ? "\(r.question.answer) \u{00B7} \(secsText(Double(r.ms)))" : "You wrote \(yours). Answer: \(r.question.answer) \u{00B7} \(secsText(Double(r.ms)))")
                     .font(Theme.text(14, .medium)).foregroundColor(Theme.sub).lineLimit(1).minimumScaleFactor(0.7)
             }
