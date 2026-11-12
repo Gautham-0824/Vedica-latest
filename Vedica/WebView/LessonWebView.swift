@@ -232,13 +232,16 @@ struct LessonScreen: View {
     var body: some View {
         ZStack(alignment: .bottomTrailing) {
             Theme.canvas.ignoresSafeArea()
+            // On iPhone the lesson stays inside the safe area, so its header and close button clear the
+            // Dynamic Island and nothing is cut by the rounded corners in landscape. The background still fills
+            // the screen. iPad has no such cut-outs, so lessons there keep the whole screen as before.
             LessonWebView(lessonID: id, narrate: nav.store.s.narrationOn, startStep: start, continueLabel: buttonTitle, onMessage: handle)
-                .ignoresSafeArea()
+                .ignoresSafeArea(edges: UIDevice.current.userInterfaceIdiom == .phone ? [] : .all)
             if finished {
                 PrimaryPill(title: buttonTitle) {
                     advance()
                 }
-                .padding(.trailing, 36).padding(.bottom, 30)
+                .padding(.trailing, pt(36)).padding(.bottom, pt(30))
                 .transition(.move(edge: .bottom).combined(with: .opacity))
             }
         }
@@ -250,12 +253,12 @@ struct LessonScreen: View {
     }
 
     private func advance() {
-        if review { nav.go(.results, forward: false) } else { nav.lessonFinished(id) }
+        if review { nav.show(.results, forward: false) } else { nav.lessonFinished(id) }
     }
 
     private func handle(_ msg: String) {
         if msg == "exit" {
-            if review { nav.go(.results, forward: false) } else { nav.lessonExit(id) }
+            if review { nav.show(.results, forward: false) } else { nav.lessonExit(id) }
         } else if msg == "continue" {
             advance()
         } else if msg == "done" && Catalog.page(id).file.hasPrefix("lessons/") {

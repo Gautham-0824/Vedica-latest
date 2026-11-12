@@ -204,9 +204,10 @@ struct Icon: View {
             if filled {
                 SVGShape(d: d).fill(color)
             } else {
-                SVGShape(d: d).stroke(color, style: StrokeStyle(lineWidth: stroke, lineCap: .round, lineJoin: .round))
+                SVGShape(d: d).stroke(color, style: StrokeStyle(lineWidth: pt(stroke), lineCap: .round, lineJoin: .round))
             }
         }
-        .frame(width: size, height: size)
+        // Sizes are design points; `pt` scales them for the current window.
+        .frame(width: pt(size), height: pt(size))
     }
 }
