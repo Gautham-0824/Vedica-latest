@@ -232,8 +232,11 @@ struct LessonScreen: View {
     var body: some View {
         ZStack(alignment: .bottomTrailing) {
             Theme.canvas.ignoresSafeArea()
+            // On iPhone the lesson stays inside the safe area, so its header and close button clear the
+            // Dynamic Island and nothing is cut by the rounded corners in landscape. The background still fills
+            // the screen. iPad has no such cut-outs, so lessons there keep the whole screen as before.
             LessonWebView(lessonID: id, narrate: nav.store.s.narrationOn, startStep: start, continueLabel: buttonTitle, onMessage: handle)
-                .ignoresSafeArea()
+                .ignoresSafeArea(edges: UIDevice.current.userInterfaceIdiom == .phone ? [] : .all)
             if finished {
                 PrimaryPill(title: buttonTitle) {
                     advance()

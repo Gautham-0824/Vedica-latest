@@ -37,8 +37,7 @@ struct RootView: View {
     }
 }
 
-/// The four tabs in a native `TabView`. The system tab bar is hidden: the design's own tab pill
-/// (in `TabHeader`) drives the selection, so the app looks the same as before.
+/// The four tabs in a native `TabView` with the system tab bar.
 struct MainTabs: View {
     @Environment(AppNavigator.self) private var nav
 
@@ -48,31 +47,39 @@ struct MainTabs: View {
 
     var body: some View {
         @Bindable var nav = nav
-        VStack(spacing: 0) {
-            TabHeader()
-            TabView(selection: $nav.tab) {
-                Tab(AppTab.home.title, systemImage: AppTab.home.symbol, value: AppTab.home) {
-                    HomeScreen().hiddenTabBar()
-                }
-                Tab(AppTab.lessons.title, systemImage: AppTab.lessons.symbol, value: AppTab.lessons) {
+        // The system tab bar is shown (HIG): at the bottom on iPhone, iPadOS's standard tab bar on iPad.
+        TabView(selection: $nav.tab) {
+            Tab(AppTab.home.title, systemImage: AppTab.home.symbol, value: AppTab.home) {
+                withHeader { HomeScreen() }
+            }
+            Tab(AppTab.lessons.title, systemImage: AppTab.lessons.symbol, value: AppTab.lessons) {
+                withHeader {
                     NavigationStack(path: $nav.lessonsPath) {
                         LessonsScreen()
                             .hiddenNavBar()
                             .navigationDestination(for: Tier.self) { TierScreen(tier: $0).hiddenNavBar() }
                     }
-                    .hiddenTabBar()
-                }
-                Tab(AppTab.quizzes.title, systemImage: AppTab.quizzes.symbol, value: AppTab.quizzes) {
-                    QuizzesScreen().hiddenTabBar()
-                }
-                Tab(AppTab.progress.title, systemImage: AppTab.progress.symbol, value: AppTab.progress) {
-                    ProgressScreen().hiddenTabBar()
                 }
             }
-            .tabViewStyle(.tabBarOnly)
+            Tab(AppTab.quizzes.title, systemImage: AppTab.quizzes.symbol, value: AppTab.quizzes) {
+                withHeader { QuizzesScreen() }
+            }
+            Tab(AppTab.progress.title, systemImage: AppTab.progress.symbol, value: AppTab.progress) {
+                withHeader { ProgressScreen() }
+            }
         }
+        .tint(Theme.blue)
         .background(Theme.canvas.ignoresSafeArea())
         .sheet(item: moduleSheet) { ModuleSheet(family: $0.id) }
+    }
+
+    /// Logo and avatar above a tab's screen.
+    private func withHeader<C: View>(@ViewBuilder _ content: () -> C) -> some View {
+        VStack(spacing: 0) {
+            TabHeader()
+            content()
+        }
+        .background(Theme.canvas.ignoresSafeArea())
     }
 }
 
@@ -138,29 +145,16 @@ struct ToastView: View {
     }
 }
 
-/// Header shared by the four tabs: logo, tab pill and avatar.
+/// Header shared by the four tabs: logo and avatar.
 struct TabHeader: View {
     @Environment(AppNavigator.self) private var nav
     private var layout: Metrics { Metrics.shared }
-    private var index: Int { AppTab.allCases.firstIndex(of: nav.tab) ?? 0 }
 
     var body: some View {
-        Group {
-            if layout.compact {
-                VStack(spacing: pt(14)) {
-                    HStack { logo; Spacer(); avatar }
-                    pill
-                }
-            } else {
-                ZStack {
-                    HStack { logo; Spacer(); avatar }
-                    pill
-                }
-            }
-        }
-        .padding(.horizontal, pt(36))
-        .padding(.top, pt(24))
-        .animation(.spring(response: 0.42, dampingFraction: 0.82), value: index)
+        // Tabs are switched with the system tab bar, so the header only holds the logo and the avatar.
+        HStack { logo; Spacer(); avatar }
+            .padding(.horizontal, pt(36))
+            .padding(.top, pt(layout.compact ? 12 : 24))
     }
 
     private var logo: some View {
@@ -178,31 +172,6 @@ struct TabHeader: View {
             .buttonStyle(PressStyle(scale: 0.94))
             .padding(.top, pt(2))
             .accessibilityLabel("Profile")
-    }
-
-    private var pill: some View {
-        let w = pt(100), gap = pt(2)
-        return ZStack(alignment: .leading) {
-            Capsule().fill(.white).frame(width: w, height: pt(38))
-                .shadow(color: .black.opacity(0.12), radius: 4, x: 0, y: 3)
-                .offset(x: CGFloat(index) * (w + gap))
-            HStack(spacing: gap) {
-                ForEach(Array(AppTab.allCases.enumerated()), id: \.offset) { i, t in
-                    Button { nav.select(t) } label: {
-                        Text(t.title)
-                            .font(Theme.text(15, i == index ? .semibold : .medium))
-                            .foregroundColor(i == index ? Theme.ink : Color(hex: 0x3c3c43))
-                            .frame(width: w, height: pt(38))
-                            .contentShape(Rectangle())
-                    }
-                    .buttonStyle(.plain)
-                    .accessibilityAddTraits(i == index ? .isSelected : [])
-                }
-            }
-        }
-        .padding(pt(3))
-        .background(Capsule().fill(Color(hex: 0x767680, alpha: 0.12)))
-        .padding(.top, layout.compact ? 0 : pt(8))
     }
 }
 

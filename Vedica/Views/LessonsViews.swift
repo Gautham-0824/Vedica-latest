@@ -7,6 +7,8 @@ struct LessonsScreen: View {
     @Environment(AppNavigator.self) private var nav
     private var store: ProgressStore { nav.store }
     private var layout: Metrics { Metrics.shared }
+    /// Height of this screen (below the header, above the tab bar), in points.
+    @State private var screenH: CGFloat = 0
 
     /// Where the 1024 x 768 map drawing sits, and how much it is shrunk, for the current window.
     private var placement: (x: CGFloat, y: CGFloat, scale: CGFloat) {
@@ -33,12 +35,50 @@ struct LessonsScreen: View {
         .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
         // The map is a fixed drawing behind the title; as a background it never changes the screen's size.
         .background(alignment: .topLeading) {
-            map
-                .scaleEffect(p.scale, anchor: .topLeading)
-                .at(p.x, p.y)
+            if layout.compact {
+                compactMap
+            } else {
+                map
+                    .scaleEffect(p.scale, anchor: .topLeading)
+                    .at(p.x, p.y)
+            }
         }
         .clipped()
         .screenBackground()
+        .onGeometryChange(for: CGFloat.self, of: { $0.size.height }) { screenH = $0 }
+    }
+
+    /// Narrow windows (iPhone portrait): the same circles, labels and path, shrunk to the width and spread
+    /// down the free height below the title, so nothing overlaps the title and the screen is not empty below.
+    private var compactMap: some View {
+        // The drawn part of the map is x 290...930, y 150...640 in map coordinates.
+        let m = min(1, (layout.w - 36) / 640)
+        let top: CGFloat = 175   // design points below the top of this screen; clears the title and subtitle
+        let free = max(0, screenH / layout.k - top - 40)
+        let sy = min(max(m, free / 490), m * 1.7)
+        let X = { (x: CGFloat) in 18 + (x - 290) * m }
+        let Y = { (y: CGFloat) in top + (y - 150) * sy }
+        let P = { (x: CGFloat, y: CGFloat) in CGPoint(x: pt(X(x)), y: pt(Y(y))) }
+        // Node centres in map coordinates match the path's end points.
+        let spot = { (cx: CGFloat, cy: CGFloat, size: CGFloat) in (X(cx) - size / 2 * m, Y(cy) - size / 2 * m) }
+        let b = spot(380, 575, 148), i = spot(660, 400, 116), a = spot(500, 215, 116)
+        return ZStack(alignment: .topLeading) {
+            Path { p in
+                p.move(to: P(380, 575))
+                p.addCurve(to: P(660, 400), control1: P(380, 470), control2: P(660, 510))
+                p.addCurve(to: P(500, 215), control1: P(660, 300), control2: P(500, 320))
+            }
+            .stroke(Color(hex: 0xdfe7ef), style: StrokeStyle(lineWidth: pt(5 * m), lineCap: .round, dash: [0.1, pt(16 * m)]))
+            .accessibilityHidden(true)
+
+            node(.basics, "1", 148, 60, x: 0, y: 0, filled: true, labelX: 172, labelY: 47, title: "Basics", titleSize: 24, sub: nil)
+                .scaleEffect(m, anchor: .topLeading).at(b.0, b.1)
+            node(.inter, "2", 116, 48, x: 0, y: 0, filled: false, labelX: 138, labelY: 18, title: "Intermediate", titleSize: 22, sub: "Decimals and division")
+                .scaleEffect(m, anchor: .topLeading).at(i.0, i.1)
+            node(.adv, "3", 116, 48, x: 0, y: 0, filled: false, labelX: 138, labelY: 18, title: "Advanced", titleSize: 22, sub: "Algebra")
+                .scaleEffect(m, anchor: .topLeading).at(a.0, a.1)
+        }
+        .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
     }
 
     private var map: some View {
