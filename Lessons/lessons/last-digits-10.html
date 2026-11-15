@@ -25,6 +25,15 @@ button{font:inherit;-webkit-tap-highlight-color:transparent;cursor:pointer}
 .pri:active,.sec:active{transform:scale(.96)}
 @keyframes vdRing{0%{transform:scale(.35);opacity:0}25%{opacity:.9}100%{transform:scale(1.8);opacity:0}}
 button:focus-visible{outline:3px solid #0a84ff;outline-offset:2px}
+#rail{max-height:294px;overflow-y:auto;overscroll-behavior:contain;scrollbar-width:none;pointer-events:auto;padding:2px 10px 16px;margin:0 -10px -16px}#rail::-webkit-scrollbar{display:none}
+html.rail-below.vd-lift #nl,html.rail-below.vd-lift #bl,html.rail-below.vd-lift #ringh,html.rail-below.vd-lift #fin,html.rail-below.vd-lift #spot,html.rail-below.vd-lift #cv>svg{translate:var(--hdx,0px) calc(var(--hdy,0px) - 70px)!important}
+html.rail-below.vd-lift #cv>#hand{margin-top:calc(var(--hdy,0px) - 70px)!important}
+html.rail-below [data-rail]{top:calc(var(--railTop) - 45px)!important}
+html.rail-below:not(.rail-col) [data-rail] #rail{max-height:122px!important}
+#pg{width:max-content;max-width:calc(var(--W,1024px) - 80px)}#pg>button{flex:0 1 auto;min-width:0}#pg>button>div{max-width:100%}
+html.rail-below [data-rail]{flex-direction:column!important;flex-wrap:nowrap!important}
+html.rail-below [data-rail]>:first-child{flex-basis:auto!important}
+html.rail-below [data-rail] #rail{flex-direction:column!important;flex-wrap:nowrap!important;align-items:center!important;max-height:165px!important}
 </style>
 </head>
 <body>
@@ -140,7 +149,7 @@ const ST={
     const g=GE(Y),ls=String(Y.L),tot=ls.length+2,xs2=xsOf(tot,512,ADV),all=[];
     digs(ls).forEach((d,i)=>{S.el('L'+i,d,ph>=1?xs2[i]:g.xs[i],RY,{c:ph>=1?GR:OR});all.push('L'+i)});
     digs(Y.Rs).forEach((d,i)=>{S.el('R'+i,d,ph>=1?xs2[ls.length+i]:g.xs[g.nl+i],RY,{c:ph>=1?GR:OR});all.push('R'+i)});
-    if(ph>=1){S.finale={x:512,y:RY,w:tot*ADV+130,h:160};S.win=true}else{S.f(all);S.h(all[all.length-1])}
+    if(ph>=1){S.win=true}else{S.f(all);S.h(all[all.length-1])}
   },
 };
 const SUM={
@@ -167,7 +176,7 @@ const STEPS=LIST.map(([g,n,m,name])=>({g,n,m,name,times:TM[g][0],end:TM[g][1]}))
 const LAST=STEPS.length-1;
 const SUTRA='Ekadhikena Purvena: by one more than the previous one';
 const LANGS=[['en','English','English','en-IN'],['hi','Hindi','हिन्दी','hi-IN'],['ta','Tamil','தமிழ்','ta-IN'],['te','Telugu','తెలుగు','te-IN'],['ml','Malayalam','മലയാളം','ml-IN']];
-const PRACTICE=[{n:43,m:47},{n:62,m:68},{n:81,m:89},{n:125,m:125},{n:137,m:133}];
+const PRACTICE=[{n:62,m:68},{n:81,m:89},{n:34,m:36,plain:true},{n:72,m:78,plain:true}];
 const rnd=(a,b)=>a+Math.floor(Math.random()*(b-a+1));
 function randomP(){const F=rnd(1,99),a=rnd(1,9);return {n:F*10+a,m:F*10+10-a}}
 function tasks(Y){return [
@@ -177,11 +186,25 @@ function tasks(Y){return [
   {cap:'Multiply the last digits: **'+Y.a+' × '+Y.b+'**. Write it with 2 digits.',q:Y.a+' × '+Y.b,ok:Y.a+' × '+Y.b+' = '+Y.Rs,ans:Y.Rs,ex:[Y.a,'×',Y.b],g:'right',hint:'Close! If the product is one digit, put a 0 in front.'},
   {cap:'Join the parts. What is **'+Y.n+' × '+Y.m+'**?',q:Y.n+' × '+Y.m,ans:String(Y.ans),g:'join',hint:'Close! Write the left part, then the right part.'}];}
 function pscene(S,Y,pr){
+  if(isOwn()){OWN.scene(S,Y,pr.done||pr.ok);return}
   const T=tasks(Y),t=pr.task,r=prob(S,Y,250),fin=pr.done||(pr.ok&&t===T.length-1);
-  if(fin){r.all.forEach(i=>S.mod(i,{c:GR}));S.finale={x:512,y:250,w:r.total+140,h:150}}
+  if(fin){r.all.forEach(i=>S.mod(i,{c:GR}))}
   else if(T[t].ex){const ex=T[t].ex,ids2=ex.map((_,i)=>'te'+t+'_'+i),q=seq(S,ex.map((x,i)=>({id:ids2[i],t:String(x),op:i===1})),512,368,46);
     S.box('tb'+t,512,368,Math.max(240,q.total+90),84,{shadow:true,r:26});r.all.forEach(i=>S.mod(i,{c:BLUE}));S.f(r.all,'tb'+t,ids2)}
 }
+
+/* ---------- on your own: only the final answer, after the guided questions ---------- */
+const isOwn=()=>!!(st.pr&&st.pr.list[st.pr.pi]&&st.pr.list[st.pr.pi].plain);
+function ptasks(Y){const T=tasks(Y);if(!isOwn())return T;const f=T[T.length-1];return [{...f,ex:null,ty:null,cap:OWN.cap(Y),ok:OWN.ok(Y),hint:OWN.hint(Y),ans:OWN.ans?OWN.ans(Y):f.ans}]}
+const PLBL=pr=>{const L=pr.list,g=L.filter(p=>!p.plain).length;return L[pr.pi]&&L[pr.pi].plain?'On your own '+(pr.pi-g+1)+' of '+(L.length-g):'Guided '+(pr.pi+1)+' of '+g};
+const PW=(pr,own)=>{if(st.step!==LAST)return 0;const L=pr.list,g=L.filter(p=>!p.plain).length,n=own?L.length-g:g;if(!n)return 0;const c=pr.pi+(pr.done||pr.ok?1:0);return Math.max(0,Math.min(n,own?c-g:c))/n*100};
+const OWN={
+  cap:Y=>'On your own now. What is **'+Y.n+' × '+Y.m+'**?',
+  ok:Y=>Y.F+' × '+Y.F1+' = '+Y.L+' and '+Y.a+' × '+Y.b+' = '+Y.Rs+', so '+Y.n+' × '+Y.m+' = '+Y.ans,
+  hint:Y=>'Close! Multiply the front part by one more, then multiply the last digits.',
+  scene:(S,Y,fin)=>{const r=prob(S,Y,250);r.all.forEach(i=>S.mod(i,{c:fin?GR:BLUE}));if(!fin)S.f(r.all)},
+  replay:Y=>[{g:'succ'},{g:'left'},{g:'right'},{g:'join'}],
+};
 
 /* ---------- chrome ---------- */
 const cv=document.getElementById('cv');
@@ -195,7 +218,7 @@ cv.innerHTML=`
 <div id="bl"></div>
 <svg class="abs" width="1024" height="768" viewBox="0 0 1024 768" style="left:0;top:0;pointer-events:none;overflow:visible"><path id="a0"/><path id="a1"/></svg>
 <div id="nl"></div>
-<div class="abs" style="right:20px;top:216px;width:184px;display:flex;flex-direction:column;align-items:flex-end;gap:7px;pointer-events:none;z-index:2"><div id="rh" style="padding:0 0 2px 4px;font-size:12px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:#8391a6;transition:opacity 300ms">Steps</div><div id="rail" style="display:flex;flex-direction:column;gap:7px"></div></div>
+<div class="abs" style="right:20px;top:332px;width:184px;display:flex;flex-direction:column;align-items:flex-end;gap:7px;pointer-events:none;z-index:2"><div id="rh" style="padding:0 0 2px 4px;font-size:12px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:#8391a6;transition:opacity 300ms">Steps</div><div id="rail" style="display:flex;flex-direction:column;gap:7px"></div></div>
 <div id="ringh"></div>
 <div id="hand" class="abs" style="left:0;top:0;pointer-events:none;z-index:4"><svg width="66" height="70" viewBox="-30 -18 60 64" style="display:block;overflow:visible;filter:drop-shadow(0 6px 10px rgba(23,35,58,.18))"><path d="M-3 11V-11c0-4 6-4 6 0v11-5c0-4 6-4 6 0v7-4c0-4 6-4 6 0v7-2c0-4 6-4 6 1v8c0 11-7 18-18 18-9 0-14-4-18-11l-6-10c-2-4 3-8 6-4z" style="fill:#fff7ee;stroke:#23324b;stroke-width:2;stroke-linecap:round;stroke-linejoin:round"/></svg></div>
 <div id="tap" class="abs" style="left:0;right:0;top:110px;bottom:120px;cursor:pointer"></div>
@@ -204,20 +227,21 @@ cv.innerHTML=`
 <div id="dn" class="abs" style="left:0;right:0;top:400px;display:none;flex-direction:column;align-items:center;gap:12px"><div class="nun" style="font-size:40px;font-weight:900;letter-spacing:-.03em">You did it!</div><div id="su" style="height:34px;padding:0 16px;border-radius:99px;background:#eaf3ff;color:#0a84ff;font-size:15px;font-weight:700;display:flex;align-items:center"></div><div style="display:flex;gap:12px;margin-top:12px"><button id="wa" class="sec">Watch the lesson again</button><button id="ta" class="pri">Try another</button></div></div>
 <div class="abs" style="top:100px;right:30px;display:flex;flex-direction:column;align-items:flex-end;gap:10px;z-index:9">
  <button id="inf" class="rb" aria-label="About this sutra" title="About this sutra" style="width:48px;height:48px"><svg width="24" height="24" viewBox="0 0 24 24" style="fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round"><circle cx="12" cy="12" r="9"/><path d="M12 11v5.5" style="stroke-width:2.4"/><circle cx="12" cy="7.6" r="1.25" style="fill:currentColor;stroke:none"/></svg></button>
- <div id="spw" style="position:relative;display:flex;justify-content:flex-end"><button id="spk" class="rb" style="width:48px;height:48px"><svg width="24" height="24" viewBox="0 0 24 24" style="fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round"><path d="M4 9.5h3.2L12 5.5v13l-4.8-4H4z" style="fill:currentColor"/><path id="wv"/></svg></button><div id="menu"></div></div></div>
+ <div id="spw" style="position:relative;display:flex;justify-content:flex-end"><button id="spk" class="rb" style="width:48px;height:48px"><svg width="24" height="24" viewBox="0 0 24 24" style="fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round"><path d="M4 9.5h3.2L12 5.5v13l-4.8-4H4z" style="fill:currentColor"/><path id="wv"/></svg></button><div id="menu"></div></div><button id="pz" class="rb" aria-label="Pause" title="Pause" style="width:48px;height:48px"><svg width="22" height="22" viewBox="0 0 24 24" style="display:block"><path id="pzi" d="M7 5.5h3.5v13H7zM13.5 5.5H17v13h-3.5z" style="fill:currentColor;stroke:currentColor;stroke-width:1.2;stroke-linejoin:round"/></svg></button></div>
 <div id="info" class="abs" style="inset:0;z-index:20;display:none;place-items:center;background:rgba(23,35,58,.32);backdrop-filter:blur(6px);opacity:0;transition:opacity 260ms ease-out"><div id="card" role="dialog" aria-modal="true" aria-label="Last digits add to 10" style="position:relative;width:560px;box-sizing:border-box;padding:30px 32px 28px;border-radius:32px;background:#fff;box-shadow:0 30px 80px rgba(23,35,58,.24);transition:transform 380ms cubic-bezier(.2,.8,.2,1),opacity 260ms">
  <button id="ix" class="rb" aria-label="Close" style="position:absolute;top:18px;right:18px;width:40px;height:40px;border:0;background:#f1f4f8"><svg width="18" height="18" viewBox="0 0 24 24" style="fill:none;stroke:currentColor;stroke-width:2.6;stroke-linecap:round"><path d="M6 6l12 12M18 6 6 18"/></svg></button>
  <div class="nun" style="padding:8px 44px 0;text-align:center;font-size:30px;font-weight:900;letter-spacing:-.03em;line-height:1.2">Last Digits Add to 10</div>
- <div style="margin-top:12px;text-align:center;font-size:15px;font-weight:600;color:#6b7a90;line-height:1.4">When two numbers share the same front part and their last digits add to 10. Multiply the front by its successor, then write the product of the last digits.</div>
- <div class="nun" style="margin-top:20px;height:130px;border-radius:20px;background:#f5f8fb;display:flex;align-items:center;justify-content:center;gap:14px;font-weight:900;letter-spacing:-.03em;font-size:48px"><span>43 × 4<span id="ex2" style="display:inline-block;color:#0a84ff;font-size:1.3em;line-height:1;transition:transform 600ms cubic-bezier(.3,1.3,.5,1) 400ms,opacity 300ms ease 400ms">7</span></span><span>=</span><span>2021</span></div>
+ <div style="margin-top:12px;text-align:center;font-size:15px;font-weight:600;color:#6b7a90;line-height:1.4">Same front part, and the last digits add to 10.</div>
+ <div class="nun" style="margin-top:20px;height:130px;border-radius:20px;background:#f5f8fb;display:flex;align-items:center;justify-content:center;gap:14px;font-weight:900;letter-spacing:-.03em;font-size:48px"><span>4<span id="ex3" style="display:inline-block;color:#e86f00;font-size:1.3em;line-height:1;transition:transform 600ms cubic-bezier(.3,1.3,.5,1) 400ms,opacity 300ms ease 400ms">3</span> × 4<span id="ex2" style="display:inline-block;color:#e86f00;font-size:1.3em;line-height:1;transition:transform 600ms cubic-bezier(.3,1.3,.5,1) 400ms,opacity 300ms ease 400ms">7</span></span><span>=</span><span>2021</span></div>
  <button id="ist" class="pri" style="margin:26px auto 0;display:block;min-width:160px;height:50px">Start</button></div></div>
 <div class="abs" style="left:36px;right:36px;bottom:30px;display:grid;grid-template-columns:56px minmax(0,1fr) auto;align-items:center;gap:20px;z-index:6">
  <button id="bk" class="rb" aria-label="Previous step" style="width:56px;height:56px"><svg width="24" height="24" viewBox="0 0 24 24" style="fill:none;stroke:currentColor;stroke-width:2.4;stroke-linecap:round;stroke-linejoin:round"><path d="m14.5 6-6 6 6 6"/></svg></button>
  <div id="cap" aria-live="polite" class="nun" style="text-align:center;font-size:23px;font-weight:700;color:#34425a;letter-spacing:-.01em;line-height:1.3;text-wrap:balance"></div>
  <div style="display:flex;align-items:center;gap:10px"><button id="rp" class="rb" aria-label="Replay this step" style="height:56px;padding:0 18px 0 14px;display:flex;gap:7px;font-size:15px;font-weight:600"><svg width="20" height="20" viewBox="0 0 24 24" style="fill:none;stroke:currentColor;stroke-width:2.3;stroke-linecap:round;stroke-linejoin:round"><path d="M4 12a8 8 0 1 0 2.3-5.7M4 5v5h5"/></svg><span>Replay</span></button>
- <button id="nx" style="height:56px;border-radius:99px;border:0;overflow:hidden;display:flex;align-items:center;justify-content:center;padding:0;font-size:17px;font-weight:700;transition:width 520ms cubic-bezier(.32,.72,0,1),background 300ms,color 300ms,box-shadow 300ms,gap 520ms"><span id="nxl" style="overflow:hidden;white-space:nowrap;transition:max-width 520ms cubic-bezier(.32,.72,0,1),opacity 300ms">Next</span><svg width="24" height="24" viewBox="0 0 24 24" style="flex-shrink:0;fill:none;stroke:currentColor;stroke-width:2.4;stroke-linecap:round;stroke-linejoin:round"><path id="nxi" d="m9.5 6 6 6-6 6"/></svg></button></div></div>`;
+ <button id="nx" style="height:56px;border-radius:99px;border:0;overflow:hidden;display:flex;align-items:center;justify-content:center;padding:0;font-size:17px;font-weight:700;transition:width 520ms cubic-bezier(.32,.72,0,1),background 300ms,color 300ms,box-shadow 300ms,gap 520ms"><span id="nxl" style="overflow:hidden;white-space:nowrap;transition:max-width 520ms cubic-bezier(.32,.72,0,1),opacity 300ms">Next</span><svg width="24" height="24" viewBox="0 0 24 24" style="flex-shrink:0;fill:none;stroke:currentColor;stroke-width:2.4;stroke-linecap:round;stroke-linejoin:round"><path id="nxi" d="m9.5 6 6 6-6 6"/></svg><div id="nxf" style="position:absolute;inset:0;border-radius:99px;background:#0a84ff;color:#fff;display:none;align-items:center;justify-content:center;gap:6px;pointer-events:none;font-size:17px;font-weight:700"><span>Next</span><svg width="24" height="24" viewBox="0 0 24 24" style="flex-shrink:0;fill:none;stroke:currentColor;stroke-width:2.4;stroke-linecap:round;stroke-linejoin:round"><path d="m9.5 6 6 6-6 6"/></svg></div></button></div></div>`;
 const $=id=>document.getElementById(id);
 const pgBars=STEPS.map((s,i)=>{const b=document.createElement('button'),w=STEPS.length>14?34:42;b.setAttribute('aria-label','Go to '+s.name);b.style.cssText='padding:12px 0;border:0;background:transparent';b.innerHTML='<div style="width:'+w+'px;height:5px;border-radius:99px;background:#e1e8ef;overflow:hidden"><div style="height:100%;width:0;background:#0a84ff;border-radius:99px"></div></div>';b.onclick=()=>go(i);$('pg').appendChild(b);return b.firstChild.firstChild});
+const ownBar=(()=>{const b=$('pg').lastChild.cloneNode(true);b.setAttribute('aria-label','Go to On your own');b.onclick=()=>go(LAST,{own:1});$('pg').appendChild(b);return b.firstChild.firstChild})();
 '1234567890'.split('').concat('⌫').forEach(d=>{const b=document.createElement('button');b.className='key';b.textContent=d;b.setAttribute('aria-label',d==='⌫'?'Delete':d);b.onclick=()=>d==='⌫'?del():press(d);$('keys').appendChild(b)});
 
 /* ---------- state + engine ---------- */
@@ -230,17 +254,33 @@ const cur=()=>st.pr.list[st.pr.pi];
 const setPr=p=>{st.pr={...st.pr,...p};render()};
 function go(step,opts={}){
   clear();const def=STEPS[step];
-  st.step=step;st.phase=0;st.done=false;st.capIn=false;if(step===LAST)st.pr=freshPr(opts.list);render();
+  st.step=step;st.phase=0;st.done=false;st.capIn=false;st.paused=false;st.t0=Date.now();stopAuto();if(step===LAST){st.pr=freshPr(opts.list);if(opts.own){const j=st.pr.list.findIndex(p=>p.plain);if(j>0)st.pr.pi=j}}render();
   later(()=>{st.capIn=true;render()},40);
   def.times.forEach((t,i)=>{if(i>0)later(()=>{st.phase=i;render()},t)});
-  later(()=>{st.done=step<LAST;render()},def.end);
+  later(()=>{st.done=step<LAST;render();startAuto()},def.end);
+}
+
+/* ---------- auto next and pause, as in the Basics lessons ---------- */
+const AUTO=5000;let autoT=null,autoF=null;
+function stopAuto(){clearTimeout(autoT);clearTimeout(autoF);autoT=null;st.auto=false}
+function startAuto(){stopAuto();if(st.step>=LAST||st.info||st.paused||!st.done)return;
+  autoF=setTimeout(()=>{st.auto=true;render()},40);
+  const t0=Date.now(),tick=()=>{let sp=false;try{sp=st.audio&&speechSynthesis.speaking}catch(e){}if(sp&&Date.now()-t0<AUTO+12000)autoT=setTimeout(tick,250);else{autoT=null;next()}};
+  autoT=setTimeout(tick,AUTO+40)}
+function togglePause(){
+  if(st.step>=LAST)return;
+  if(!st.paused){st.pe=Date.now()-st.t0;clear();stopAuto();st.paused=true;try{speechSynthesis.pause()}catch(e){}render();return}
+  const def=STEPS[st.step],pe=st.pe,step=st.step;st.paused=false;st.t0=Date.now()-pe;st.capIn=true;try{speechSynthesis.resume()}catch(e){}
+  if(st.done){render();startAuto();return}
+  def.times.forEach((t,i)=>{if(i>st.phase)later(()=>{st.phase=i;render()},Math.max(0,t-pe))});
+  later(()=>{st.done=step<LAST;render();startAuto()},Math.max(0,def.end-pe));render();
 }
 const next=()=>go(st.step<LAST?st.step+1:0);
 const back=()=>st.step>0?go(st.step-1):go(0);
-function stageTap(){if(st.step>=LAST)return;if(!st.done){clear();st.phase=STEPS[st.step].times.length-1;st.done=true;st.capIn=true;render()}else next()}
+function stageTap(){if(st.step>=LAST)return;if(!st.done){clear();st.phase=STEPS[st.step].times.length-1;st.done=true;st.capIn=true;render();startAuto()}else next()}
 function press(d){
   const {pr}=st;if(st.step!==LAST||st.phase<1||!pr||pr.ok||pr.replay||pr.done)return;
-  const Y=yav(cur().n,cur().m),T=tasks(Y),t=pr.task,ans=T[t].ans,input=((pr.bad?'':pr.input)+d).slice(0,ans.length);
+  const Y=yav(cur().n,cur().m),T=ptasks(Y),t=pr.task,ans=T[t].ans,input=((pr.bad?'':pr.input)+d).slice(0,ans.length);
   if(input.length<ans.length)return setPr({input,bad:false,again:false});
   if(input===ans){
     buzz([12,40,12]);setPr({input,ok:true,bad:false,again:false});
@@ -255,10 +295,10 @@ function press(d){
 }
 function del(){const {pr}=st;if(st.step!==LAST||!pr||pr.ok||pr.replay||pr.done)return;setPr({input:pr.bad?'':pr.input.slice(0,-1),bad:false})}
 function startReplay(){
-  const Y=yav(cur().n,cur().m),g=tasks(Y)[st.pr.task].g,si=STEPS.findIndex(s=>s.g===g);let t=0;
-  setPr({replay:{s:si,ph:0},input:'',bad:false});
-  STEPS[si].times.forEach((tt,ph)=>later(()=>setPr({replay:{s:si,ph}}),tt));
-  t=STEPS[si].end+700;later(()=>setPr({replay:null,wrong:0,input:'',again:true}),t);
+  const Y=yav(cur().n,cur().m),tk=ptasks(Y)[st.pr.task],Q=(isOwn()?OWN.replay(Y):[{g:tk.g,k:tk.k}]).map(q=>({...q,s:STEPS.findIndex(s=>s.g===q.g)})).filter(q=>q.s>=0);let t=0;
+  setPr({replay:{s:Q[0].s,ph:0,k:Q[0].k},input:'',bad:false});
+  Q.forEach(q=>{STEPS[q.s].times.forEach((tt,ph)=>later(()=>setPr({replay:{s:q.s,ph,k:q.k}}),t+tt));t+=STEPS[q.s].end+700});
+  later(()=>setPr({replay:null,wrong:0,input:'',again:true}),t);
 }
 function frame(){
   if(st.step<LAST){const d=STEPS[st.step],Y=yav(d.n,d.m),S=mk(Y.n+'x'+Y.m+'.');ST[d.g](S,Y,st.phase);return S}
@@ -348,18 +388,20 @@ function render(){
   const rk=hv?Math.round(hx)+'-'+Math.round(hy)+'-'+st.step:'';
   if(rk!==ringKey){ringKey=rk;$('ringh').innerHTML=hv?'<div style="position:absolute;left:'+(hx-24)+'px;top:'+(hy-24)+'px;width:48px;height:48px;border-radius:50%;z-index:3;border:3px solid rgba(10,132,255,.45);pointer-events:none;animation:vdRing 1.5s 1s ease-out infinite both"></div>':''}
 
+  document.documentElement.classList.toggle('vd-lift',st.step<LAST||!!(st.pr&&st.pr.replay));
   // recap rail
   const rc=STEPS[st.step],items=[];
   if(st.step<LAST)STEPS.forEach((s,i)=>{if(i>st.step||!SUM[s.g]||s.n!==rc.n||s.m!==rc.m||(i===st.step&&!st.done))return;items.push({id:i,txt:SUM[s.g](yav(s.n,s.m)),hl:HL[s.g]||(yav(s.n,s.m).over?BLUE:OR)})});
   const rail=$('rail');
   [...rail.children].forEach(c=>{if(!items.some(x=>'r'+x.id===c.dataset.id))c.remove()});
-  items.forEach(c=>{
+  items.forEach((c,ci)=>{
     if(rail.querySelector('[data-id="r'+c.id+'"]'))return;
     const m=c.txt.match(/^(.*(?:= |: ))(.+)$/),d=document.createElement('div');d.dataset.id='r'+c.id;d.setAttribute('role','button');d.title='Replay step '+(c.id+1);
     d.style.cssText='height:36px;max-width:184px;box-sizing:border-box;padding:0 14px 0 7px;pointer-events:auto;cursor:pointer;white-space:nowrap;display:flex;align-items:center;gap:8px;flex-shrink:0;border-radius:99px;background:#fff;border:1px solid #edf1f5;box-shadow:0 1px 0 rgba(23,35,58,.03),0 6px 16px rgba(23,35,58,.06);transform:translateX(12px) scale(.9);opacity:0';
-    d.innerHTML='<span style="flex-shrink:0;width:22px;height:22px;border-radius:99px;background:#eaf3ff;color:#0a84ff;display:grid;place-items:center;font-family:Nunito,sans-serif;font-size:12px;font-weight:800">'+(c.id+1)+'</span><span class="nun" style="font-size:15px;font-weight:800;letter-spacing:-.01em">'+(m?m[1]:c.txt)+'<span style="color:'+c.hl+'">'+(m?m[2]:'')+'</span></span>';
+    d.innerHTML='<span style="flex-shrink:0;width:22px;height:22px;border-radius:99px;background:#eaf3ff;color:#0a84ff;display:grid;place-items:center;font-family:Nunito,sans-serif;font-size:12px;font-weight:800">'+(ci+1)+'</span><span class="nun" style="font-size:15px;font-weight:800;letter-spacing:-.01em">'+(m?m[1]:c.txt)+'<span style="color:'+c.hl+'">'+(m?m[2]:'')+'</span></span>';
     d.onclick=()=>go(c.id);rail.appendChild(d);requestAnimationFrame(()=>requestAnimationFrame(()=>{d.style.transition='transform '+(rm?0:520)+'ms cubic-bezier(.3,1.3,.5,1),opacity 320ms ease';d.style.transform='none';d.style.opacity=1}));
   });
+  if(rail.children.length>(rail._n||0))rail.scrollTop=rail.scrollHeight;rail._n=rail.children.length;
   $('rh').style.opacity=items.length?1:0;
 
   // captions, practice
@@ -368,31 +410,34 @@ function render(){
   else if(!Y)capStr='Your turn.';
   else if(pr.replay){const d=STEPS[pr.replay.s];capStr=CAP[d.g](Y);hl=HL[d.g]||colOf(Y)}
   else if(pr.done){capStr='**'+Y.n+' × '+Y.m+' = '+Y.ans+'**. Same trick, every time.';hl=GR}
-  else{const T=tasks(Y)[pr.task];if(pr.ok){capStr='**Yes!** '+(T.ok||T.q+' = '+T.ans)+'.';hl=GR}else capStr=T.cap}
+  else{const T=ptasks(Y)[pr.task];if(pr.ok){capStr='**Yes!** '+(T.ok||T.q+' = '+T.ans)+'.';hl=GR}else capStr=T.cap}
   capNow=capStr.replace(/\*\*/g,'');
   const cap=$('cap');cap.innerHTML=capStr.split('**').map((t,i)=>t?(i%2?'<span style="color:'+hl+';font-weight:800">'+t+'</span>':'<span>'+t+'</span>'):'').join('');
   Object.assign(cap.style,{opacity:st.capIn?1:0,transform:'translateY('+(st.capIn?0:8)+'px)',filter:st.capIn?'blur(0)':'blur(4px)',transition:st.capIn?'opacity 450ms ease,transform 550ms cubic-bezier(.32,.72,0,1),filter 450ms ease':'none'});
-  $('sn').textContent=st.step===LAST?'Practice':'Step '+(st.step+1)+' of '+LAST;$('sm').textContent=STEPS[st.step].name;
+  $('sn').textContent=st.step===LAST?'Practice':'Step '+(st.step+1)+' of '+LAST;$('sm').textContent=st.step===LAST&&st.pr?PLBL(st.pr):STEPS[st.step].name;
   pgBars.forEach((f,i)=>{const s=STEPS[i];let w=0,tr='none';
-    if(i<st.step)w=100;else if(i===st.step){if(st.step<LAST){if(st.done){w=100;tr='width 300ms ease'}else if(st.capIn){w=100;tr='width '+s.end+'ms linear'}}else{w=(pr.pi+(pr.done||pr.ok?1:0))/pr.list.length*100;tr='width 600ms cubic-bezier(.32,.72,0,1)'}}
+    if(i<st.step)w=100;else if(i===st.step){if(st.step<LAST){if(st.done){w=100;tr='width 300ms ease'}else if(st.paused){w=Math.min(100,st.pe/s.end*100);tr='none'}else if(st.capIn){w=100;tr='width '+Math.max(0,s.end-(Date.now()-st.t0))+'ms linear'}}else{w=PW(pr,0);tr='width 600ms cubic-bezier(.32,.72,0,1)'}}
     f.style.width=w+'%';f.style.transition=tr});
+  ownBar.style.width=PW(pr,1)+'%';ownBar.style.transition=st.step===LAST?'width 600ms cubic-bezier(.32,.72,0,1)':'none';
   const showP=prac&&!pr.done&&!pr.replay;
   $('pr').style.display=showP?'flex':'none';$('keys').style.display=showP?'flex':'none';$('dn').style.display=prac&&pr.done?'flex':'none';$('tap').style.display=st.step<LAST&&!st.info?'block':'none';
   const col=pr.ok?GR:pr.bad?OR:BLUE;
   Object.assign($('inp').style,{minWidth:'100px',height:'78px',padding:'0 18px',boxSizing:'border-box',borderRadius:'22px',border:'3px solid '+col,background:pr.ok?'#eefaf3':pr.bad?'#fff5eb':'#f4f9ff',display:'flex',alignItems:'center',justifyContent:'center',fontSize:'46px',letterSpacing:'.02em',color:pr.input?col:'#b5c3d2',transform:'translateX('+pr.shake+'px) scale('+(pr.ok?1.06:1)+')',transition:'transform 110ms ease,border-color 200ms,background 200ms,color 200ms'});
   $('inp').textContent=pr.input||'?';
-  let ht='Use the trick from the lesson.';if(Y&&pr.wrong>0)ht=tasks(Y)[pr.task].hint;if(pr.again)ht='Your turn again.';if(pr.ok)ht='That’s it.';
+  let ht='Use the trick from the lesson.';if(Y&&pr.wrong>0)ht=ptasks(Y)[pr.task].hint;if(pr.again)ht='Your turn again.';if(pr.ok)ht='That’s it.';
   $('hint').textContent=ht;$('hint').style.color=pr.wrong&&!pr.ok&&!pr.again?'#a8662a':pr.ok?GR:'#8a97aa';
   $('su').textContent=SUTRA;
-  const exp=(st.done&&st.step<LAST)||(st.step===LAST&&false),nx=$('nx');
-  Object.assign(nx.style,{width:(exp?124:56)+'px',gap:exp?'6px':'0',background:exp?BLUE:'#e7f1fd',color:exp?'#fff':BLUE,boxShadow:exp?'0 10px 24px rgba(10,132,255,.3)':'none'});
+  const am=st.step<LAST,exp=am,nx=$('nx');
+  Object.assign(nx.style,{position:'relative',width:(exp?124:56)+'px',gap:exp?'6px':'0',background:am?'#fff':'#e7f1fd',color:BLUE,boxShadow:am?'inset 0 0 0 2px '+BLUE+', 0 6px 16px rgba(10,132,255,.14)':'none'});
+  {const fill=am&&st.auto;Object.assign($('nxf').style,{display:am?'flex':'none',clipPath:fill?'inset(0 0 0 0)':'inset(0 100% 0 0)',transition:fill?'clip-path '+AUTO+'ms linear':'none'})}
   Object.assign($('nxl').style,{maxWidth:exp?'60px':'0',opacity:exp?1:0});
   $('nxi').setAttribute('d',st.step===LAST?'M20 12a8 8 0 1 1-2.3-5.7M20 5v5h-5':'m9.5 6 6 6-6 6');nx.setAttribute('aria-label',st.step===LAST?'Start the lesson again':'Next step');
+  {const pz=$('pz');pz.style.display=st.step<LAST?'grid':'none';Object.assign(pz.style,{background:st.paused?BLUE:'#fff',color:st.paused?'#fff':'#3a4860',borderColor:st.paused?BLUE:'#e1e8ef',boxShadow:st.paused?'0 8px 18px rgba(10,132,255,.28)':'0 4px 12px rgba(23,35,58,.05)'});$('pzi').setAttribute('d',st.paused?'M8.5 5.5v13l10-6.5z':'M7 5.5h3.5v13H7zM13.5 5.5H17v13h-3.5z');pz.setAttribute('aria-label',st.paused?'Play':'Pause');pz.title=st.paused?'Play':'Pause'}
   $('bk').style.color=st.step===0?'#c3ccd6':'#3a4860';
   // info, narration menu
   const inf=$('info');inf.style.display=st.info?'grid':'none';inf.style.opacity=st.infoShow?1:0;
   Object.assign($('card').style,{opacity:st.infoShow?1:0,transform:'translateY('+(st.infoShow?0:14)+'px) scale('+(st.infoShow?1:.92)+')'});
-  Object.assign($('ex2').style,{opacity:st.infoShow?1:0,transform:st.infoShow?'none':'translateY(8px) scale(.8)'});
+  Object.assign($('ex2').style,{opacity:st.infoShow?1:0,transform:st.infoShow?'none':'translateY(8px) scale(.8)'});Object.assign($('ex3').style,{opacity:st.infoShow?1:0,transform:st.infoShow?'none':'translateY(8px) scale(.8)'});
   const on=st.audio,sk=$('spk');Object.assign(sk.style,{background:on?BLUE:'#fff',color:on?'#fff':'#3a4860',borderColor:on?BLUE:'#e1e8ef',boxShadow:on?'0 8px 18px rgba(10,132,255,.28)':'0 4px 12px rgba(23,35,58,.06)'});
   $('wv').setAttribute('d',on?'M15.5 9a4 4 0 0 1 0 6M18 6.5a7.5 7.5 0 0 1 0 11':'m16 9.5 5 5m0-5-5 5');
   const ln=(LANGS.find(l=>l[0]===st.lang)||LANGS[0])[1];sk.setAttribute('aria-label',on?'Narration on · '+ln:'Narration off');
@@ -402,10 +447,10 @@ function render(){
   if(st.audio&&st.capIn&&capNow!==spoken)speak();
 }
 function fit(){const k=Math.min(innerWidth/1024,innerHeight/768);$('cv').style.transform='scale('+k+')'}
-function openInfo(){st.info=true;st.menu=false;render();setTimeout(()=>{st.infoShow=true;render()},20)}
-function closeInfo(){st.infoShow=false;render();setTimeout(()=>{st.info=false;render();const p=pending;pending=null;if(p)p()},260)}
+function openInfo(){st.info=true;st.menu=false;stopAuto();render();setTimeout(()=>{st.infoShow=true;render()},20)}
+function closeInfo(){st.infoShow=false;render();setTimeout(()=>{st.info=false;render();const p=pending;pending=null;if(p)p();else startAuto()},260)}
 $('inf').onclick=openInfo;$('ix').onclick=closeInfo;$('ist').onclick=closeInfo;$('info').onclick=closeInfo;$('card').onclick=e=>e.stopPropagation();
-$('tap').onclick=stageTap;$('nx').onclick=next;$('bk').onclick=back;$('rp').onclick=()=>go(st.step);
+$('tap').onclick=stageTap;$('pz').onclick=togglePause;$('nx').onclick=next;$('bk').onclick=back;$('rp').onclick=()=>go(st.step);
 $('x').onclick=()=>{try{speechSynthesis.cancel()}catch(e){}go(0)};
 $('wa').onclick=()=>go(0);$('ta').onclick=()=>go(LAST,{list:[randomP()]});
 $('spw').onmouseenter=()=>{st.menu=true;render()};$('spw').onmouseleave=()=>{st.menu=false;render()};
