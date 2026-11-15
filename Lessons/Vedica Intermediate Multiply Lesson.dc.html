@@ -16,6 +16,13 @@ html,body{margin:0;height:100%;background:#e8edf2;}
 body{font-family:'DM Sans',system-ui,sans-serif;-webkit-font-smoothing:antialiased;overflow:hidden;color:#17233a}
 a{color:#0a84ff;text-decoration:none} a:hover{color:#0064d6}
 button{font:inherit;-webkit-tap-highlight-color:transparent}
+#rail{scrollbar-width:none}#rail::-webkit-scrollbar{display:none}
+/* Portrait (steps below the animation): one step per line, latest 4 showing, older ones scroll back. Beats the app's row layout. */
+html.rail-below [data-rail]{flex-direction:column!important;flex-wrap:nowrap!important;top:calc(var(--railTop) - 60px)!important}
+html.rail-below [data-rail]>:first-child{flex-basis:auto!important}
+html.rail-below [data-rail] #rail{flex-direction:column!important;flex-wrap:nowrap!important;align-items:center!important;max-height:184px!important}
+html.rail-below #rail>*{width:auto!important;min-width:190px}
+html.rail-below:not(.rail-col) [data-rail] #rail{max-height:140px!important}
 @keyframes vdRing{0%{transform:scale(.35);opacity:0}25%{opacity:.9}100%{transform:scale(1.8);opacity:0}}
 </style>
 </helmet>
@@ -67,14 +74,16 @@ button{font:inherit;-webkit-tap-highlight-color:transparent}
         <div style="{{ n.o }}"><div style="{{ n.i }}">{{ n.t }}</div></div>
       </sc-for>
 
-      <div style="position:absolute;right:30px;top:236px;width:190px;display:flex;flex-direction:column;align-items:stretch;gap:8px;pointer-events:none;z-index:2">
+      <div style="position:absolute;right:30px;top:316px;width:190px;display:flex;flex-direction:column;align-items:stretch;gap:8px;pointer-events:none;z-index:2">
         <div style="{{ railHead }}">{{ railTitle }}</div>
+        <div id="rail" style="display:flex;flex-direction:column;align-items:stretch;gap:8px;max-height:328px;overflow-y:auto;overscroll-behavior:contain;pointer-events:auto;padding:2px 10px 16px;margin:0 -10px -16px">
         <sc-for list="{{ rail }}" as="c" hint-placeholder-count="0">
           <div role="button" title="{{ c.label }}" style="{{ c.st }}" onClick="{{ c.go }}">
             <span style="flex-shrink:0;width:22px;height:22px;border-radius:99px;background:#eaf3ff;color:#0a84ff;display:grid;place-items:center;font-family:Nunito,sans-serif;font-size:12px;font-weight:800">{{ c.n }}</span>
             <span style="font-family:Nunito,sans-serif;font-size:16px;font-weight:800;letter-spacing:-0.01em;color:#17233a;white-space:nowrap">{{ c.a }}<span style="{{ c.bs }}">{{ c.b }}</span></span>
           </div>
         </sc-for>
+        </div>
       </div>
 
       {{ ring }}
@@ -138,6 +147,11 @@ button{font:inherit;-webkit-tap-highlight-color:transparent}
             </sc-for>
           </div>
         </div>
+        <sc-if value="{{ showPause }}" hint-placeholder-val="{{ false }}">
+          <button onClick="{{ togglePause }}" aria-label="{{ pauseAria }}" title="{{ pauseAria }}" style="{{ pauseStyle }}" style-active="transform:scale(.92)">
+            <svg width="22" height="22" viewBox="0 0 24 24" style="display:block"><path d="{{ pauseIcon }}" style="fill:currentColor;stroke:currentColor;stroke-width:1.2;stroke-linejoin:round"></path></svg>
+          </button>
+        </sc-if>
       </div>
 
       <sc-if value="{{ infoMount }}" hint-placeholder-val="{{ false }}">
@@ -798,10 +812,18 @@ function rdGen(m, n) {
   return out;
 }
 const P19 = { n: 1, m: 19 }, RK = K(P19), G19 = rdGen(19, 18);
-const RCX = 620, RADV = 36, RAY = 420, RBY = 548;
+let RCX = 620; const RADV = 36, RAY = 420, RBY = 548;
+// Where the digit row sits. Steps below (portrait): centred. Steps beside it: kept clear of the steps list,
+// centred again once the window is wide enough. Returns how far to lift the scene in portrait, so the steps fit below it.
+function rdFit() {
+  const de = document.documentElement, below = de.classList.contains('rail-below');
+  const W = parseFloat(getComputedStyle(de).getPropertyValue('--W')) || 1024, dx = (W - 1024) / 2;
+  RCX = below ? 537 : Math.min(537, 440 + dx);
+  return below ? -80 : 0;
+}
 const rpos = (i) => RCX + (17 - i - 8.5) * RADV;
 function rdFrac(S, big) {
-  const x = big ? 512 : 300, s = big ? 1 : 0.46, y0 = big ? 236 : 176, yb = big ? 304 : 207, y1 = big ? 372 : 238;
+  const x = big ? 512 : RCX - 320, s = big ? 1 : 0.46, y0 = big ? 236 : 176, yb = big ? 304 : 207, y1 = big ? 372 : 238;
   S.el(RK('fn'), '1', x, y0, { s });
   S.box(RK('fb'), x, yb, 150, 8, { fill: INK, c: INK, r: 99, s });
   S.el(RK('fd0'), '1', x - 29 * s, y1, { s });
@@ -810,8 +832,8 @@ function rdFrac(S, big) {
 }
 function rdTop(S) {
   rdFrac(S, false);
-  S.el(RK('mx'), '×', 356, 207, { z: 40, w: 700, c: ORANGE });
-  S.el(RK('er'), '2', 386, 207, { z: 52, c: ORANGE });
+  S.el(RK('mx'), '×', RCX - 264, 207, { z: 40, w: 700, c: ORANGE });
+  S.el(RK('er'), '2', RCX - 234, 207, { z: 52, c: ORANGE });
 }
 function rdRow(S, upto, o = {}) {
   S.el(RK('pre'), '0.', rpos(17) - 50, RAY, { z: 46, o: upto >= 0 || o.pre ? 1 : 0 });
@@ -831,11 +853,17 @@ function rdBubble(S, lines, cur) {
 }
 const RD_LINES = [['ct1', '8 × 2 = 16'], ['ct2', '6 × 2 + 1 = 13'], ['ct3', '3 × 2 + 1 = 7'], ['ct4', '7 × 2 = 14'], ['ct5', '4 × 2 + 1 = 9']];
 const cIf = (S, ...ids) => ids.filter(id => S.E[id]);
+// On-your-own question: the last k digits of 1/m are given (as written, left to right); the answer is the digit before them.
+function rdPlain(P) {
+  const e = (P.m + 1) / 10, k = P.k || 3, G = rdGen(P.m, k + 1), p = G[k - 1];
+  return { e, ans: G[k].d, known: G.slice(0, k).map(g => g.d).reverse(),
+    how: p.d + ' × ' + e + (p.c ? ' + ' + p.c : '') + ' = ' + G[k].v };
+}
 
 const RDEC = {
   topic: 'Recurring decimals',
   sutra: 'Ekadhikena Purvena: by one more than the previous one',
-  practice: [{ n: 1, m: 29 }, { n: 1, m: 39 }],
+  practice: [{ n: 1, m: 29 }, { n: 1, m: 39 }, { n: 1, m: 49, plain: true, k: 3 }, { n: 1, m: 69, plain: true, k: 4 }],
   steps: [
     { name: 'Meet the problem', times: [0, 500, 1500], end: 2600, P: P19,
       cap: () => 'Let’s turn **1/19** into a decimal. Long division would take ages. **Watch this.**',
@@ -952,7 +980,7 @@ const RDEC = {
         rdTop(S); rdRow(S, 17, { noCarry: true });
         S.box(RK('bar'), RCX, RAY - 38, 18 * RADV, 5, { fill: GREEN, c: GREEN, r: 99, o: ph >= 1 ? 1 : 0, s: ph >= 1 ? 1 : 0.4 });
         if (ph === 0) { S.f(rIds(0, 17), RK('pre')); }
-        if (ph >= 1) { green(S, [...rIds(0, 17), RK('pre')]); S.finale = { x: 590, y: RAY, w: 760, h: 150 }; S.win = true; }
+        if (ph >= 1) { green(S, [...rIds(0, 17), RK('pre')]); S.finale = { x: RCX - 30, y: RAY, w: 760, h: 150 }; S.win = true; }
       } },
     { name: 'Your turn', times: [0, 500], end: 700 },
   ],
@@ -972,6 +1000,18 @@ const RDEC = {
     S.box(k('pb'), 512, 238, 104, 6, { fill: INK, c: INK, r: 99 });
     dd.forEach((d, i) => S.el(k('pd' + i), d, 512 + (i - 0.5) * 40, 282, { z: 64 }));
     const ids = [k('pn'), k('pd0'), k('pd1')];
+    if (P.plain && pr.done) { green(S, ids); S.mod(k('pb'), { fill: GREEN, c: GREEN }); S.finale = { x: 512, y: 240, w: 210, h: 190 }; return; }
+    if (P.plain) { // on your own: the decimal's last digits are shown, the learner finds the next one to the left
+      const Q = rdPlain(P), xs = xsOf(Q.known.length + 2, 512, 40).map((x, i) => x + (i ? 6 : -6)), y = 368, got = pr.ok || pr.done;
+      S.box(k('ob'), 512, y, xs[xs.length - 1] - xs[0] + 110, 84, { shadow: true, r: 26 });
+      S.el(k('od'), '…', xs[0], y, { z: 46, c: MUTE });
+      S.box(k('oq'), xs[1], y, 34, 52, { dashed: true, c: got ? GREEN : '#cbd7e3', fill: 'transparent', r: 10, q: got ? '' : '?', o: got ? 0 : 1 });
+      S.el(k('oa'), Q.ans, xs[1], y, { z: 46, c: GREEN, o: got ? 1 : 0, s: got ? 1 : 0.6 });
+      Q.known.forEach((d, i) => S.el(k('ok' + i), d, xs[i + 2], y, { z: 46, c: i === 0 && !got ? BLUE : INK }));
+      if (got) { green(S, ids); S.mod(k('pb'), { fill: GREEN, c: GREEN }); S.finale = { x: 512, y: 280, w: Math.max(260, xs[xs.length - 1] - xs[0] + 150), h: 290 }; }
+      else { S.f(ids, k('ob'), k('od'), k('oq'), Q.known.map((_, i) => k('ok' + i))); if (pr.wrong >= 2 && !pr.again) S.hand = { k: k('ok0') }; }
+      return;
+    }
     const fin = pr.done || (pr.ok && t === T.length - 1);
     if (!fin) {
       if (t === 0) { S.mod(k('pd0'), { c: BLUE }); S.mod(k('pd1'), { o: 0.3 }); }
@@ -983,9 +1023,12 @@ const RDEC = {
   },
   doneCap: (P) => '**1/' + P.m + '** works the same way. Same trick, every time.',
   hint: () => [],
-  hintText: () => 'Close! Use the multiplier from the lesson.',
+  hintText: (P) => (P && P.plain ? 'Close! Multiply the blue digit by ' + rdPlain(P).e + ', then add the carry.' : 'Close! Use the multiplier from the lesson.'),
   taskHint: (P, t) => ['Close! Drop the 9. Add 1 to the digit in front of it.', 'Close! Multiply the 1 by the multiplier.', 'Close! Multiply the last digit by the multiplier again.', 'Close! Multiply first, then add the carry.'][t],
-  replayFor: (P, t) => (t === 0 ? [1] : t < 3 ? [2] : [3, 4]),
+  replayFor: (P, t) => (P.plain ? [2, 3] : t === 0 ? [1] : t < 3 ? [2] : [3, 4]),
+  plainAns: (P) => rdPlain(P).ans,
+  plainCap: (P) => { const Q = rdPlain(P); return 'On your own now. **1/' + P.m + '** ends in **…\u2060' + Q.known.join('') + '**. What is the next digit to the left?'; },
+  plainOk: (P) => { const Q = rdPlain(P); return '**Yes!** ' + Q.how + ', so the next digit is **' + Q.ans + '**.'; },
   random: () => ({ n: 1, m: [29, 39, 49, 59, 69, 79, 89][Math.floor(Math.random() * 7)] }),
 };
 // ---------- division near a base: Nikhilam ----------
@@ -1014,7 +1057,7 @@ function dvCol(S, show24, show58) {
 const DIV = {
   topic: 'Dividing near a base',
   sutra: 'Nikhilam: all from 9 and the last from 10',
-  practice: [{ n: 1321, m: 98 }, { n: 2412, m: 97 }],
+  practice: [{ n: 1321, m: 98 }, { n: 2412, m: 97 }, { n: 1513, m: 98, plain: true }, { n: 2116, m: 97, plain: true }],
   steps: [
     { name: 'Meet the problem', times: [0, 500, 1600], end: 2800, P: PD,
       cap: () => 'Let’s divide **1234 by 98**. Long division is slow. There is a faster way.',
@@ -1097,6 +1140,13 @@ const DIV = {
     const k = K(P), T = DIV.tasks(P), t = pr.task || 0, L = Math.floor(P.n / 100), R = P.n % 100;
     seq(S, [...numItems(k, 'pn', P.n), { id: k('po'), t: '÷', op: true }, ...numItems(k, 'pm', P.m)], 512, 206, 64);
     const ids = [...digs(P.n).map((_, i) => k('pn' + i)), k('po'), ...digs(P.m).map((_, i) => k('pm' + i))];
+    if (P.plain) { // on your own: just the problem; the learner types the remainder
+      const got = pr.ok || pr.done, r = R + L * (100 - P.m);
+      S.el(k('ps'), `${L} | ${String(R).padStart(2, '0')}`, 512, 276, { z: 34, c: MUTE, w: 800, o: !got && pr.wrong >= 2 && !pr.again ? 1 : 0 });
+      if (got) { S.el(k('pa'), `${L} rem ${r}`, 512, 300, { z: 64, c: GREEN }); green(S, ids); S.f(ids, k('pa')); S.finale = { x: 512, y: 253, w: 360, h: 200 }; }
+      else { S.box(k('ob'), 512, 380, 260, 84, { shadow: true, r: 26 }); S.el(k('ol'), 'remainder', 512, 380, { z: 40, w: 800, c: BLUE }); S.f(ids, k('ps'), k('ob'), k('ol')); }
+      return;
+    }
     S.el(k('ps'), `${L} | ${String(R).padStart(2, '0')}`, 512, 276, { z: 34, c: MUTE, w: 800, o: t >= 1 ? 1 : 0 });
     const fin = pr.done || (pr.ok && t === T.length - 1);
     if (!fin) {
@@ -1106,15 +1156,18 @@ const DIV = {
       seq(S, X.map((x, j) => ({ id: k('te' + t + '_' + j), t: x, op: x === '×' || x === '+' || x === '−', c: t === 1 && j === 2 ? ORANGE : INK })), 512, 380, 46);
       S.f(ids, k('ps'), k('tb' + t), X.map((_, j) => k('te' + t + '_' + j)));
     } else {
-      S.el(k('pa'), `${L} R ${R + L * (100 - P.m)}`, 512, 380, { z: 64, c: GREEN });
-      green(S, ids); S.f(ids, k('pa')); S.finale = { x: 512, y: 290, w: 360, h: 260 };
+      S.el(k('pa'), `${L} rem ${R + L * (100 - P.m)}`, 512, 300, { z: 64, c: GREEN });
+      green(S, ids); S.f(ids, k('pa')); S.finale = { x: 512, y: 253, w: 360, h: 200 };
     }
   },
-  doneCap: (P) => { const L = Math.floor(P.n / 100), r = P.n % 100 + L * (100 - P.m); return `**${P.n} ÷ ${P.m} = ${L} R ${r}**. Same trick, every time.`; },
+  doneCap: (P) => { const L = Math.floor(P.n / 100), r = P.n % 100 + L * (100 - P.m); return `**${P.n} ÷ ${P.m} = ${L} rem ${r}**. Same trick, every time.`; },
   hint: () => [],
-  hintText: () => 'Close! Use the gap from 100.',
+  hintText: (P) => (P && P.plain ? 'Close! Split off the last two digits. Multiply the left by the gap, then add.' : 'Close! Use the gap from 100.'),
   taskHint: (P, t) => ['Close! Take the divisor away from 100.', 'Close! Multiply the left side by the gap.', 'Close! Add your answer to the last two digits.'][t],
-  replayFor: (P, t) => [[1], [3], [4]][t],
+  replayFor: (P, t) => (P.plain ? [2, 3, 4] : [[1], [3], [4]][t]),
+  plainAns: (P) => P.n % 100 + Math.floor(P.n / 100) * (100 - P.m),
+  plainCap: (P) => `On your own now. **${P.n} ÷ ${P.m}**. What is the **remainder**?`,
+  plainOk: (P) => { const L = Math.floor(P.n / 100), R = P.n % 100, d = 100 - P.m; return `**Yes!** ${L} × ${d} = ${L * d}, and ${R} + ${L * d} = ${R + L * d}. So **${P.n} ÷ ${P.m} = ${L} rem ${R + L * d}**.`; },
   random: () => {
     for (;;) {
       const m = [97, 98, 99][Math.floor(Math.random() * 3)], d = 100 - m, L = 11 + Math.floor(Math.random() * (Math.floor(80 / d) - 10));
@@ -1169,7 +1222,7 @@ class Component extends DCLogic {
   sc() { return SCRIPTS[this.scr()] || X11; }
   lastIdx() { return this.sc().steps.length - 1; }
   freshPr(list) { return { list: list || this.sc().practice.slice(), pi: 0, task: 0, input: '', wrong: 0, ok: false, bad: false, shake: 0, replay: null, done: false, again: false }; }
-  startAuto(step) { this.stopAuto(); if (step >= this.lastIdx() || this.state.infoMount) return; this.af = setTimeout(() => this.setState({ auto: true }), 40); const t0 = Date.now(), go = () => { if (window.__vdBusy && window.__vdBusy() && Date.now() - t0 < AUTO + 12000) this.at = setTimeout(go, 250); else this.next(); }; this.at = setTimeout(go, AUTO + 40); } // waits for the narration to finish
+  startAuto(step) { this.stopAuto(); if (step >= this.lastIdx() || this.state.infoMount || this.state.paused) return; this.af = setTimeout(() => this.setState({ auto: true }), 40); const t0 = Date.now(), go = () => { if (window.__vdBusy && window.__vdBusy() && Date.now() - t0 < AUTO + 12000) this.at = setTimeout(go, 250); else this.next(); }; this.at = setTimeout(go, AUTO + 40); } // waits for the narration to finish
   stopAuto() { clearTimeout(this.at); clearTimeout(this.af); this.setState({ auto: false }); }
   later(fn, ms) { this.timers.push(setTimeout(fn, ms)); }
   // Waits at least ms, then until the voice has finished its line, so no line is cut off by the next one.
@@ -1182,7 +1235,7 @@ class Component extends DCLogic {
     const fails = TESTS.filter(([n, m, want]) => trick(n, m) !== want || n * m !== want);
     if (G19.slice().reverse().map(g => g.d).join('') !== '052631578947368421') console.log('[Vedica] recurring decimal test FAILED');
     console.log(fails.length ? `[Vedica] trick tests FAILED: ${JSON.stringify(fails)}` : `[Vedica] ${TESTS.length}/${TESTS.length} trick tests pass`);
-    this.onResize = () => this.setState({ k: Math.min((innerWidth - 32) / 1056, (innerHeight - 32) / 800, 1.3) });
+    this.onResize = () => { this.setState({ k: Math.min((innerWidth - 32) / 1056, (innerHeight - 32) / 800, 1.3) }); clearTimeout(this.rz); this.rz = setTimeout(() => this.forceUpdate(), 250); };
     this.onKey = (e) => {
       const s = this.state;
       if (s.infoMount) { if (e.key === 'Escape') this.closeInfo(); return; }
@@ -1201,6 +1254,8 @@ class Component extends DCLogic {
     else if (s0 === 0) { this.pending = () => this.go(0); this.openInfo(); } else this.go(s0);
   }
   componentDidUpdate(pp) {
+    { const r = document.getElementById('rail'), n = r ? r.childElementCount : 0; // keep the newest step in view
+      if (r && n !== this.railN) { const grew = n > (this.railN || 0); this.railN = n; if (grew) r.scrollTo({ top: r.scrollHeight, behavior: this.rm ? 'auto' : 'smooth' }); } }
     if (NATIVE && this.state.pr && this.state.pr.done && !this.posted) { this.posted = true; nativePost('done'); }
     if (pp.script !== this.props.script) { this.clear(); const saved = resumeGet(this.scr()); if (saved > 0 && saved <= this.lastIdx()) this.go(saved, { list: this.sc().practice.slice() }); else { this.pending = () => this.go(0, { list: this.sc().practice.slice() }); this.openInfo(); } }
     if (this.state.audio && this.state.capIn && this.capNow && this.capNow !== this.spoken) this.speak();
@@ -1221,15 +1276,17 @@ class Component extends DCLogic {
   savePref() { try { localStorage.setItem(LKEY, JSON.stringify({ lang: this.state.lang, audio: this.state.audio })); } catch (e) {} }
   openInfo(full) { this.stopAuto(); this.setState({ infoFull: !!full }); clearTimeout(this.it); this.setState({ infoMount: true, menu: false }); this.it = setTimeout(() => this.setState({ infoShow: true }), 20); }
   closeInfo() { clearTimeout(this.it); this.setState({ infoShow: false }); const p = this.pending; this.pending = null; this.it = setTimeout(() => { this.setState({ infoMount: false }); if (p) p(); else if (this.state.done) this.startAuto(this.state.step); }, 260); }
-  componentWillUnmount() { clearTimeout(this.at); clearTimeout(this.af); clearTimeout(this.st); clearTimeout(this.it); clearTimeout(this.mt); try { speechSynthesis.cancel(); } catch (e) {} this.clear(); cancelAnimationFrame(this.raf); removeEventListener('resize', this.onResize); removeEventListener('keydown', this.onKey); }
+  componentWillUnmount() { clearTimeout(this.at); clearTimeout(this.af); clearTimeout(this.st); clearTimeout(this.it); clearTimeout(this.mt); clearTimeout(this.rz); try { speechSynthesis.cancel(); } catch (e) {} this.clear(); cancelAnimationFrame(this.raf); removeEventListener('resize', this.onResize); removeEventListener('keydown', this.onKey); }
 
   go(step, opts = {}) {
     this.clear();
     resumeSet(this.scr(), step);
     const SC = this.sc(), last = this.lastIdx(), def = SC.steps[step];
     const pr = step === last ? this.freshPr(opts.list) : this.state.pr;
+    if (step === last && opts.own) { const j = pr.list.findIndex(x => x.plain); if (j > 0) pr.pi = j; }
     this.stopAuto();
-    this.setState({ step, phase: 0, done: false, capIn: false, pr });
+    this.t0 = Date.now();
+    this.setState({ step, phase: 0, done: false, capIn: false, pr, paused: false });
     this.later(() => this.setState({ capIn: true }), 40);
     def.times.forEach((t, i) => { if (i > 0) this.later(() => this.setState({ phase: i }), t); });
     this.later(() => {
@@ -1240,6 +1297,19 @@ class Component extends DCLogic {
   }
   next() { const s = this.state.step, last = this.lastIdx(); if (s === last && (this.props.onContinue || NATIVE_CONT)) { resumeSet(this.scr(), null); return (this.props.onContinue || NATIVE_CONT)(); } this.go(s < last ? s + 1 : 0); }
   back() { const s = this.state.step; if (s > 0) this.go(s - 1); else if (this.props.onExit) this.props.onExit(); }
+  // Pause freezes the step (animation, narration, auto next); Play carries on from the same moment.
+  togglePause() {
+    const s = this.state, last = this.lastIdx();
+    if (s.step >= last) return;
+    if (!s.paused) { this.pe = Date.now() - this.t0; this.clear(); this.stopAuto(); try { speechSynthesis.pause(); } catch (e) {} this.setState({ paused: true }); return; }
+    const def = this.sc().steps[s.step], pe = this.pe, step = s.step;
+    this.t0 = Date.now() - pe; try { speechSynthesis.resume(); } catch (e) {}
+    this.setState({ paused: false, capIn: true }, () => {
+      if (s.done) return this.startAuto(step);
+      def.times.forEach((t, i) => { if (i > s.phase) this.later(() => this.setState({ phase: i }), Math.max(0, t - pe)); });
+      this.later(() => { this.setState({ done: step < last }); this.startAuto(step); }, Math.max(0, def.end - pe));
+    });
+  }
   stageTap() {
     const s = this.state, def = this.sc().steps[s.step];
     if (s.step >= this.lastIdx()) return;
@@ -1252,7 +1322,7 @@ class Component extends DCLogic {
   press(d) {
     const { step, phase, pr } = this.state;
     if (step !== this.lastIdx() || phase < 1 || !pr || pr.ok || pr.replay || pr.done) return;
-    const P = this.curP(), SC = this.sc(), T = SC.tasks && !P.plain ? SC.tasks(P) : null, t = pr.task || 0, ans = String(T ? T[t].ans : P.n * P.m);
+    const P = this.curP(), SC = this.sc(), T = SC.tasks && !P.plain ? SC.tasks(P) : null, t = pr.task || 0, ans = String(T ? T[t].ans : SC.plainAns ? SC.plainAns(P) : P.n * P.m);
     const input = ((pr.bad ? '' : pr.input) + d).slice(0, ans.length);
     if (input.length < ans.length) return this.setPr({ input, bad: false, again: false });
     if (input === ans) {
@@ -1287,11 +1357,20 @@ class Component extends DCLogic {
 
   frame() {
     const st = this.state, SC = this.sc(), last = this.lastIdx(), S = mkScene();
-    if (st.step < last) { const d = SC.steps[st.step]; d.scene(S, d.P, st.phase); }
+    const dy = this.scr() === 'rd' ? rdFit() : this.scr() === 'dv' && document.documentElement.classList.contains('rail-below') ? -120 : 0;
+    let lesson = false;
+    if (st.step < last) { const d = SC.steps[st.step]; d.scene(S, d.P, st.phase); lesson = true; }
     else if (st.pr && st.phase >= 1) {
       const P = this.curP();
-      if (st.pr.replay) SC.steps[st.pr.replay.s].scene(S, P, st.pr.replay.ph);
+      if (st.pr.replay) { SC.steps[st.pr.replay.s].scene(S, P, st.pr.replay.ph); lesson = true; }
       else practiceScene(S, P, st.pr, SC);
+    }
+    if (dy && lesson) { // portrait: lift the whole scene so the steps list fits underneath
+      Object.values(S.E).forEach(e => { e.y += dy; });
+      Object.values(S.B).forEach(b => { b.y += dy; });
+      S.A.forEach(a => { if (a) { a.p0 = [a.p0[0], a.p0[1] + dy]; a.p1 = [a.p1[0], a.p1[1] + dy]; } });
+      if (S.hand && !S.hand.k) S.hand = { ...S.hand, y: S.hand.y + dy };
+      if (S.finale) S.finale = { ...S.finale, y: S.finale.y + dy };
     }
     return S;
   }
@@ -1484,8 +1563,8 @@ class Component extends DCLogic {
     else if (pr.done) { capStr = SC.doneCap ? SC.doneCap(P) : `**${P.n} × ${P.m} = ${P.n * P.m}**. Same trick, every time.`; hl = GREEN; }
     else if (SC.tasks && !P.plain && SC.tasks(P) && pr.ok) { const T = SC.tasks(P)[pr.task || 0]; capStr = `**Yes!** ${T.q} = ${T.ans}.`; hl = GREEN; }
     else if (SC.tasks && !P.plain && SC.tasks(P)) { capStr = SC.tasks(P)[pr.task || 0].cap; hl = (pr.task || 0) === 1 ? ORANGE : BLUE; }
-    else if (pr.ok) { capStr = `**Yes!** ${P.n} × ${P.m} = ${P.n * P.m}.`; hl = GREEN; }
-    else capStr = `${P.plain ? 'On your own now.' : 'Your turn.'} What is **${P.n} × ${P.m}**?`;
+    else if (pr.ok) { capStr = SC.plainOk ? SC.plainOk(P) : `**Yes!** ${P.n} × ${P.m} = ${P.n * P.m}.`; hl = GREEN; }
+    else capStr = P.plain && SC.plainCap ? SC.plainCap(P) : `${P.plain ? 'On your own now.' : 'Your turn.'} What is **${P.n} × ${P.m}**?`;
     this.capNow = capStr.replace(/\*\*/g, '');
     const cap = capStr.split('**').map((t, i) => ({ t, st: i % 2 ? { color: hl, fontWeight: 800 } : {} })).filter(s => s.t);
     const capStyle = {
@@ -1500,16 +1579,20 @@ class Component extends DCLogic {
     SC.steps.forEach((s, i) => { if (i === last) return; const g = groups[groups.length - 1], key = pkey(s) + (s.group || ''); if (g && g.key === key) g.idx.push(i); else groups.push({ key, idx: [i], P: s.P, group: s.group }); });
     const multi = groups.length > 1;
     const grpOf = (i) => groups.findIndex(g => g.idx.includes(i));
+    // Practice has two lines on top: the guided questions, then the on-your-own ones.
+    const ownG = (pr.list || []).filter(x => !x.plain).length, ownN = (pr.list || []).length - ownG;
+    const ownW = (own) => { if (st.step !== last) return 0; const n = own ? ownN : ownG; if (!n) return 0; const c = pr.pi + (pr.done || pr.ok ? 1 : 0); return Math.max(0, Math.min(n, own ? c - ownG : c)) / n * 100; };
     const progress = SC.steps.map((s, i) => {
       let w = 0, tr = 'none';
       if (i < st.step) w = 100;
       else if (i === st.step) {
-        if (st.step < last) { if (st.done) { w = 100; tr = 'width 300ms ease'; } else if (st.capIn) { w = 100; tr = `width ${s.end}ms linear`; } }
-        else { w = ((pr.pi + (pr.done || pr.ok ? 1 : 0)) / pr.list.length) * 100; tr = 'width 600ms cubic-bezier(.32,.72,0,1)'; }
+        if (st.step < last) { if (st.done) { w = 100; tr = 'width 300ms ease'; } else if (st.paused) { w = Math.min(100, (this.pe || 0) / s.end * 100); tr = 'none'; } else if (st.capIn) { w = 100; tr = `width ${Math.max(0, s.end - (Date.now() - (this.t0 || Date.now())))}ms linear`; } }
+        else { w = ownW(false); tr = 'width 600ms cubic-bezier(.32,.72,0,1)'; }
       }
       const gi = i === last ? groups.length : grpOf(i), first = i > 0 && (i === last || groups[gi].idx[0] === i);
       return { label: `Go to ${s.name}`, go: () => this.go(i), bst: { padding: '12px 0', border: 0, background: 'transparent', cursor: 'pointer', marginLeft: multi && first ? 14 : 0 }, fill: { height: '100%', width: `${w}%`, background: BLUE, borderRadius: 99, transition: tr } };
     });
+    if (SC.practice.some(x => x.plain)) progress.push({ label: 'Go to On your own', go: () => this.go(last, { own: true }), bst: { padding: '12px 0', border: 0, background: 'transparent', cursor: 'pointer', marginLeft: 0 }, fill: { height: '100%', width: `${ownW(true)}%`, background: BLUE, borderRadius: 99, transition: st.step === last ? 'width 600ms cubic-bezier(.32,.72,0,1)' : 'none' } });
 
     let hintText = 'Use the trick from the lesson.';
     if (P && pr.wrong > 0) hintText = SC.taskHint && !P.plain ? SC.taskHint(P, pr.task || 0) : SC.hintText(P);
@@ -1563,7 +1646,7 @@ class Component extends DCLogic {
     const PRI = { height: 56, padding: '0 30px', borderRadius: 99, border: 0, background: BLUE, color: '#ffffff', fontSize: 17, fontWeight: 700, cursor: 'pointer', boxShadow: '0 10px 24px rgba(10,132,255,.3)', transition: 'transform 140ms cubic-bezier(.3,.7,.4,1)' };
     const SEC = { height: 56, padding: '0 26px', borderRadius: 99, border: '1px solid #e1e8ef', background: '#ffffff', color: '#3a4860', fontSize: 17, fontWeight: 600, cursor: 'pointer', boxShadow: '0 4px 12px rgba(23,35,58,.05)', transition: 'transform 140ms cubic-bezier(.3,.7,.4,1)' };
 
-    const EX = { dv: ['1234 ÷ 98', '12 R 58'], rd: ['1/19', '0.0526…'], x11: ['32 × 11', '352'], m11: ['32 × 11', '352'], m101: ['32 × 101', '3232'], x9: ['47 × 99', '4653'], m9: ['47 × 9', '423'], m99: ['47 × 99', '4653'], m999: ['235 × 999', '234765'], sq5: ['35²', '1225'] };
+    const EX = { dv: ['205 ÷ 98', '2 rem 9'], rd: ['1/19', '0.0526…'], x11: ['32 × 11', '352'], m11: ['32 × 11', '352'], m101: ['32 × 101', '3232'], x9: ['47 × 99', '4653'], m9: ['47 × 9', '423'], m99: ['47 × 99', '4653'], m999: ['235 × 999', '234765'], sq5: ['35²', '1225'] };
     const ex = EX[this.scr()] || EX.x11;
     const info = { ...(INFO[this.scr()] || INFO.x11), exQ: ex[0], exA: ex[1] };
     { const m = info.title.match(/\d+(?!-)/) || info.title.match(/Unlike/), i = m ? m.index : info.title.length;
@@ -1613,6 +1696,8 @@ class Component extends DCLogic {
       topic: SC.topic, stepNum: isLast ? 'Practice' : multi ? (() => { const g = groups[grpOf(st.step)]; return `${g.group ? g.group.split(':')[0] + ' · ' : ''}${g.P.n} × ${g.P.m} · Step ${g.idx.indexOf(st.step) + 1} of ${g.idx.length}`; })() : `Step ${st.step + 1} of ${last}`, stepName: isLast ? (() => { const L = pr.list || [], g = L.filter(x => !x.plain).length, Q = L[pr.pi] || {}; return Q.plain ? `On your own ${pr.pi - g + 1} of ${L.length - g}` : `Guided ${pr.pi + 1} of ${g}`; })() : SC.steps[st.step].name,
       progress, nums, boxes, rail, railTitle: isLastStep ? 'Your work' : 'Steps', railHead: { padding: '0 0 2px 4px', fontSize: 12, fontWeight: 700, letterSpacing: '.08em', textTransform: 'uppercase', color: '#8391a6', opacity: rail.length ? 1 : 0, transition: 'opacity 300ms ease' }, a0, a1, a2, spotStyle, finaleStyle, handStyle, ring,
       showTap: !isLast && !st.infoMount, stageTap: () => this.stageTap(),
+      showPause: !isLast && !st.infoMount, togglePause: () => this.togglePause(), pauseAria: st.paused ? 'Play' : 'Pause', pauseIcon: st.paused ? 'M8.5 5.5v13l10-6.5z' : 'M7 5.5h3.5v13H7zM13.5 5.5H17v13h-3.5z',
+      pauseStyle: { width: 48, height: 48, borderRadius: 99, border: st.paused ? '1px solid #0a84ff' : '1px solid #e1e8ef', background: st.paused ? '#0a84ff' : '#ffffff', color: st.paused ? '#ffffff' : '#3a4860', display: 'grid', placeItems: 'center', padding: 0, cursor: 'pointer', boxShadow: st.paused ? '0 8px 18px rgba(10,132,255,.28)' : '0 4px 12px rgba(23,35,58,.06)', transition: 'transform 140ms cubic-bezier(.3,.7,.4,1), background 200ms, color 200ms' },
       showPrompt: prac && !pr.done && !pr.replay, showDone: prac && pr.done,
       inputShown: pr.input || '?', inputStyle, hintText,
       hintStyle: { fontSize: 16, fontWeight: 600, color: pr.wrong && !pr.ok && !pr.again ? '#a8662a' : pr.ok ? GREEN : '#8a97aa', transition: 'color 200ms', textAlign: 'center', maxWidth: 560 },
